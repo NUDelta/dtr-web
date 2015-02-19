@@ -1,0 +1,10 @@
+<template name="vision">
+<div class="dtr-content" id="vision">
+<img src="/images/dtr-lab.jpg" class="img-responsive" alt="DTR students @ work">
+<div>
+<p>
+Design, Technology, and Research (DTR) is a CS and Segal Research driven learning initiative that empowers undergraduate and graduate students to drive cutting-edge research through the development of systems that shape new experiences with people and technology. As a program and model for student-driven research, DTR prepares students for careers in engineering, design, innovation, and research by providing authentic practice.
+</p>
+</div>
+</div>
+</template>

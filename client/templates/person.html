@@ -1,0 +1,24 @@
+<template name="Person">
+<div class="flip-container" ontouchstart="this.classList.toggle('hover');">
+  <div class="flipper">
+    <div class="front">
+      <img class="person-photo" src="{{ photoLink}}"/>
+      <!-- front content -->
+      </div>
+    <div class="back">
+      <div class="person-card">
+	<div class="person-name-title">
+	  <img class="person-thumbnail" src="{{photoLink}}"/>
+	  <div class="person-name">{{name}}</div>
+	  <div class="person-title">{{role}}</div>
+	</div>
+	<div class="spacer"></div>
+	<div class="person-bio">
+	  {{{description}}}
+	</div>
+	<!-- back content -->
+      </div>
+    </div>
+  </div>
+</div>
+</template>

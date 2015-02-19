@@ -1,0 +1,10 @@
+<template name="method">
+<div id="method">
+<p>
+Students participate in DTR through fast-paced, quarter-long programs (intended to be repeated). Students work with a mentor to identify a direction of research, explore and iterate over designs, prototype at varying fidelities, build working systems, conduct evaluative studies, and report findings through conference publications. As a cohort, each week students demo their prototypes, provide and receive feedback, and help each other resolve technical challenges. DTR adapts and extends agile development and design-based research practices with scrums, sprints, studio critique, design logs, and pair research.</p>
+
+Design, Technology, and Research (DTR) is a CS and Segal Research driven learning initiative that empowers undergraduate and graduate students to drive cutting-edge research through the development of systems that shape new experiences with people and technology. As a program and model for student-driven research, DTR prepares students for careers in engineering, design, innovation, and research by providing authentic practice.
+</p>
+
+</div>
+</template>

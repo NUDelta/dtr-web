@@ -1,0 +1,85 @@
+html { 
+  background: #36465d;
+/*    background: url(images/galaxy.jpg) no-repeat center center fixed; */
+  -webkit-background-size: cover;
+  -moz-background-size: cover;
+  -o-background-size: cover;
+  background-size: cover;
+}
+
+body {
+    background-color: transparent;
+}
+
+.dtr-content {
+/*  background: #56bc8a;*/
+  background: #36465d;
+    color: #fff;
+/*    background:rgba(50,50,50,0.5);*/
+    margin: 3em;
+ /*   padding-left: 10em;
+    padding-right: 10em;
+    padding-top: 2em;*/
+    font-family: 'Helvetica Neue', Helvetica, Arial, sans-serif;
+    font-size: 2em;
+    font-style: normal;
+    font-variant: normal;
+    font-weight: 200;
+/*    line-height: 1.2em;*/
+}
+
+
+.navbar {
+    font-size: 2em;
+/*    padding-left: 10em;
+    padding-right: 10em;*/
+    font-family: 'Helvetica Neue', Helvetica, Arial, sans-serif;
+    font-style: normal;
+    font-variant: normal;
+    font-weight: 200;
+/*    margin: 0em;*/
+}
+
+.navbar .container-fluid {
+/*    margin: 0;
+padding: 0;*/
+}
+
+.navbar-collapse {
+/*    margin: 0;
+    padding: 0;*/
+}
+
+.person-photo {
+    width: 360px;
+    height: 360px;
+}
+
+
+.person-thumbnail {
+    width: 120px;
+    height: 120px;
+    float:right;
+}
+
+
+
+.person-card {
+    margin: 10px;
+    padding: 20px;
+}
+.person-name {
+    font-size: 2em;
+    font-weight: 700px;
+}
+.person-title {
+    font-size: 1.2em;
+    font-weight: 200;
+}
+
+.person-bio {
+    font-size: 1em;
+    font-weight: 400;
+}
+
+.spacer { margin-top: 10px; }

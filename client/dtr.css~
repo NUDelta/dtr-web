@@ -1,0 +1,60 @@
+html { 
+  background: #36465d;
+  /*url(images/galaxy.jpg) no-repeat center center fixed; */
+  -webkit-background-size: cover;
+  -moz-background-size: cover;
+  -o-background-size: cover;
+  background-size: cover;
+}
+
+body {
+    background-color: transparent;
+}
+
+.dtr-content {
+/*  background: #56bc8a;*/
+  background: #36465d;
+    color: #fff;
+/*    background:rgba(50,50,50,0.5);*/
+    margin: 0em;
+    padding-left: 10em;
+    padding-right: 10em;
+    padding-top: 2em;
+    font-family: 'Helvetica Neue', Helvetica, Arial, sans-serif;
+    font-size: 2em;
+    font-style: normal;
+    font-variant: normal;
+    font-weight: 200;
+/*    line-height: 1.2em;*/
+}
+
+
+.navbar {
+    margin-bottom: 0;
+}
+
+
+
+.person-photo {
+    width: 400px;
+    height: 400px;
+}
+
+.person-card {
+    margin: 10px;
+}
+.person-name {
+    font-size: 2em;
+    font-weight: 700px;
+}
+.person-title {
+    font-size: 1.2em;
+    font-weight: 200;
+}
+
+.person-bio {
+    font-size: 1em;
+    font-weight: 400;
+}
+
+.spacer { margin-top: 10px; }

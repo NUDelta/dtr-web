@@ -15,6 +15,7 @@ a {
     color: "hotpink" 
 }
 
+
 .dtr-content {
 /*  background: #56bc8a;*/
   background: #36465d;
@@ -94,4 +95,20 @@ padding: 0;*/
     max-width: inherit;
     width: 100%;
     height: auto;
+}
+
+
+.project-image {
+    max-width: inherit;
+    width: 100%;
+    height: auto;
+}
+
+.project-person-name {
+    font-size: 1.2em;
+}
+
+.project-person-role {
+    color: "lightgrey";
+    margin-left: "20px";
 }

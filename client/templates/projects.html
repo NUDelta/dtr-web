@@ -10,12 +10,19 @@
 			<div class="row">
 				{{#each sig_project _id}}
 					<div class="col-lg-6 col-md-6">
-						<h3>{{ title }}</h3>
-						<p>{{ learn_more about }}</p>
+					  <h3><a href="/projects/{{proj_id}}">{{ title }}</a></h3>
+					  <p>{{ learn_more about }}</p>
 					</div>
 				{{/each}}
 			</div>
-
+			<div class="row">
+			  <div class="col-lg-6 col-md-6">
+			    <h3>Team</h3>
+			    {{#each people_list}}
+			    <div class="project-person-name">{{name}}</div>
+			    {{/each}}
+			  </div>
+			</div>
 
 		</div>
 	</div>

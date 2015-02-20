@@ -145,7 +145,7 @@ projects=[
 	"title" : "Secrets",
 	"people" : ["cgrief"],
 	"about" : "Information sharing a core focus of many online systems, and within these systems information is shared either through established social ties and networks or to the general public. However, there are opportunities to share types of information that are not shared in these systems because they are too public. These types of information would benefit from the ability to be shared in controlled non-public manners due to their limited or private nature. We introduce Secrets, a system that allows users to specify limits on who information in shared with, in this case with user-specified tasks. These tasks establish communication channels between users and create common identity or reciprocity to promote information sharing. This paper will discuss the design of Secrets and present results from a 1-week deployment through a college community where users performed tasks and shared secrets about their community. The results found from this deployment show that user-imposed tasks promote information sharing and that information shared over this platform differs from information shared to the public or to existing networks",
-	"banner" : "",
+	"banner" : "/images/projects/secrets.png",
 	"images" : [
 	    {
 		'image_link': '',
@@ -165,7 +165,7 @@ projects=[
 	"title" : "Remote Paper Prototype Testing",
 	"people" : ["kchen"],
 	"about" : "Remote Paper Prototype Testing, or RPPT, approaches lo-fidelity prototyping differently. Traditional advances in prototyping or design methods lean toward quickly developing more complex and fleshed out demos, which often means creating many predefined interactions for designers to customize and insert. RPPT instead focuses on making low fidelity paper prototyping, which has no such restrictions, more accessible, powerful, and able to be conducted remotely",
-	"banner" : "https://drive.google.com/open?id=0B2XFICitZbqybmgtU29RaVdpWEE&authuser=2",
+	"banner" : "/images/projects/rppt-teaser.png",
 	"images" : [
 	    {
 		'image_link': '/images/projects/rppt.png',

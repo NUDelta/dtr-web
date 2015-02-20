@@ -11,6 +11,10 @@ body {
     background-color: transparent;
 }
 
+a {
+    color: "hotpink" 
+}
+
 .dtr-content {
 /*  background: #56bc8a;*/
   background: #36465d;
@@ -59,7 +63,8 @@ padding: 0;*/
 .person-thumbnail {
     width: 120px;
     height: 120px;
-    float:right;
+    float:left;
+    margin-right: 20px;
 }
 
 
@@ -67,6 +72,7 @@ padding: 0;*/
 .person-card {
     margin: 10px;
     padding: 20px;
+    color: white;
 }
 .person-name {
     font-size: 2em;

@@ -3,8 +3,15 @@ people=[
 	"_id":"hzhang",
 	"photoLink":"http://delta.northwestern.edu/wordpress/wp-content/uploads/2013/11/haoqi-250x250.jpg",
 	"name": "Haoqi Zhang",
-	"role": "Professor",
+	"role": "Assistant Professor in Computer Science and Design; Co-Director, Delta Lab",
 	"description": "<a href=\"http://eecs.northwestern.edu/~hq\">Haoqi</a> is an Assistant Professor at Northwestern University in <a href=\"http://www.eecs.northwestern.edu\">Computer Science</a> and at the <a href=\"http://www.segal.northwestern.edu\">Segal Design Institute</a>. He studies, designs, and builds social computing systems that promote desired behaviors and outcomes. His current work focuses on engaging crowds and communities in problem solving and collective action, and on advancing new data-driven design processes. He research spans the fields of social computing, crowdsourcing, human computer interaction, artificial intelligence, and decision science. He received his PhD in Computer Science and BA in Computer Science and Economics from Harvard University."
+    },
+    {
+	"_id":"lgerber",
+	"photoLink":"http://delta.northwestern.edu/wordpress/wp-content/uploads/2013/11/liz-250x250.jpg",
+	"name": "Liz Gerber",
+	"role": "Breed Junior Chair in Design; Co-Director, Delta Lab",
+	"description": "<a href=\"http://egerber.mech.northwestern.edu/\">Liz</a> is the Breed Junior Chair of Design in the <a href=\"http://www.mccormick.northwestern.edu\">McCormick School of Engineering</a> and <a href=\"http://www.communication.northwestern.edu\">School of Communication</a> at Northwestern University. She has spent 11 years researching and designing award winning innovation programs for universities and S&amp;P 500 companies nationally and internationally. She has been invited to speak nationally and internationally at non-profit and for-profit institutions, including Facebook, Hewlett-Packard, MIT, and Stanford. Her work has been featured in such venues as Oprah, NPR, ABC, Harvard Business Review, Forbes, and Fast Company, and is currently funded by the National Science Foundation, the Mozilla Foundation, and the MacArthur Foundation."
     },
     {
 	"_id":"jhibschman",
@@ -98,12 +105,32 @@ people=[
 	"description": "Nicole is an undergraduate student at Northwestern University majoring in English and Computer Science. She works on projects with the student group Design for America and does web design for the news site North by Northwestern. Her interests include crowdsourcing, interactive news/storytelling, and social design. Her research involves developing a mobile app to promote low-effort crowdsourcing through physical gestures and mobile sensors."
     },
     {
+	"_id":"eharburg",
+	"photoLink":"http://delta.northwestern.edu/wordpress/wp-content/uploads/2013/11/emily-250x250.jpg",
+	"name": "Emily Harburg",
+	"role": "PhD Student",
+	"description": "<a href=\"http://emilyharburg.com/\">Emily</a> is a Ph.D. Student in the <a href=\"http://tsb.northwestern.edu\">Technology and Social Behavior</a> program at Northwestern University. Emily is interested in building tools to improve motivation, decision-making, innovation, and collaboration. She is currently looking at the effects of using crowfunding to increase self-efficacy. Emily received her B.S. in Social Anthropology with a minor in Psychology from Harvard University. Prior to doctoral studies, Emily worked for Walt Disney Imagineering in the Disney Research behavioral sciences team."
+    },
+    {
 	"_id":"scambo",
 	"photoLink":"http://delta.northwestern.edu/wordpress/wp-content/uploads/2015/02/scott.jpg",
 	"name": "Scott Cambo",
 	"role": "PhD Student",
 	"description": "Scott is a PhD student in the Technology and Social Behavior program.  He completed his undergraduate degree in Information Science (minor in Cognitive Science) at Cornell University and was a 2014 Data Science For Social Good Fellow.  His research interests include ubiquitous computing, mobile computing, HCI, social computing, personal informatics and generally any kind of research that helps to people to gain actionable knowledge about themselves and the world we live in through technology."
     },
-    
+    {
+	"_id": "ckim",
+	"photoLink" : "http://delta.northwestern.edu/wordpress/wp-content/uploads/2015/02/christina.jpg",
+	"name": "Christina Kim",
+	"role": "Undergrad Researcher",
+	"description": "Christina is a undergraduate student at Northwestern University studying Computer Science in the McCormick School of Engineering. She is interested in human-centered design, online communities, and social computing. As Vice President of Services of Northwestern's Associated Student Government, Christina works to create web apps and intiatives for Northwestern's undergraduates."
+    },
+    {
+	"_id": "favino",
+	"photoLink" : "http://delta.northwestern.edu/wordpress/wp-content/uploads/2015/02/frank.jpg",
+	"name": "Frank Avino",
+	"role": "Undergrad Researcher",
+	"description": "Frank Avino is an undergraduate Computer Science student in the McCormick School of Engineering and Applied Science, graduating in June 2015. His lifetime of experience with playing the game of hockey has lead him to giving back to the game through research. His current research seeks to solve the problem of hockey coaches being unable to provide enough thorough, factual feedback to each of his or her players during and after each of the team's games."
+    }
 ];
 

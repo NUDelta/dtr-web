@@ -168,7 +168,7 @@ projects=[
 	"banner" : "https://drive.google.com/open?id=0B2XFICitZbqybmgtU29RaVdpWEE&authuser=2",
 	"images" : [
 	    {
-		'image_link': 'https://dl.dropbox.com/s/50qxti8lrqjxjmj/IMG_0897.JPG',
+		'image_link': '/images/projects/rppt.png',
 		'caption' : 'Remote paper prototype testing enables designers to wizard paper prototypes from afar while a user tests the prototype in realistic scenarios, out of the lab.'
 	    },
 	    {

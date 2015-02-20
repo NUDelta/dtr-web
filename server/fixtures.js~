@@ -1,8 +1,0 @@
-if (People.find().count() === 0) {
-    console.log("right");
-    if(!(typeof people === 'undefined')){
-        for(var i in people){
-            People.insert(people[i]);
-        }
-    }
-}

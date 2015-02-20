@@ -27,8 +27,8 @@ sigs=[
 	"_id": "sig_oc",
 	"title" : "On-the-Go Crowdsourcing",
 	"about": "The On-the-Go Crowdsourcing SIG will focus on designing, developing, and deploying mobile applications that aim to engage individuals in physical crowdsourcing efforts and related tasks. Projects are designed within the constraint of peoples’ existing mobility and routines in order to either contribute to data collection and tracking efforts or to complete physical tasks. TapShare and Gaze focus on using lightweight interactions and natural gestures to create and scaffold location-based reports. Technologies such as tap detection and architecture for an identify-focus-capture technique are primary components of TapShare and Gaze. CrowdFound and Libero support communities who help each other look for lost items and deliver packages through their daily routines. CrowdFound and Libero primarily use context detection (motion activity, direction, time of day, distance, geofencing, and iBeacon technology) to create context-aware and highly specific location-based notifications. All projects are iOS applications that use location-based notifications either to scaffold existing data (i.e. contributing reports to applications built using TapShare and Gaze) or to prompt users to complete a task (i.e. use Libero to pick up packages from the mailroom to deliver to a fellow student in the same dorm).",
-	"projects" : ["proj_libero", "proj_crowdfound", "proj_tapshare", "proj_gaze", "proj_bitefeed"],
-	"people" : ["ykim", "eharburg", "schan", "nzhu", "hzhang"],
+	"projects" : ["proj_libero", "proj_crowdfound", "proj_tapshare", "proj_gaze", "proj_bitenow"],
+	"people" : ["ykim", "eharburg", "schan", "nzhu", "hzhang", "zallen"],
 	"banner" : "/images/sigs/sig_pc.jpg",
     }
 ]

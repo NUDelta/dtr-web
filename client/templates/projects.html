@@ -1,11 +1,24 @@
 <template name="Projects">
   <div id="projects">
 
-    {{#each projects}}
+    {{#each sigs}}
+    <div class="container">
 		<div class="jumbotron">
-			<h1>{{ title }}</h1>
+			<h2>{{ title }}</h2>
+			<img class="projects-banner" src="{{ banner }}"/>
+			<p>{{ about }}</p>
+			<div class="row">
+				{{#each sig_project _id}}
+					<div class="col-lg-6 col-md-6">
+						<h3>{{ title }}</h3>
+						<p>{{ about }}</p>
+					</div>
+				{{/each}}
+			</div>
 			<p><a class="btn btn-primary btn-lg" href="#" role="button">Learn more</a></p>
+
 		</div>
+	</div>
     {{/each}}
 
   </div>

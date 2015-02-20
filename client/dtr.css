@@ -89,3 +89,9 @@ padding: 0;*/
 }
 
 .spacer { margin-top: 10px; }
+
+.projects-banner {
+    max-width: inherit;
+    width: 100%;
+    height: auto;
+}

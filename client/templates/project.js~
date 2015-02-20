@@ -1,0 +1,6 @@
+Template.Project.helpers({
+    people_list : function(){
+	console.log("here");
+	return People.find();
+    },
+});

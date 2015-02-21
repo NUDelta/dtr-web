@@ -1,44 +1,49 @@
 <template name="layout">
 
-   <nav class="navbar navbar-default"> 
-      <div class="container-fluid">
-	<!-- Brand and toggle get grouped for better mobile display -->
-	<div class="navbar-header">
-	  <button type="button" class="navbar-toggle collapsed" data-toggle="collapse" data-target="#dtr-nav-collapse">
-            <span class="sr-only">Toggle navigation</span>
-            <span class="icon-bar"></span>
-            <span class="icon-bar"></span>
-            <span class="icon-bar"></span>
-	  </button>
-  <a class="navbar-brand" href="{{ pathFor 'vision'}}">DTR</a>
-	</div>
-	
-	<!-- Collect the nav links, forms, and other content for toggling -->
-	<div class="collapse navbar-collapse" id="dtr-nav-collapse">
-	  <ul class="nav navbar-nav">
-	    {{>navItems}}
-    
-	    
-	  </ul>
-<!--	  <ul class="nav navbar-nav navbar-right">
-            <li><a href="#">Thanks</a></li>
-	  </ul>
--->
-	</div><!-- /.navbar-collapse -->
-      </div><!-- /.container-fluid -->
+   <nav id="header" class="navbar navbar-default"> 
+     <div class="container-fluid">
+       
+       <div class="row">
+	 <div class="col-lg-2 col-md-2"></div>
+	 <div class="col-lg-8 col-md-8">
+	   <!-- Brand and toggle get grouped for better mobile display -->
+	   <div class="navbar-header" >
+	     <button type="button" class="navbar-toggle collapsed" data-toggle="collapse" data-target="#dtr-nav-collapse">
+               <span class="sr-only">Toggle navigation</span>
+               <span class="icon-bar"></span>
+               <span class="icon-bar"></span>
+               <span class="icon-bar"></span>
+	     </button>
+	          <a class="navbar-brand" href="{{ pathFor 'Vision'}}">DTR</a>
+	   </div>
+	   
+	   <!-- Collect the nav links, forms, and other content for toggling -->
+	   <div class="collapse navbar-collapse" id="dtr-nav-collapse">
+	     <ul class="nav navbar-nav">
+	       {{>navItems}}
+	     </ul>
+	     <!--	  <ul class="nav navbar-nav navbar-right">
+			  <li><a href="#">Thanks</a></li>
+	     </ul>
+	     -->
+	   </div><!-- /.navbar-collapse -->
+	 </div><!-- /.container-fluid -->
+       </div>
+     </div>
    </nav>
-    <div id="main" class="row-fluid">
-      {{> yield}}
-    </div>
-
+   <div id="main" class="row-fluid">
+     {{> yield}}
+   </div>
+   
 </template>
 
 <template name='navItems'>
-  <li class="{{ activeIfTemplateIs 'Vision' }}"><a href="{{ pathFor 'Vision'}}">Vision <span class="sr-only">(current)</span></a></li>
-  <li class="{{ activeIfTemplateIs 'Method' }}"><a href="{{ pathFor 'Method'}}">Method</a></li>
-  <li class="{{ activeIfTemplateIs 'People' }}"><a href="{{ pathFor 'People'}}">People</a></li>
-  <li class="{{ activeIfTemplateIs 'Projects' }}"><a href="{{pathFor 'Projects'}}">Projects</a></li>
-  <li class="{{ activeIfTemplateIs 'Apply' }}"><a href="">Join Us</a></li>
+  <li class="navitem {{ activeIfTemplateIs 'Vision' }}"><a href="{{ pathFor 'Vision'}}">Vision <span class="sr-only">(current)</span></a></li>
+  <li class="navitem {{ activeIfTemplateIs 'Method' }}"><a href="{{ pathFor 'Method'}}">Method</a></li>
+  <li class="navitem {{ activeIfTemplateIs 'People' }}"><a href="{{ pathFor 'People'}}">People</a></li>
+  <li class="navitem {{ activeIfTemplateIs 'Projects' }}"><a href="{{pathFor 'Projects'}}">Projects</a></li>
+  <li class="navitem {{ activeIfTemplateIs 'Apply' }}"><a href="{{pathFor 'Apply'}}">Apply</a></li>
+  <li class="navitem {{ activeIfTemplateIs 'Faq' }}"><a href="{{pathFor 'Faq'}}">FAQ</a></li>
 
 <!--  <li class="{{ activeIfTemplateIs 'Resources' }}"><a href="{{pathFor 'Resources'}}">Resources</a></li>-->
 </template>

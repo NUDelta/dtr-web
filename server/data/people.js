@@ -92,7 +92,7 @@ people=[
     },
     {
 	"_id":"kchen",
-	"photoLink":"http://delta.northwestern.edu/wordpress/wp-content/uploads/2014/10/kevin.jpg",
+	"photoLink":"http://delta.northwestern.edu/wordpress/wp-content/uploads/2015/02/kevin1-square.jpg",
 	"name": "Kevin Chen",
 	"role": "Undergrad Researcher",
 	"description": "Kevin is an undergraduate student at Northwestern University majoring in Computer Science in the McCormick School of Engineering. He is interested in sociotechnical connections, crowdsourcing, artificial intelligence, and algorithms. Kevin's research explores new prototyping interactions made available by Google Glass."

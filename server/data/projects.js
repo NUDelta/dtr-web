@@ -28,7 +28,7 @@ projects=[
 	"banner" : "https://dl.dropbox.com/s/wyfa9ee65l3088g/Icon.png",
 	"images" : [
 	    {
-		'image_link': 'https://dl.dropbox.com/s/tb9rocztyix2326/iOS%20Simulator%20Screen%20Shot%20Feb%2020%2C%202015%2C%202.28.34%20AM.png',
+		'image_link': 'https://www.dropbox.com/s/r5j1tdbsvj9s68q/crowdfound.png?dl=0',
 		'caption' : 'Users are shown map of pins where lost items have been tagged.'
 	    },
 	    {
@@ -51,7 +51,7 @@ projects=[
 		'image_link': 'https://dl.dropbox.com/s/x3qcacb6qhah81a/BiteNowMockup.png',
 		'caption' : 'BiteNow finds out where free food is on campus by asking many users simple questions and notifies the interested ones about it when they come, close to food',
 	    },
-	    {   
+	    {
 		'image_link' : 'https://dl.dropbox.com/s/7rm84xuxv0dtfym/BiteNowInteractionFlow.png',
 		'caption' : 'The flow of a food report, from creation to populating the newsfeed of free food nearby.'
 	    }

@@ -1,12 +1,12 @@
 <template name="Person">
   <div class="person-card" id="person-{{_id}}">
-    <div class="container">
-      <img class="person-thumbnail" src="{{photoLink}}"/>
+    <img class="person-thumbnail" src="{{photoLink}}"/>
+    <div class="person-description">
       <div class="person-name">{{name}}</div>
       <div class="person-title">{{role}}</div>
       <div class="spacer"></div>
       <div class="person-bio">
-	{{{description}}}
+       {{{description}}}
       </div>
     </div>
   </div>

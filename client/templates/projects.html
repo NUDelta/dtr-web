@@ -11,7 +11,11 @@
 				{{#each sig_project _id}}
 					<div class="col-lg-6 col-md-6">
 					  <h3><a class="proj_link" href="/projects/{{proj_id}}">{{ title }}</a></h3>
-					  <p>{{ learn_more about }}</p>
+					  {{#if video}}
+					  	<p>{{ learn_more video_about }}</p>
+					  {{else}}
+					  	<p>{{ learn_more about }}</p>
+					  {{/if}}
 					</div>
 				{{/each}}
 			</div>

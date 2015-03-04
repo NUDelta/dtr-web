@@ -72,6 +72,10 @@ body {
     margin: 0px;
 }
 
+.navitem {
+    margin: 0 5px 0 5px;
+}
+
 /* general content styling */
 .dtr-content h3 {
     color: #333;    
@@ -253,6 +257,10 @@ body {
    border-bottom: 1px solid #333;
 }
 
+video.projects-banner {
+    height: 574px;
+}
+
 .projects-banner {
     max-width: inherit;
     width: 100%;
@@ -272,4 +280,19 @@ body {
 .project-person-role {
     color: "lightgrey";
     margin-left: "20px";
+}
+
+a.project-publication-name {
+    color: #333;
+    font-weight: 300;
+    background-color: #fff9bc;
+}
+
+a.project-publication:hover {
+    text-decoration: none;
+    background-color: #FFF056;
+    -webkit-transition: background 0.5s ease, padding 0.8s linear;
+    -moz-transition: background 0.5s ease, padding 0.8s linear;
+    -o-transition: background 0.5s ease, padding 0.8s linear;
+    transition: background 0.5s ease, padding 0.8s linear;
 }

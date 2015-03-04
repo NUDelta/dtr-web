@@ -164,19 +164,18 @@ projects=[
 	"sig" : "sig_bb",
 	"title" : "Remote Paper Prototype Testing",
 	"people" : ["kchen"],
-	"about" : "Remote Paper Prototype Testing, or RPPT, approaches lo-fidelity prototyping differently. Traditional advances in prototyping or design methods lean toward quickly developing more complex and fleshed out demos, which often means creating many predefined interactions for designers to customize and insert. RPPT instead focuses on making low fidelity paper prototyping, which has no such restrictions, more accessible, powerful, and able to be conducted remotely",
+	"video": "https://docs.google.com/uc?id=0B2XFICitZbqybmgtU29RaVdpWEE&export=download",
+	"video_about" : "Remote Paper Prototype Testing, or RPPT, approaches lo-fidelity prototyping differently. Traditional advances in prototyping or design methods lean toward quickly developing more complex and fleshed out demos, which often means creating many predefined interactions for designers to customize and insert. RPPT instead focuses on making low fidelity paper prototyping, which has no such restrictions, more accessible, powerful, and able to be conducted remotely.",
+	"video_poster": "/images/projects/rppt.png",
 	"banner" : "/images/projects/rppt-teaser.png",
-	"images" : [
-	    {
-		'image_link': '/images/projects/rppt.png',
-		'caption' : 'Remote paper prototype testing enables designers to wizard paper prototypes from afar while a user tests the prototype in realistic scenarios, out of the lab.'
-	    },
-	    {
-		'image_link': 'https://dl.dropbox.com/s/44hmvl66yp4benm/final%20teaser.png',
-		'caption' : 'The user tester interacts with a video feed of the paper prototype (back in the lab) on their phone, while Google Glass streams their first-person perspective back to the designer-wizard.'
-	    }
+	"about": "RPPT enables designers to wizard paper prototypes from afar while a user tests the prototype in realistic scenarios, out of the lab. The user tester interacts with a video feed of the paper prototype (back in the lab) on their phone, while Google Glass streams their first-person perspective back to the designer-wizard.",
+	"publications" : [
+		{
+			"title": "Remote Paper Prototype Testing",
+			"conference": "CHI 2015",
+			"url": "https://users.eecs.northwestern.edu/~hq/papers/rppt-chi.pdf"
+		}
 	],
-	"publications" : [],
 	"design_log": ""
     },
     {

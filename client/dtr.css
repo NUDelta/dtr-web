@@ -296,3 +296,21 @@ a.project-publication:hover {
     -o-transition: background 0.5s ease, padding 0.8s linear;
     transition: background 0.5s ease, padding 0.8s linear;
 }
+
+.form-group {
+    margin-bottom: 0px;
+}
+
+#task {
+    padding-left: 50px;
+    display: none;
+}
+
+.task {
+    margin-left: 50px;
+}
+
+#btn-story-done {
+    display: none;
+    margin-top: 10px;
+}

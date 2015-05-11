@@ -314,3 +314,17 @@ a.project-publication:hover {
     display: none;
     margin-top: 10px;
 }
+
+.checkbox {
+    display: inline-block;
+}
+
+input[name="task"] {
+    width: 60%;
+    display: inline-block;
+}
+
+#select-points {
+    display: inline-block;
+    width: 15%;
+}

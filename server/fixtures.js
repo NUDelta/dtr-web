@@ -27,3 +27,33 @@ if (Sigs.find().count() === 0) {
 		console.log("sigs are undefined");
 	}
 }
+
+if (Sprints.find().count() === 0) {
+	if(!(typeof sprints === 'undefined')){
+		for(var i in sprints){
+			Sprints.insert(sprints[i]);
+		}
+	} else {
+		console.log("sprints are undefined");
+	}
+}
+
+if (Stories.find().count() === 0) {
+	if(!(typeof stories === 'undefined')){
+		for(var i in stories){
+			Stories.insert(stories[i]);
+		}
+	} else {
+		console.log("stories are undefined");
+	}
+}
+
+if (Tasks.find().count() === 0) {
+	if(!(typeof tasks === 'undefined')){
+		for(var i in tasks){
+			Tasks.insert(tasks[i]);
+		}
+	} else {
+		console.log("tasks are undefined");
+	}
+}

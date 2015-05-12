@@ -1,6 +1,19 @@
 <template name="sprintItem">
-	Project: {{project}}
-	{{#each stories}}
-		{{> sprintStory}}
-	{{/each}}
+	<div class="row">
+			<div class="col-lg-8 col-lg-offset-2 col-md-12">
+				<h1>This sprint</h1>
+				{{#each stories}}
+					{{> sprintStory}}
+				{{/each}}
+				<div class="panel panel-default">
+					<div class="panel-body">
+						<form class="main form page">
+							<div class="form-group">
+								<input name="story" id="story" type="text" value="" placeholder="Add a user story" class="form-control"/>
+							</div>
+						</form>
+					</div>
+				</div>
+			</div>
+		</div>
 </template>

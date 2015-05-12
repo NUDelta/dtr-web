@@ -1,3 +1,35 @@
 <template name="sprintTask">
-	{{description}}
+	<div class="task">
+						        <row>
+							        <input name="task" type="text" value="{{description}}" placeholder="Add a task" class="form-control dtr-content form-task"/>
+							        <!-- <p class="p-task">{{description}}</p> -->
+							        <select class="form-control dtr-content select-points" id="select-points-{{_id}}">
+								  		<option {{select1}}>1</option>
+								  		<option {{select2}}>2</option>
+								  		<option {{select3}}>3</option>
+								  		<option {{select5}}>5</option>
+								  		<option {{select8}}>8</option>
+								  		<option {{select13}}>13</option>
+								  	</select>
+								  	<div href="" class="btn btn-circle-sm btn-primary">D</div>
+								  	<div href="" class="btn btn-circle-sm btn-primary">T</div>
+								  	<div href="" class="btn btn-circle-sm btn-primary">R</div>
+							        <!-- <div class="checkbox">
+									    <label>
+									      <input type="checkbox" id="checkbox-D" checked> D
+									    </label>
+								  	</div>
+								  	<div class="checkbox">
+									    <label>
+									      <input type="checkbox" id="checkbox-T"> T
+									    </label>
+								  	</div>
+								  	<div class="checkbox">
+									    <label>
+									      <input type="checkbox" id="checkbox-R"> R
+									    </label>
+								  	</div> -->
+								  	<div class="btn btn-primary btn-sm btn-claim">Claim</div>
+								  </row>
+							  </div>
 </template>

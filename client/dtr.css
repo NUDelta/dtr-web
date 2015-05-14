@@ -447,3 +447,7 @@ h2.h-light {
 .hidden {
     visibility: hidden;
 }
+
+.dropdown-menu {
+    padding: 10px;
+}

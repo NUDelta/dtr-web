@@ -1,0 +1,14 @@
+<template name="login">
+	<li id="login-dropdown-list" class="dropdown">
+		<a class="dropdown-toggle" data-toggle="dropdown">Log in</a>
+		<div class="dropdown-menu">
+			{{#if loggedIn}}
+			<button class="btn btn-primary col-sm-12" id="logout-button">Log out</button>
+			{{else}}
+			<input id="login-username" type="text" placeholder="Username" class="form-control"/>
+			<input id="login-password" type="password" placeholder="Password" class="form-control"/>
+			<button class="btn btn-primary col-sm-12" id="login-buttons-password" type="button">Sign in</button>
+			{{/if}}
+		</div>
+	</li>
+</template>

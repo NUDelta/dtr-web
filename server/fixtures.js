@@ -27,3 +27,63 @@ if (Sigs.find().count() === 0) {
 		console.log("sigs are undefined");
 	}
 }
+
+if (Sprints.find().count() === 0) {
+	/*var projects = Projects.find().fetch();
+	for (var i = 0; i < projects.length; i++) {
+		Sprints.insert({
+			project: projects[i]._id,
+			range: ["2015-05-14", "2015-05-27"],
+			people: projects[i].people
+		});
+	}*/
+
+	/*Sprints.insert({
+		project: "proj_libero",
+		range: ["2015-05-14", "2015-05-27"],
+		people: ["ahollenbeck"]
+	});*/
+
+	if(!(typeof sprints === 'undefined')){
+		for(var i in sprints){
+			Sprints.insert(sprints[i]);
+		}
+	} else {
+		console.log("sprints are undefined");
+	}
+}
+
+if (Stories.find().count() === 0) {
+	if(!(typeof stories === 'undefined')){
+		for(var i in stories){
+			Stories.insert(stories[i]);
+		}
+	} else {
+		console.log("stories are undefined");
+	}
+}
+
+if (Tasks.find().count() === 0) {
+	if(!(typeof tasks === 'undefined')){
+		for(var i in tasks){
+			Tasks.insert(tasks[i]);
+		}
+	} else {
+		console.log("tasks are undefined");
+	}
+}
+
+/*Accounts.createUser({username: 'ahollenbeck', password: 'password', profile: {name: 'ahollenbeck'}}, function(err) {
+	if (err) {
+		alert(err);
+	}
+	else {}//success
+});*/
+
+/*Meteor.users.insert({
+	username: 'ahollenbeck',
+	profile: {}
+});
+
+Accounts.setPassword('ahollenbeck', 'password');*/
+

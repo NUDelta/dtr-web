@@ -132,6 +132,28 @@ people=[
 	"role": "Undergrad Researcher",
 	"description": "Zak is an undergraduate student at Northwestern University majoring in Computer Science in the McCormick School of Engineering. He is minoring in business and also plays on the soccer team. Zak is interested in crowdsourcing, user-centered design, and human-computer interaction. His research includes exploring how emotional tags can be linked to Instagram photos."
     },
+    {
+    "_id":"hspindell",
+	"photoLink":"",
+	"name": "Henry Spindell",
+	"role": "Undergrad Researcher",
+	"description": "Henry is an undergraduate studying Computer Science in the Weinberg College of Arts and Science. He is interested in entertainment, education, practical applications of AI, and long walks on the beach. He is currently working with Frank to research how crowdsourcing observations can provide accurate data that highlights noteworthy moments in live events."
+    },
+    {
+    "_id":"klin",
+	"photoLink":"",
+	"name": "Katherine Lin",
+	"role": "Undergrad Researcher",
+	"description": "Katherine is an undergraduate student at Northwestern University studying Computer Science  in the McCormick School of Engineering.  She is interested in human-centered design, crowdsourcing, and sustainability.  Her current research explores the intersection between habit formation and citizen science."
+    },
+    {
+    "_id":"slim",
+	"photoLink":"",
+	"name": "Sarah Lim",
+	"role": "Undergrad Researcher",
+	"description": "Sarah is a freshman who likes cats."
+    }
+
 
 ];
 

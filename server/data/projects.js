@@ -103,7 +103,7 @@ projects=[
 	"_id" : "proj_pwap",
 	"sig" : "sig_pwap",
 	"title" : "Programming with a Purpose ",
-	"people" : ["phouse", "brothman", "ahollenbeck"],
+	"people" : ["ahollenbeck", "slim"],
 	"about" : "Students all over the world are learning to program, often from online resources, without tight feedback loops or guided learning.  PWAP seeks to help fill in these gaps by providing a  system that guides users through the learning experience - coupling the learning with real, practical, and useful tasks. The PWAP initiative provides students with an opportunity to  learn production-quality development practices while fulfilling the coding needs of actual clients",
 	"banner" : "http://oi59.tinypic.com/zvzspt.jpg",
 	"images" : [
@@ -173,7 +173,7 @@ projects=[
 		{
 			"title": "Remote Paper Prototype Testing",
 			"conference": "CHI 2015",
-			"url": "https://users.eecs.northwestern.edu/~hq/papers/rppt-chi.pdf"
+			"url": "http://dl.acm.org/citation.cfm?id=2702423"
 		}
 	],
 	"design_log": ""
@@ -219,10 +219,30 @@ projects=[
 	"design_log": ""
     },
     {
+	"_id" : "proj_zen_walk",
+	"sig" : "sig_sc",
+	"title" : "Zen Walk",
+	"people" : ["scambo", "klin"],
+	"about" : "",
+	"banner" : "",
+	"images" : [
+	    {
+		'image_link': '',
+		'caption' : ''
+	    },
+	    {
+		'image_link' : '',
+		'caption' : ''
+	    }
+	],
+	"publications" : [],
+	"design_log": ""
+    },
+    {
 	"_id" : "proj_rink_talk",
 	"sig" : "sig_sc",
 	"title" : "RinkTalk",
-	"people" : ["favino"],
+	"people" : ["favino", "hspindell"],
 	"about" : "Youth and high school hockey coaches want to be able to show their players game film in order to teach them how to improve their skills, technique, and game decisions. This is difficult for the coach because reviewing game film takes a great deal of time. What if parents were to give coaches the times of these important events through an iOS app, so the coach already knows what to review and can perform the film review faster so the players have more opportunities to learn off the ice? I’ve designed, built, and user tested an iOS app that allows multiple parents in the stands to record game events in real time, with the timestamp of these recordings being manually sent to the coach for review. I’ve found so far that it will most likely take an entire crowd of parents at a game to get accurate recordings that will earn the confidence of the coach, and I’m currently exploring real-time crowdsourcing techniques to arrive at a solution which utilizes all parents in the stands",
 	"banner" : "https://dl.dropbox.com/s/hmmt49w9bvh8yfj/arena2retina47.png",
 	"images" : [
@@ -233,6 +253,26 @@ projects=[
 	    {
 		'image_link' : 'https://dl.dropbox.com/s/0h8w3s48cwn35mf/iOS%20Simulator%20Screen%20Shot%20Feb%2019%2C%202015%2C%2010.32.28%20PM.png',
 		'caption' : 'Parents will be able to collect timestamps for one of several events'
+	    }
+	],
+	"publications" : [],
+	"design_log": ""
+    },
+    {
+	"_id" : "proj_dtr",
+	"sig" : "sig_dtr",
+	"title" : "DTR",
+	"people" : ["ahollenbeck", "lmaliakal"],
+	"about" : "",
+	"banner" : "",
+	"images" : [
+	    {
+		'image_link': '',
+		'caption' : ''
+	    },
+	    {
+		'image_link' : '',
+		'caption' : ''
 	    }
 	],
 	"publications" : [],

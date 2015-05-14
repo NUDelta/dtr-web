@@ -8,3 +8,4 @@ meteor-platform
 mizzao:bootstrap-3
 iron:router
 manuelschoebel:wait-on-lib
+accounts-password

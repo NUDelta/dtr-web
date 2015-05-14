@@ -2,8 +2,11 @@ Meteor.publish('people', function() {
 	return People.find();
 });
 
-Meteor.publish('projects', function() {
-	return Projects.find();
+Meteor.publish('projects', function(proj) {
+	if (proj !== undefined)
+		return Projects.find({_id: proj});
+	else
+		return Projects.find();
 });
 
 Meteor.publish('sigs', function() {

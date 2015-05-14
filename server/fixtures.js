@@ -29,6 +29,21 @@ if (Sigs.find().count() === 0) {
 }
 
 if (Sprints.find().count() === 0) {
+	/*var projects = Projects.find().fetch();
+	for (var i = 0; i < projects.length; i++) {
+		Sprints.insert({
+			project: projects[i]._id,
+			range: ["2015-05-14", "2015-05-27"],
+			people: projects[i].people
+		});
+	}*/
+
+	/*Sprints.insert({
+		project: "proj_libero",
+		range: ["2015-05-14", "2015-05-27"],
+		people: ["ahollenbeck"]
+	});*/
+
 	if(!(typeof sprints === 'undefined')){
 		for(var i in sprints){
 			Sprints.insert(sprints[i]);
@@ -57,3 +72,18 @@ if (Tasks.find().count() === 0) {
 		console.log("tasks are undefined");
 	}
 }
+
+/*Accounts.createUser({username: 'ahollenbeck', password: 'password', profile: {name: 'ahollenbeck'}}, function(err) {
+	if (err) {
+		alert(err);
+	}
+	else {}//success
+});*/
+
+/*Meteor.users.insert({
+	username: 'ahollenbeck',
+	profile: {}
+});
+
+Accounts.setPassword('ahollenbeck', 'password');*/
+

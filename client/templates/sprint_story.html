@@ -1,15 +1,19 @@
 <template name="sprintStory">
-	<div class="panel panel-default">
-					<div class="panel-body">
-						<form class="main form page">
-							<div class="form-group">
-								<input name="story" id="story" type="text" value="{{description}}" placeholder="Add a user story" class="form-control form-story"/>
-								<!-- <p class="p-story">{{description}}</p> -->
-								{{#each tasks}}
-									{{> sprintTask}}
-								{{/each}}
-							</div>
-						</form>
+	<div class="panel panel-default panel-story">
+		<div class="panel-body">
+			<form class="main form page">
+				<div class="form-group">
+					<input name="story" id="story" type="text" value="{{description}}" placeholder="Add a user story" class="form-control form-story form-vanish"/>
+					<span class="glyphicon glyphicon-remove remove-story" aria-hidden="true"></span>
+					{{#each tasks}}
+						{{> sprintTask}}
+					{{/each}}
+					<div class="task">
+						<span class="glyphicon glyphicon-remove dummy-remove-task" aria-hidden="true"></span>
+						<input name="task" type="text" placeholder="Add a task" class="form-control dtr-content form-add-task form-vanish"/>
 					</div>
 				</div>
+			</form>
+		</div>
+	</div>
 </template>

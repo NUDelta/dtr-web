@@ -1,35 +1,30 @@
 <template name="sprintTask">
-	<div class="task">
-						        <row>
-							        <input name="task" type="text" value="{{description}}" placeholder="Add a task" class="form-control dtr-content form-task"/>
-							        <!-- <p class="p-task">{{description}}</p> -->
-							        <select class="form-control dtr-content select-points" id="select-points-{{_id}}">
-								  		<option {{select1}}>1</option>
-								  		<option {{select2}}>2</option>
-								  		<option {{select3}}>3</option>
-								  		<option {{select5}}>5</option>
-								  		<option {{select8}}>8</option>
-								  		<option {{select13}}>13</option>
-								  	</select>
-								  	<div href="" class="btn btn-circle-sm btn-primary">D</div>
-								  	<div href="" class="btn btn-circle-sm btn-primary">T</div>
-								  	<div href="" class="btn btn-circle-sm btn-primary">R</div>
-							        <!-- <div class="checkbox">
-									    <label>
-									      <input type="checkbox" id="checkbox-D" checked> D
-									    </label>
-								  	</div>
-								  	<div class="checkbox">
-									    <label>
-									      <input type="checkbox" id="checkbox-T"> T
-									    </label>
-								  	</div>
-								  	<div class="checkbox">
-									    <label>
-									      <input type="checkbox" id="checkbox-R"> R
-									    </label>
-								  	</div> -->
-								  	<div class="btn btn-primary btn-sm btn-claim">Claim</div>
-								  </row>
-							  </div>
+	<div class="task {{#if ownTask this}}own-task{{/if}}">
+    <row>
+    	<span class="glyphicon glyphicon-remove remove-task" aria-hidden="true"></span>
+      	<input name="task" type="text" value="{{description}}" placeholder="Describe your task" class="form-control dtr-content form-task form-vanish"/>
+      	<span class="hi {{#if stage1}}hidden{{/if}}">{{stage1}}
+	      	<select class="form-control dtr-content select-points form-vanish" id="select-points-{{_id}}">
+		  		<option {{select1}}>1</option>
+		  		<option {{select2}}>2</option>
+		  		<option {{select3}}>3</option>
+		  		<option {{select5}}>5</option>
+		  		<option {{select8}}>8</option>
+		  		<option {{select13}}>13</option>
+		  	</select>
+		  	<div href="" data-toggle="D" class="toggle-DTR btn btn-circle btn-circle-sm btn-primary {{#unless D}}btn-circle-unfilled{{/unless}}">D</div>
+		  	<div href="" data-toggle="T" class="toggle-DTR btn btn-circle btn-circle-sm btn-primary {{#unless T}}btn-circle-unfilled{{/unless}}">T</div>
+		  	<div href="" data-toggle="R" class="toggle-DTR btn btn-circle btn-circle-sm btn-primary {{#unless R}}btn-circle-unfilled{{/unless}}">R</div>
+		</span>
+		<span class="{{#unless stage3}}hidden{{/unless}}">
+		  	{{#if ownTask this}}<div class="btn btn-unclaim btn-circle btn-circle-sm btn-warning"><span class="glyphicon glyphicon-remove" aria-hidden="true"></span></div>
+		  	{{else}}{{#if available this}}<div class="btn btn-claim btn-circle btn-circle-sm btn-success"><span class="glyphicon glyphicon-ok" aria-hidden="true"></span></div>
+		  	{{else}}
+		  		{{#each this.people}}
+		  			<div class="btn btn-circle btn-circle-sm btn-info btn-initials">{{initials this}}</div>
+		  		{{/each}}
+		  	{{/if}}{{/if}}
+	  	</span>
+  	</row>
+	</div>
 </template>

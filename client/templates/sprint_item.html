@@ -1,7 +1,33 @@
 <template name="sprintItem">
 	<div class="row">
-			<div class="col-lg-8 col-lg-offset-2 col-md-12">
-				<h1>This sprint</h1>
+			<div class="col-lg-2 col-lg-offset-1">
+				<div class="group-points {{#unless stage2}}hidden{{/unless}}">
+					<div class="breakdown-name">
+						Total points
+						<div class="points-badge">{{pointsGroup this}}</div>
+						<div class="points-breakdown">
+							<span class="breakdown breakdown-D">{{groupPointsD this}}D</span>
+							<span class="breakdown breakdown-T">{{groupPointsT this}}T</span>
+							<span class="breakdown breakdown-R">{{groupPointsR this}}R</span>
+						</div>
+					</div>
+				</div>
+				<div class="btn btn-success btn-block done-stage-1 {{#unless stage1}}hidden{{/unless}}">Done adding tasks</div>
+				<div class="btn btn-success btn-block done-stage-2 {{#unless stage2}}hidden{{/unless}}">Done assigning points</div>
+				{{#each people}}
+					<div class="individual-points {{#unless stage3}}hidden{{/unless}}">
+						<div class="breakdown-name">{{printName this}}</div>
+						<div class="points-badge">{{personPoints this}}</div>
+						<div class="points-breakdown">
+							<span class="breakdown breakdown-D">{{personPointsD this}}D</span>
+							<span class="breakdown breakdown-T">{{personPointsT this}}T</span>
+							<span class="breakdown breakdown-R">{{personPointsR this}}R</span>
+						</div>
+					</div>
+				{{/each}}
+			</div>
+			<div class="col-lg-8 col-md-12">
+				<!-- <h2 class="h-light">This sprint: {{printDateRange}}</h2> -->
 				{{#each stories}}
 					{{> sprintStory}}
 				{{/each}}
@@ -9,7 +35,7 @@
 					<div class="panel-body">
 						<form class="main form page">
 							<div class="form-group">
-								<input name="story" id="story" type="text" value="" placeholder="Add a user story" class="form-control"/>
+								<input name="story" id="story" type="text" value="" placeholder="Add a user story" class="form-control form-add-story form-vanish"/>
 							</div>
 						</form>
 					</div>

@@ -1,60 +1,8 @@
 <template name="sprint">
 <div class="dtr-content container">
 	<!-- {{addHighcharts}} -->
-	<div class="row">
-		
-	</div>
 	{{#each sprints}}
 		{{> sprintItem}}
 	{{/each}}
-		<!-- {{#each sprints}}
-			{{> sprintItem}}
-		{{/each}} -->
-		<!-- <div class="row">
-			<div class="col-lg-2">
-			<div id="donut-container" style="min-width: 300px; height: 400px; width: 100%; padding-bottom: 100px;"></div>
-			</div>
-			<div class="col-lg-6 col-lg-offset-2 col-md-12">
-				<h1>This sprint</h1>
-				<div class="panel panel-default">
-				  <div class="panel-body">
-				  	<form class="main form page">
-					    <div class="form-group">
-					        <input name="story" id="story" type="text" value="" placeholder="Add a user story" class="form-control"/>
-					        <div id="task">
-						        <row>
-							        <input name="task" type="text" value="" placeholder="Add a task" class="form-control"/>
-							        <select class="form-control" id="select-points">
-								  		<option>1</option>
-								  		<option>2</option>
-								  		<option>3</option>
-								  		<option>5</option>
-								  		<option>8</option>
-								  		<option>13</option>
-								  	</select>
-							        <div class="checkbox">
-									    <label>
-									      <input type="checkbox" id="checkbox-D" checked> D
-									    </label>
-								  	</div>
-								  	<div class="checkbox">
-									    <label>
-									      <input type="checkbox" id="checkbox-T"> T
-									    </label>
-								  	</div>
-								  	<div class="checkbox">
-									    <label>
-									      <input type="checkbox" id="checkbox-R"> R
-									    </label>
-								  	</div>
-								  </row>
-							  </div>
-					        <input type="button" id="btn-story-done" value="done" align="right" class="btn btn-primary">
-					    </div>
-					  </form>
-				  </div>
-				</div>
-			</div>
-		</div> -->
 	</div>
 </template>

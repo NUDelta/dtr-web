@@ -173,7 +173,7 @@ projects=[
 		{
 			"title": "Remote Paper Prototype Testing",
 			"conference": "CHI 2015",
-			"url": "https://users.eecs.northwestern.edu/~hq/papers/rppt-chi.pdf"
+			"url": "http://dl.acm.org/citation.cfm?id=2702423"
 		}
 	],
 	"design_log": ""

@@ -6,13 +6,15 @@ Template.login.events({
 	'click #login-buttons-password': function(e) {
 		var username = $('#login-username').val(),
 		password = $('#login-password').val();
-		console.log(username);
-		console.log(password);
 		if (username === '' || password === '') {
 			alert('Please fill in all fields.');
 			return;
 		}
-		Meteor.loginWithPassword(username, password);
+		Meteor.loginWithPassword(username, password, function (res, err) {
+			if (err) {
+				alert('could not log you in');
+			}
+		});
 	},
 	'click #logout-button': function(e) {
 		Meteor.logout();

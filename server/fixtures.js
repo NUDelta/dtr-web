@@ -73,41 +73,12 @@ if (Tasks.find().count() === 0) {
 	}
 }
 
-// var users = [
-// 	{
-// 		username: 'slim',
-// 		password: 'password',
-// 	},
-// 	{
-// 		username: 'favino',
-// 		password: 'password',
-// 	},
-// 	{
-// 		username: 'nzhu',
-// 		password: 'password',
-// 	},
-// 	{
-// 		username: 'hzhang',
-// 		password: 'password'
-// 	}
-// ]
 
-// for(var i = 0; i < users.length; i++) {
-// 	Accounts.createUser(users[i]);
-// }
-
-
-/*Accounts.createUser({username: 'ahollenbeck', password: 'password', profile: {name: 'ahollenbeck'}}, function(err) {
-	if (err) {
-		alert(err);
+People.find().forEach(function (person) {
+	var peep = Meteor.users.findOne({ username: person._id });
+	if (!peep) {
+		Accounts.createUser({ username: person._id, password: 'password' });
+		console.log('Created user ' + person._id);
 	}
-	else {}//success
-});*/
-
-/*Meteor.users.insert({
-	username: 'ahollenbeck',
-	profile: {}
 });
-
-Accounts.setPassword('ahollenbeck', 'password');*/
 

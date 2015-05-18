@@ -3,7 +3,8 @@ Template.login.events({
 		console.log('hi');
 		e.stopPropagation();
 	},
-	'click #login-buttons-password': function(e) {
+	'submit form': function(e) {
+		e.preventDefault();
 		var username = $('#login-username').val(),
 		password = $('#login-password').val();
 		if (username === '' || password === '') {

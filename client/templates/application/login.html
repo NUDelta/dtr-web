@@ -1,5 +1,5 @@
 <template name="login">
-	<ul class='nav navbar-nav pull-right'>
+	<ul class='nav navbar-nav navbar-right'>
 		<li id="login-dropdown-list" class="dropdown">
 			{{#if loggedIn}}
 				<a class="dropdown-toggle" data-toggle="dropdown">{{currentUser.username}}</a>
@@ -10,9 +10,11 @@
 			{{else}}
 				<a class="dropdown-toggle" data-toggle="dropdown">Log in</a>
 				<div class="dropdown-menu">
-					<input id="login-username" type="text" placeholder="Username" class="form-control"/>
-					<input id="login-password" type="password" placeholder="Password" class="form-control"/>
-					<button class="btn btn-primary col-sm-12" id="login-buttons-password" type="button">Sign in</button>
+					<form>
+						<input id="login-username" type="text" placeholder="Username" class="form-control"/>
+						<input id="login-password" type="password" placeholder="Password" class="form-control"/>
+						<button class="btn btn-primary col-sm-12" id="login-buttons-password" type="submit">Sign in</button>
+					</form>
 				</div>
 			{{/if}}
 		</li>

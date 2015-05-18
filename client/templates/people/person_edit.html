@@ -1,0 +1,34 @@
+ <template name="personEdit">
+  <form class="main form page">
+    <div class="form-group">
+      <label class="control-label" for="name">Name</label>
+      <div class="controls">
+          <input name="name" id="name" type="text" value="{{name}}" placeholder="Your name
+" class="form-control"/>
+      </div>
+    </div>
+    <div class="form-group">
+      <label class="control-label" for="role">Role</label>
+      <div class="controls">
+          <input name="role" id="role" type="text" value="{{role}}" placeholder="Your role
+" class="form-control"/>
+      </div>
+    </div>
+    <div class="form-group">
+      <label class="control-label" for="role">Description</label>
+      <div class="controls">
+          <input name="description" id="description" type="text" value="{{description}}" placeholder="Short bio
+" class="form-control"/>
+      </div>
+    </div>
+    <div class="form-group">
+      <label class="control-label" for="link">Link to Photo</label>
+      <div class="controls">
+          <input name="link" id="link" type="text" value="{{photoLink}}" placeholder="Link to your photo" class="form-control"/>
+      </div>
+    </div>
+    <input type="submit" value="Submit edits" class="btn btn-primary submit"/>
+    <hr/>
+    <a class="btn btn-danger delete" href="#">Delete person</a>
+  </form>
+</template>

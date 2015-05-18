@@ -1,0 +1,28 @@
+Template.sigEdit.events({ 
+    'submit form': function(e) {
+	e.preventDefault();
+	var currentSigId = this._id;
+	var sigProperties = {
+	    title: $(e.target).find('[name=title]').val(),  
+	    about: $(e.target).find('[name=about]').val(),  
+	    banner: $(e.target).find('[name=banner]').val(),  
+	}
+	Sigs.update(currentSigId, {$set: sigProperties}, 
+		      function(error) { 
+			  if (error) {
+			      // display the error to the user
+			      alert(error.reason); 
+			  } else {
+			      Router.go('Projects');
+			  }
+		      });
+    },
+    'click .delete': function(e) { 
+	e.preventDefault();
+	if (confirm("Delete this SIG?")) { 
+	    var currentSigId = this._id; 
+	    People.remove(currentSigId); 
+	    Router.go('Projects');
+	} 
+    }
+});

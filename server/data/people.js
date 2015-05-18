@@ -141,19 +141,24 @@ people=[
     },
     {
     "_id":"klin",
-	"photoLink":"",
+	"photoLink":"http://delta.northwestern.edu/wordpress/wp-content/uploads/2015/05/katherine.jpg",
 	"name": "Katherine Lin",
 	"role": "Undergrad Researcher",
 	"description": "Katherine is an undergraduate student at Northwestern University studying Computer Science  in the McCormick School of Engineering.  She is interested in human-centered design, crowdsourcing, and sustainability.  Her current research explores the intersection between habit formation and citizen science."
     },
     {
     "_id":"slim",
-	"photoLink":"",
-	"name": "Sarah Lim",
+    "photoLink":"http://delta.northwestern.edu/wordpress/wp-content/uploads/2015/05/sarah.png",
+    "name": "Sarah Lim",
+    "role": "Undergrad Researcher",
+    "description": "Sarah is an undergraduate student at Northwestern University studying Computer Science and Cognitive Science. She is interested in the social and educational applications of human-computer interaction and UX design. Currently, her research concerns the design and implementation of accessible web layouts."
+    },
+    {
+    "_id":"sazria",
+	"photoLink":"http://delta.northwestern.edu/wordpress/wp-content/uploads/2015/03/shana.png",
+	"name": "Shana Azria",
 	"role": "Undergrad Researcher",
-	"description": "Sarah is a freshman who likes cats."
+	"description": "Shana is an undergraduate student at Northwestern University majoring in Computer Science. She is interested in mobile development, interface design and crowdsourcing. She is currently working on a crowdsourcing mobile application that uses location-based notifications to prompt users to complete a task."
     }
-
-
 ];
 

@@ -32,7 +32,6 @@ body {
     padding-right: 15px !important;
     padding-top: 5px !important;
     padding-bottom: 5px !important;*/
-    width: 75px;
     border: none;
     border-radius: 0px;
     text-align: center !important;
@@ -66,6 +65,7 @@ body {
     background-color: #FFF056;
     color: #333;
     border-radius: 0px;
+    cursor: pointer;
 }
 
 .navbar > .container-fluid .navbar-brand {
@@ -453,4 +453,9 @@ h2.h-light {
 
 .dropdown-menu {
     padding: 10px;
+}
+
+.dropdown-menu button {
+    margin-top: 5px;
+    margin-bottom: 5px;
 }

@@ -12,7 +12,6 @@ Template.sprintTask.events({
 	},
 	'click .toggle-DTR': function(e) {
 		var toggle = $(e.target).data('toggle');
-		console.log(toggle);
 		switch (toggle) {
 			case 'D':
 				Tasks.update(this._id, {$set: {D: !this.D}});
@@ -43,7 +42,6 @@ Template.sprintTask.events({
 			console.log('user has not claimed this task.');
 		} else {
 			currentPeople.splice(index, 1);
-			console.log(currentPeople);
 			Tasks.update(this._id, {$set: {people: currentPeople}});
 		}
 	}
@@ -80,6 +78,9 @@ Template.sprintTask.helpers({
 	},
 	available: function(taskId) {
 		return Tasks.findOne(taskId).people.length === 0 && Projects.findOne().people.indexOf(Meteor.user().username) !== -1;
+	},
+	userPerson: function() {
+		return People.findOne(Meteor.user().username);
 	},
 	initials: function(personId) {
 		var fullName = People.findOne(personId).name,

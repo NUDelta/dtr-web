@@ -17,11 +17,11 @@
 		  	<div href="" data-toggle="R" class="toggle-DTR btn btn-circle btn-circle-sm btn-primary {{#unless R}}btn-circle-unfilled{{/unless}}">R</div>
 		</span>
 		<span class="{{#unless stage3}}hidden{{/unless}}">
-		  	{{#if ownTask this}}<div class="btn btn-unclaim btn-circle btn-circle-sm btn-warning"><span class="glyphicon glyphicon-remove" aria-hidden="true"></span></div>
-		  	{{else}}{{#if available this}}<div class="btn btn-claim btn-circle btn-circle-sm btn-success"><span class="glyphicon glyphicon-ok" aria-hidden="true"></span></div>
+		  	{{#if ownTask this}}<div class="btn btn-circle btn-circle-sm btn-success btn-initials btn-unclaim active">{{initials userPerson}}</div>
+		  	{{else}}{{#if available this}}<div class="btn btn-circle btn-circle-sm btn-success btn-initials btn-claim">{{initials userPerson}}</div>
 		  	{{else}}
 		  		{{#each this.people}}
-		  			<div class="btn btn-circle btn-circle-sm btn-info btn-initials">{{initials this}}</div>
+		  			<div class="btn btn-circle btn-circle-sm btn-info btn-initials" disabled="disabled">{{initials this}}</div>
 		  		{{/each}}
 		  	{{/if}}{{/if}}
 	  	</span>

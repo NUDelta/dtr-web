@@ -1,14 +1,20 @@
 <template name="login">
-	<li id="login-dropdown-list" class="dropdown">
-		<a class="dropdown-toggle" data-toggle="dropdown">Log in</a>
-		<div class="dropdown-menu">
+	<ul class='nav navbar-nav pull-right'>
+		<li id="login-dropdown-list" class="dropdown">
 			{{#if loggedIn}}
-			<button class="btn btn-primary col-sm-12" id="logout-button">Log out</button>
+				<a class="dropdown-toggle" data-toggle="dropdown">{{currentUser.username}}</a>
+				<div class="dropdown-menu">
+					<button class="btn btn-primary col-sm-12" id="edit-profile">Edit Profile</button>
+					<button class="btn btn-primary col-sm-12" id="logout-button">Log out</button>
+				</div>
 			{{else}}
-			<input id="login-username" type="text" placeholder="Username" class="form-control"/>
-			<input id="login-password" type="password" placeholder="Password" class="form-control"/>
-			<button class="btn btn-primary col-sm-12" id="login-buttons-password" type="button">Sign in</button>
+				<a class="dropdown-toggle" data-toggle="dropdown">Log in</a>
+				<div class="dropdown-menu">
+					<input id="login-username" type="text" placeholder="Username" class="form-control"/>
+					<input id="login-password" type="password" placeholder="Password" class="form-control"/>
+					<button class="btn btn-primary col-sm-12" id="login-buttons-password" type="button">Sign in</button>
+				</div>
 			{{/if}}
-		</div>
-	</li>
+		</li>
+	</ul>
 </template>

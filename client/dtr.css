@@ -32,7 +32,6 @@ body {
     padding-right: 15px !important;
     padding-top: 5px !important;
     padding-bottom: 5px !important;*/
-    width: 75px;
     border: none;
     border-radius: 0px;
     text-align: center !important;
@@ -66,6 +65,7 @@ body {
     background-color: #FFF056;
     color: #333;
     border-radius: 0px;
+    cursor: pointer;
 }
 
 .navbar > .container-fluid .navbar-brand {
@@ -75,7 +75,6 @@ body {
 .navitem {
     margin: 0 5px 0 5px;
 }
-
 /* general content styling */
 .dtr-content h3 {
     color: #333;    
@@ -95,7 +94,7 @@ body {
     margin-bottom: 20px;
 }
 
-.dtr-content p, .dtr-content ol, .dtr-content input, .dtr-content select, .dtr-content-borrow {
+.dtr-content p, .dtr-content ol, .dtr-content input, .dtr-content textarea, .dtr-content select, .dtr-content-borrow {
     font-size: 1.3em;
     font-style: normal;
     color: #333;
@@ -103,6 +102,10 @@ body {
     margin-bottom: 20px;
     margin-top: 10px;
     line-height: 1.3em;
+}
+
+textarea {
+    resize: none;
 }
 
 .dtr-content a:link, .dtr-content a:visited {
@@ -450,4 +453,9 @@ h2.h-light {
 
 .dropdown-menu {
     padding: 10px;
+}
+
+.dropdown-menu button {
+    margin-top: 5px;
+    margin-bottom: 5px;
 }

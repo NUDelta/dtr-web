@@ -2,7 +2,7 @@ sprints = [
 	{
 		"project": "proj_libero",
 		"range": ["2015-05-15", "2015-05-28"],
-		"people": ["ykim"],
+		"people": ["ykim", "sazria"],
 		"stage": "1"
 	},
 	{

@@ -31,5 +31,9 @@ Template.sprintStory.events({
 			}
 		});
 		Stories.remove(this._id);
+	},
+	'keyup textarea': function(e) {
+		var needed_rows = Math.floor(e.currentTarget.value.length / 68) + 1;
+		$(e.currentTarget).attr('rows', needed_rows);
 	}
 });

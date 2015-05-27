@@ -1,0 +1,56 @@
+ <template name="sigEdit">
+  <form class="main form page">
+    <div class="form-group">
+      <label class="control-label" for="title">title</label>
+      <div class="controls">
+          <input name="title" id="title" type="text" value="{{title}}" placeholder="Title
+" class="form-control"/>
+      </div>
+    </div>
+    <div class="form-group">
+      <label class="control-label" for="about">About</label>
+      <div class="controls">
+          <input name="about" id="about" type="text" value="{{about}}" placeholder="About
+" class="form-control"/>
+      </div>
+    </div>
+    <div class="form-group">
+      <label class="control-label" for="banner">SIG banner</label>
+      <div class="controls">
+          <input name="banner" id="banner" type="text" value="{{banner}}" placeholder="Link to sig banner" class="form-control"/>
+      </div>
+    </div>
+    
+<div class="form-group">
+  <label class="control-label" for="projects">Projects</label>
+  {{#each sigProjectsList}}
+  <p class="controls">
+    <input name="projects" id="projects" type="checkbox" checked/> {{title}}
+  </p>
+  {{/each}}
+  {{#each notSigProjectsList}}
+  <p class="controls">
+    <input name="projects" id="projects" type="checkbox"/> {{title}}
+  </p>
+  {{/each}}
+</div>
+
+<div class="form-group">
+  <label class="control-label" for="people">People</label>
+  {{#each sigPeopleList}}
+  <p class="controls">
+    <input name="people" id="people" type="checkbox" value="{{name}}" checked/> {{name}}
+  </p>
+  {{/each}}
+  {{#each notSigPeopleList}}
+  <p class="controls">
+    <input name="people" id="people" type="checkbox" value="{{name}}"/> {{name}}
+  </p>
+  {{/each}}
+</div>
+
+<input type="submit" value="Submit edits" class="btn btn-primary submit"/>
+<hr/>
+<a class="btn btn-danger delete" href="#">Delete SIG</a>
+  </form>
+ </template>

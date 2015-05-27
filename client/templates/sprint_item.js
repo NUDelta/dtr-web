@@ -23,9 +23,6 @@ Template.sprintItem.helpers({
 			}
 		});
 		return points;
-		/*while (tasksCursor.hasNext()) {
-			console.log('task');
-		}*/
 	},
 	pointsGroup: function(sprintId) {
 		var points = 0,

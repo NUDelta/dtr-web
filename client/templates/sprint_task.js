@@ -1,5 +1,5 @@
 Template.sprintTask.events({
-	'keyup input': function(e) {
+	'keyup textarea': function(e) {
 		Tasks.update(this._id, {$set: {description: e.target.value}});
 	},
 	'change select': function(e) {
@@ -48,6 +48,7 @@ Template.sprintTask.events({
 });
 
 Template.sprintTask.rendered = function() {
+	console.log('rendered');
 	$('#select-points option').removeAttr('selected');
 	var points = this.points;
 	/*$('#select-points-' + this._id + ' option[value="' + points + '"]').attr('selected', 'selected');*/
@@ -96,5 +97,10 @@ Template.sprintTask.helpers({
 	},
 	stage3: function() {
 		return Sprints.findOne().stage === "3";
+	},
+	autosize: function() {
+		Meteor.defer(function() {
+			$('textarea').autosize().show().trigger('autosize.resize');
+		});
 	}
-})
+});

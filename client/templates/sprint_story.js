@@ -10,6 +10,15 @@ Template.sprintStory.helpers({
 });
 
 Template.sprintStory.events({
+	'keydown textarea.form-story': function(e) {
+		if (e.which == 13) {
+			e.preventDefault();
+			var nextTextarea = $('textarea')[$('textarea').index(e.target)+1];
+			if (nextTextarea) {
+				nextTextarea.focus();
+			}
+		}
+	},
 	'keyup textarea.form-story': function(e) {
 		Stories.update(this._id, {$set: {description: e.target.value}});
 	},
@@ -38,6 +47,6 @@ Template.sprintStory.events({
 		Stories.remove(this._id);
 	},
 	'keyup textarea': function(e) {
-		$(e.target).autosize();
+		console.log('hi');
 	}
 });

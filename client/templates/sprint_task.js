@@ -1,5 +1,14 @@
 Template.sprintTask.events({
-	'keyup textarea': function(e) {
+	'keydown textarea.form-task': function(e) {
+		if (e.which == 13) {
+			e.preventDefault();
+			var nextTextarea = $('textarea')[$('textarea').index(e.target)+1];
+			if (nextTextarea) {
+				nextTextarea.focus();
+			}
+		}
+	},
+	'keyup textarea.form-task': function(e) {
 		Tasks.update(this._id, {$set: {description: e.target.value}});
 	},
 	'change select': function(e) {

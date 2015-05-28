@@ -4,9 +4,10 @@ for(var i in people) {
 	if (!thing) {
 		People.insert(people[i]);
 	}
-	else if (thing !== people[i]) {
-		People.update(thing, people[i]);
-	}
+	// Create if entry doesn't exist. Otherwise, ignore.
+	// else if (thing !== people[i]) {
+	// 	People.update(thing, people[i]);
+	// }
 }
 
 for(var i in projects) {
@@ -14,9 +15,10 @@ for(var i in projects) {
 	if (!thing) {
 		Projects.insert(projects[i]);
 	}
-	else if (thing !== projects[i]) {
-		Projects.update(thing, projects[i]);
-	}
+	// Create if entry doesn't exist. Otherwise, ignore.
+	// else if (thing !== projects[i]) {
+	// 	Projects.update(thing, projects[i]);
+	// }
 }
 
 for(var i in sigs) {
@@ -24,22 +26,24 @@ for(var i in sigs) {
 	if (!thing) {
 		Sigs.insert(sigs[i]);
 	}
-	else if (thing !== sigs[i]) {
-		Sigs.update(thing, sigs[i]);
-	}
+	// Create if entry doesn't exist. Otherwise, ignore.
+	// else if (thing !== sigs[i]) {
+	// 	Sigs.update(thing, sigs[i]);
+	// }
 }
 
 for(var i in sprints) {
 	thing = Sprints.findOne({ project: sprints[i].project });
-	console.log(thing);
-	console.log(sprints[i]);
+	// console.log(thing);
+	// console.log(sprints[i]);
 	delete(thing._id); // sprints don't currently have custom things
 	if (!thing) {
 		Sprints.insert(sprints[i]);
 	}
-	else if (thing !== sprints[i]) {
-		Sprints.update(thing, sprints[i]);
-	}
+	// Create if entry doesn't exist. Otherwise, ignore.
+	// else if (thing !== sprints[i]) {
+	// 	Sprints.update(thing, sprints[i]);
+	// }
 }
 
 People.find().forEach(function (person) {

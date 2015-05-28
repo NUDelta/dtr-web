@@ -1,34 +1,29 @@
  <template name="personEdit">
-  <form class="main form page">
-    <div class="form-group">
-      <label class="control-label" for="name">Name</label>
-      <div class="controls">
-          <input name="name" id="name" type="text" value="{{name}}" placeholder="Your name
-" class="form-control"/>
+  <div class="container profile-edit">
+    <div class="person-card" id="person-{{person._id}}">
+      <h1> Edit Profile </h1>
+      <h4> Changes will be saved automatically. </h4>
+      <img class="person-thumbnail" src="{{person.photoLink}}"/>
+      <div class="person-description">
+        <input name="name" type="text" class="person-name" value="{{person.name}}">
+        <input name="role" type="text" class="person-title" value="{{person.role}}">
+        <div class="spacer"></div>
+        <!-- have this dynamically resize later -->
+        <textarea name="description" class="person-bio" value="{{person.description}}" rows="5"></textarea>
+      </div>
+      <div class="form-group">
+        <label class="control-label" for="link">Link to Photo: </label>
+        <div class="surrounder">
+          <input name="photoLink" id="link" type="text" value="{{person.photoLink}}" placeholder="Link to your photo"/>
+        </div>
       </div>
     </div>
-    <div class="form-group">
-      <label class="control-label" for="role">Role</label>
-      <div class="controls">
-          <input name="role" id="role" type="text" value="{{role}}" placeholder="Your role
-" class="form-control"/>
-      </div>
+    <div class="person-card">
+      <h1> Projects </h1>
+      {{#each projects}}
+        <h4><a href="/projects/{{shorten _id}}">{{title}}</a></h4>
+      {{/each}}
+      <h4><a href="">+ Add a new project (not yet implemented) </a></h4>
     </div>
-    <div class="form-group">
-      <label class="control-label" for="role">Description</label>
-      <div class="controls">
-          <input name="description" id="description" type="text" value="{{description}}" placeholder="Short bio
-" class="form-control"/>
-      </div>
-    </div>
-    <div class="form-group">
-      <label class="control-label" for="link">Link to Photo</label>
-      <div class="controls">
-          <input name="link" id="link" type="text" value="{{photoLink}}" placeholder="Link to your photo" class="form-control"/>
-      </div>
-    </div>
-    <input type="submit" value="Submit edits" class="btn btn-primary submit"/>
-    <hr/>
-    <a class="btn btn-danger delete" href="#">Delete person</a>
-  </form>
+  </div>
 </template>

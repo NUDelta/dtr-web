@@ -459,3 +459,66 @@ h2.h-light {
     margin-top: 5px;
     margin-bottom: 5px;
 }
+
+/* Edit Page Styles */
+
+.profile-edit {
+    color: #333;    
+    font-weight: 600;
+    padding-bottom: 10px;
+    padding-top: 15px;
+}
+
+.profile-edit h1 {
+    margin-bottom: 10px;
+}
+
+.profile-edit h4 {
+    margin-bottom: 15px;
+}
+
+.profile-edit .person-thumbnail {
+    margin-bottom: 10px;
+}
+
+.profile-edit input[type=text], .profile-edit textarea {
+    border: 1px transparent;
+    display: block;
+    width: 100%;
+    color: rgb(51, 51, 51);
+}
+
+.profile-edit input[type=text]:focus, .profile-edit textarea:focus {
+    outline-offset: -3px;
+    outline: #86827F auto 5px;
+}
+
+.profile-edit .form-group {
+    margin-top: 20px;
+    clear: both;
+    overflow: hidden;
+}
+
+.profile-edit .form-group label {
+    float: left;
+    margin-right: 10px;
+}
+
+.profile-edit .form-group .surrounder {
+    overflow: hidden;
+}
+
+/*.profile-edit .form-group > input {
+    width: auto;
+}*/
+
+/*.profile-edit .person-name {
+    font-size: 2em;
+    font-weight: 700;
+}
+
+.profile-edit .person-title {
+    font-size: 1.2em;
+    font-weight: 300;
+    text-transform: uppercase;
+}*/

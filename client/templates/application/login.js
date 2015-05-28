@@ -19,7 +19,7 @@ Template.login.events({
 	},
 	'click #logout-button': function(e) {
 		Meteor.logout();
-	}
+	},
 });
 
 Template.login.helpers({

@@ -1,5 +1,8 @@
 People = new Mongo.Collection("people");
 People.allow({
+	insert: function (userId, doc) {
+		return true;
+	},
 	update: function (userId, doc, fields, modifier) {
 		var username = Meteor.users.findOne(userId).username;
 		if (username === doc._id) {
@@ -8,6 +11,9 @@ People.allow({
 		else {
 			return false;
 		}
+	},
+	remove: function (userId, doc) {
+		return true;
 	}
 });
 

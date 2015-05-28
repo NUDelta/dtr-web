@@ -134,7 +134,7 @@ people=[
     },
     {
     "_id":"hspindell",
-	"photoLink":"",
+	"photoLink":"https://media.licdn.com/media/p/8/000/253/095/3a59049.jpg",
 	"name": "Henry Spindell",
 	"role": "Undergrad Researcher",
 	"description": "Henry is an undergraduate studying Computer Science in the Weinberg College of Arts and Science. He is interested in entertainment, education, practical applications of AI, and long walks on the beach. He is currently working with Frank to research how crowdsourcing observations can provide accurate data that highlights noteworthy moments in live events."

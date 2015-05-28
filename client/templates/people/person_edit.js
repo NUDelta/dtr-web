@@ -5,7 +5,7 @@ Template.personEdit.events({
 		var update = {}
 		update[attribute] = value;
 
-		People.update(this._id, {$set: update});
+		People.update(this.person._id, {$set: update});
 	} 
 });
 

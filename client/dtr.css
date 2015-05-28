@@ -508,6 +508,10 @@ h2.h-light {
     overflow: hidden;
 }
 
+.making-new input, .making-new textarea{
+    border: default;
+}
+
 /*.profile-edit .form-group > input {
     width: auto;
 }*/

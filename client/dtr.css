@@ -508,9 +508,21 @@ h2.h-light {
     overflow: hidden;
 }
 
+.profile-edit .person-card {
+    position: relative;
+}
+
+.profile-edit .person-card .glyphicon-remove {
+    position: absolute;
+    right: 0;
+    top: 0;
+    font-size: 24px;
+}
+
 .making-new input, .making-new textarea{
     border: default;
 }
+
 
 /*.profile-edit .form-group > input {
     width: auto;

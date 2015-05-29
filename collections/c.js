@@ -1,3 +1,5 @@
+admins = ['hzhang', 'kchen'];
+
 People = new Mongo.Collection("people");
 People.allow({
 	insert: function (userId, doc) {
@@ -5,7 +7,7 @@ People.allow({
 	},
 	update: function (userId, doc, fields, modifier) {
 		var username = Meteor.users.findOne(userId).username;
-		if (username === doc._id) {
+		if (username === doc._id || admins.indexOf(username) !== -1) {
 			return true;
 		}
 		else {
@@ -13,7 +15,9 @@ People.allow({
 		}
 	},
 	remove: function (userId, doc) {
-		return true;
+		if (admins.indexOf(username) !== -1) {
+			return true;
+		}
 	}
 });
 

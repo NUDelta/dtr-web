@@ -26,7 +26,7 @@ Template.rosterEdit.events({
     'change #add-photo-link': function (e) {
         Session.set('add-photo-thumbnail', e.currentTarget.value);
     },
-    'click .existing button[type=delete]': function (e) {
+    'click .existing .glyphicon-remove': function (e) {
         if (confirm("Delete this person?")) {
             People.remove($(e.currentTarget).data('id'));
         }

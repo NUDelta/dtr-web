@@ -484,6 +484,7 @@ h2.h-light {
     display: block;
     width: 100%;
     color: rgb(51, 51, 51);
+    resize: vertical;
 }
 
 .profile-edit input[type=text]:focus, .profile-edit textarea:focus {

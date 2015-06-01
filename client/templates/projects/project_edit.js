@@ -67,7 +67,12 @@ Template.projectEdit.events({
         Projects.update(project_id, {$set: {images: images}});
     },
     'click #images-add': function () {
-        Projects.update(project_id, {$push: {images: {image_link: undefined, caption: undefined}}});
+        if (!Projects.findOne(project_id).images) {
+            Projects.update(project_id, {$set: {images: [{}]}});
+        }
+        else {
+            Projects.update(project_id, {$push: {images: {}}});
+        }
     },
     'click .publication-add': function () {
         Projects.update(this._id, {$push: {publications: {title: undefined, conference: undefined, url: undefined}}});

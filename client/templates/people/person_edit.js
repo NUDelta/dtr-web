@@ -15,6 +15,11 @@ Template.personEdit.events({
         var id = e.currentTarget.getAttribute('data-toggle');
         if (confirm('Are you sure you want to delete this project?')) {
             Projects.remove(id);
+            Sigs.find().forEach(function (sig) {
+                if (sig.projects.indexOf(id) !== -1) {
+                    Sigs.update(sig, {$pull: {projects: id}});
+                }
+            })
         }
     },
     'submit #add-new-project-form': function (e) {

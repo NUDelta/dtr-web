@@ -46,10 +46,17 @@ Template.personEdit.events({
                     about: "",
                     banner: "",
                     images: [{}],
-                    pucliations: [],
+                    publications: [],
                     design_log: "",
                 };
-                Projects.insert(new_proj);
+                Projects.insert(new_proj, function (err, res) {
+                    if (err) {
+                        alert(err);
+                    }
+                    else {
+                        Sigs.update(sig_id._id, {$push: {projects: new_proj._id}})
+                    }
+                });
                 e.currentTarget.reset();
             }
         }

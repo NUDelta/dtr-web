@@ -2,7 +2,7 @@
   <div class="container profile-edit">
     <div class="person-card" id="person-{{person._id}}">
       <h1> Edit Profile </h1>
-      <h4> Changes will be saved automatically. </h4>
+      <h3 style="margin-top: 2px"> Changes will be saved automatically. </h3>
       <img class="person-thumbnail" src="{{person.photoLink}}"/>
       <div class="person-description">
         <input name="name" type="text" class="person-name" value="{{person.name}}">
@@ -20,7 +20,7 @@
     </div>
     <div class="person-card">
       <h1> Projects </h1>
-      <h4> All of these changes will also be saved automatically </h4>
+      <h3 style="margin-top: 2px"> All of these changes will also be saved automatically. </h3>
       {{#each projects}}
         <div class="projects-list-item">
           <h4 span data-toggle="{{_id}}"><a href="">{{title}}</a></h4>

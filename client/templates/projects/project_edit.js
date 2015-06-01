@@ -90,7 +90,7 @@ Template.projectEdit.events({
             delete match.url;
         }
         var publications = Projects.findOne(project_id).publications;
-        publications.pop(publications.indexOf(match));
+        publications.splice(publications.indexOf(match), 1);
         Projects.update(project_id, {$set: {publications: publications}});
     },
     'change .publications-edit input': function (e) {

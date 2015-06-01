@@ -22,7 +22,7 @@ Template.personEdit.events({
         e.preventDefault();
         var name = e.target.projectname.value;
         var sig = e.target.signame.value;
-        var new_id = 'proj_' + name.toLowerCase();
+        var new_id = 'proj_' + name.toLowerCase().replace(/\s/g, '_');
 
         if (Projects.findOne(new_id)) {
             alert('A project already exists with this name!');

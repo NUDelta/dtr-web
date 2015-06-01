@@ -484,7 +484,6 @@ h2.h-light {
     display: block;
     width: 100%;
     color: rgb(51, 51, 51);
-    resize: vertical;
 }
 
 .profile-edit input[type=text]:focus, .profile-edit textarea:focus {
@@ -603,6 +602,10 @@ h2.h-light {
     font-family: 'Lato', sans-serif;
     font-size: 14px;
     font-weight: normal;
+}
+
+.project-edit textarea {
+    resize: vertical;
 }
 
 

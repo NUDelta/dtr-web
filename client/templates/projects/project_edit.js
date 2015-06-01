@@ -1,7 +1,5 @@
-var project_id;
-
 Template.projectEdit.rendered = function () {
-    project_id = this.data._id;
+    // project_id = this.data._id;
 
     var people = [];
     People.find().forEach(function (person) {
@@ -44,11 +42,12 @@ Template.projectEdit.events({
         var update = {}
         update[attribute] = value;
 
-        Projects.update(project_id, {$set: update});
+        Projects.update(this._id, {$set: update});
     },
     'change .images-edit input, change .images-edit textarea': function (e) {
         // repeats some code with change publications, but w/e
         e.stopPropagation();
+        var project_id = Template.instance().data._id;
         var index = e.currentTarget.getAttribute('data-index');
         var purpose = $(e.currentTarget).data('purpose');
         var value = e.currentTarget.value;
@@ -61,17 +60,18 @@ Template.projectEdit.events({
     },
     'click .images-edit .glyphicon-remove': function (e) {
         e.stopPropagation();
+        var project_id = Template.instance().data._id;
         var index = e.currentTarget.getAttribute('data-index');
         var images = Projects.findOne(project_id).images;
         images.splice(index, 1);
         Projects.update(project_id, {$set: {images: images}});
     },
-    'click #images-add': function () {
-        if (!Projects.findOne(project_id).images) {
-            Projects.update(project_id, {$set: {images: [{}]}});
+    'click #images-add': function (e) {
+        if (!Projects.findOne(this._id).images) {
+            Projects.update(this._id, {$set: {images: [{}]}});
         }
         else {
-            Projects.update(project_id, {$push: {images: {}}});
+            Projects.update(this._id, {$push: {images: {}}});
         }
     },
     'click .publication-add': function () {
@@ -81,6 +81,7 @@ Template.projectEdit.events({
         var title = $(e.currentTarget).data('title');
         var conference = $(e.currentTarget).data('conference');
         var url = $(e.currentTarget).data('url');
+        var project_id = Template.instance().data._id;
 
         // awful hacky, but can't think of a good way to do this...
         // found a way to index stuff...update to match images-ediit soon
@@ -103,6 +104,7 @@ Template.projectEdit.events({
         var purpose = $(e.currentTarget).data('purpose');
         var value = e.currentTarget.value;
         var identifier = $(e.currentTarget).data('identifier');
+        var project_id = Template.instance().data._id;
 
         var publications = Projects.findOne(project_id).publications;
         for (var i in publications) {
@@ -113,14 +115,15 @@ Template.projectEdit.events({
         Projects.update(project_id, {$set: {publications: publications}});
     },
     'click .project-team-edit .glyphicon-remove': function (e) {
-        var user_id = $(e.currentTarget).data('id');
+        var user_id = $(e.currentTarget).data('uid');
+        var project_id = Template.instance().data._id;
         Projects.update(project_id, {$pull: {people: user_id}});
     },
     'submit #add-teammate-form': function (e) {
         e.preventDefault();
         var person = People.findOne({name: e.target.teammate.value});
         if (person) {
-            Projects.update(project_id, {$push: {people: person._id}});
+            Projects.update(this._id, {$push: {people: person._id}});
             e.target.reset();
         }
         else {

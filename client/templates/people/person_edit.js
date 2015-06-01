@@ -7,7 +7,7 @@ Template.personEdit.events({
 
 		People.update(this.person._id, {$set: update});
 	},
-    'click .projects-list-item .glyphicon-minus': function (e) {
+    'click .projects-list-item .glyphicon-pencil': function (e) {
         var id = e.currentTarget.getAttribute('data-toggle');
         $('#' + id).slideToggle(600);
     },

@@ -539,7 +539,7 @@ h2.h-light {
     cursor: pointer;
 }
 
-.profile-edit .projects-list-item .glyphicon-minus {
+.profile-edit .projects-list-item .glyphicon-pencil {
     position: absolute;
     right: 50px;
     top: 0px;

@@ -36,9 +36,11 @@ for(var i in sprints) {
 	thing = Sprints.findOne({ project: sprints[i].project });
 	// console.log(thing);
 	// console.log(sprints[i]);
-	delete(thing._id); // sprints don't currently have custom things
 	if (!thing) {
 		Sprints.insert(sprints[i]);
+	}
+	else {
+		// delete(thing._id); // sprints don't currently have custom things
 	}
 	// Create if entry doesn't exist. Otherwise, ignore.
 	// else if (thing !== sprints[i]) {

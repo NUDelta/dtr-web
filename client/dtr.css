@@ -304,8 +304,6 @@ a.project-publication:hover {
     margin-bottom: 0px;
 }
 
-
-
 .task {
     margin-left: 50px;
 }
@@ -502,6 +500,7 @@ h2.h-light {
 .profile-edit .form-group label {
     float: left;
     margin-right: 10px;
+    clear: both;
 }
 
 .profile-edit .form-group .surrounder {
@@ -521,6 +520,84 @@ h2.h-light {
 
 .making-new input, .making-new textarea{
     border: default;
+}
+
+.profile-edit .project-edit {
+    width: 100%;
+}
+
+.profile-edit .project-edit video.projects-banner {
+    height: auto;
+}
+
+.profile-edit .projects-list-item {
+    position: relative;
+}
+
+.profile-edit .projects-list-item .glyphicon {
+    font-size: 22px;
+    cursor: pointer;
+}
+
+.profile-edit .projects-list-item .glyphicon-minus {
+    position: absolute;
+    right: 50px;
+    top: 0px;
+}
+
+.project-edit input.proj-title {
+    font-size: 30px;
+    margin-top: 20px;
+    margin-bottom: 10px;
+    line-height: 1.1;
+    font-weight: 500;
+}
+
+.project-edit textarea {
+    font-weight: 300;
+    font-size: 21px;
+    margin-top: 15px;
+    margin-bottom: 15px;
+}
+
+.project-edit .project-publication-name {
+    font-weight: 300;
+}
+
+.project-edit .publications-edit strong input {
+    display: inline;
+    width: 36%;
+    margin-bottom: 2px;
+}
+
+.project-edit .publications-edit .form-group {
+    margin-top: 5px;
+}
+
+.project-edit-lists div {
+    position: relative;
+    margin-bottom: 8px;
+}
+
+.project-edit .project-edit-lists div:hover .glyphicon-remove {
+    display: inline-block;
+}
+
+.project-edit .project-edit-lists .glyphicon-remove {
+    font-size: 16px;
+    color: #ADA7A4;
+    display: none;
+}
+
+.project-edit-lists a {
+    display: inline-block;
+    margin-top: 5px;
+}
+
+.project-edit .images-edit textarea {
+    font-family: 'Lato', sans-serif;
+    font-size: 14px;
+    font-weight: normal;
 }
 
 

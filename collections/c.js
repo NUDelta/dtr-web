@@ -25,7 +25,7 @@ Projects = new Mongo.Collection("projects");
 Projects.allow({
 	insert: function (userId, doc) {
 		var username = Meteor.users.findOne(userId).username;
-		if (doc.people.indexOf(username) !== -1) {
+		if (doc.people.indexOf(username) !== -1 || admins.indexOf(username) !== -1) {
 			return true;
 		}
 		else {
@@ -34,7 +34,7 @@ Projects.allow({
 	},
 	update: function (userId, doc, fields, modifier) {
 		var username = Meteor.users.findOne(userId).username;
-		if (doc.people.indexOf(username) !== -1) {
+		if (doc.people.indexOf(username) !== -1 || admins.indexOf(username) !== -1) {
 			return true;
 		}
 		else {
@@ -43,7 +43,7 @@ Projects.allow({
 	},
 	remove: function (userId, doc) {
 		var username = Meteor.users.findOne(userId).username;
-		if (doc.people.indexOf(username) !== -1) {
+		if (doc.people.indexOf(username) !== -1 || admins.indexOf(username) !== -1) {
 			return true;
 		}
 		else {

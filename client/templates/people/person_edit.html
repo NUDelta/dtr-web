@@ -21,9 +21,30 @@
     <div class="person-card">
       <h1> Projects </h1>
       {{#each projects}}
-        <h4><a href="/projects/{{shorten _id}}">{{title}}</a></h4>
+        <div class="projects-list-item">
+          <h4><a href="/projects/{{shorten _id}}">{{title}}</a></h4>
+          <span data-toggle="{{_id}}" class="glyphicon glyphicon-minus"></span>
+          <span data-toggle="{{_id}}" class="glyphicon glyphicon-remove"></span>
+        </div>
+        <div id="{{_id}}" style="display: none">
+          {{> projectEdit}}
+        </div>
       {{/each}}
-      <h4><a href="">+ Add a new project (not yet implemented) </a></h4>
+      <!-- spice up this form a bit!  I got pretty lazy here...-->
+      <form id="add-new-project-form">
+        <div class="form-group">
+          <h3 style="margin-bottom: 5px;"> Add a new project: </h3>
+          <label class="control-label" for="add-new-project-name"> Choose project name: </label>
+          <div class="surrounder">
+            <input name="projectname" id="add-new-project-name" type="text" placeholder="Name (required)" required>
+          </div>
+          <label class="control-label" for="add-new-project-sig"> Choose project SIG: </label>
+          <div class="surrounder">
+            <input name="signame" id="add-new-project-sig" type="text" placeholder="SIG (required)" required>
+          </div>
+        </div>
+        <button type="submit" class="btn btn-default btn-success" style="margin-top: 10px">Create project!</button>
+      </form>
     </div>
   </div>
 </template>

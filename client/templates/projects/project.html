@@ -14,8 +14,8 @@
           <p>{{ about }}</p>
         {{/if}}
         <div class="row">
-          {{#each images}}
-          <div class="col-lg-6 col-md-6">
+          {{#each get_array images}}
+          <div class="col-lg-6 col-md-6" style="{{determine_clear index}}">
             <div>
             <img class="project-image" src="{{image_link}}"/>
                 <div>{{caption}}</div>

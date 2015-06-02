@@ -80,9 +80,9 @@
           {{/each}}
           <form id="add-teammate-form">
             <div class="form-group">
-              <label class="control-label" for="add-teammate"> Add teammates: </label>
+              <label class="control-label" for="add-teammate-{{_id}}"> Add teammates: </label>
               <div class="surrounder">
-                <input name="teammate" id="add-teammate" type="text" placeholder="Enter teammate's username"/>
+                <input name="teammate" id="add-teammate-{{_id}}" class="add-teammate-input" type="text" placeholder="Enter teammate's username"/>
               </div>
             </div>
           </form>

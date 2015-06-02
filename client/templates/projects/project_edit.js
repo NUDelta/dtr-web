@@ -5,7 +5,7 @@ Template.projectEdit.rendered = function () {
     People.find().forEach(function (person) {
         people.push(person.name);
     });
-    $('#add-teammate').autocomplete({
+    $('.add-teammate-input').autocomplete({
         source: people
     });
 };

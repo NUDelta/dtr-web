@@ -1,5 +1,57 @@
+admins = ['hzhang', 'kchen'];
+
 People = new Mongo.Collection("people");
+People.allow({
+	insert: function (userId, doc) {
+		return true;
+	},
+	update: function (userId, doc, fields, modifier) {
+		var username = Meteor.users.findOne(userId).username;
+		if (username === doc._id || admins.indexOf(username) !== -1) {
+			return true;
+		}
+		else {
+			return false;
+		}
+	},
+	remove: function (userId, doc) {
+		if (admins.indexOf(username) !== -1) {
+			return true;
+		}
+	}
+});
+
 Projects = new Mongo.Collection("projects");
+Projects.allow({
+	insert: function (userId, doc) {
+		var username = Meteor.users.findOne(userId).username;
+		if (doc.people.indexOf(username) !== -1 || admins.indexOf(username) !== -1) {
+			return true;
+		}
+		else {
+			return false;
+		}
+	},
+	update: function (userId, doc, fields, modifier) {
+		var username = Meteor.users.findOne(userId).username;
+		if (doc.people.indexOf(username) !== -1 || admins.indexOf(username) !== -1) {
+			return true;
+		}
+		else {
+			return false;
+		}
+	},
+	remove: function (userId, doc) {
+		var username = Meteor.users.findOne(userId).username;
+		if (doc.people.indexOf(username) !== -1 || admins.indexOf(username) !== -1) {
+			return true;
+		}
+		else {
+			return false;
+		}
+	}
+});
+
 Sigs = new Mongo.Collection("sigs");
 Sprints = new Mongo.Collection("sprints");
 Sprints.allow({

@@ -1,0 +1,46 @@
+ <template name="rosterEdit">
+  <div class="container profile-edit">
+  <div class="person-card">
+    <h1> DTR Roster </h1>
+    <h4> Any changes are automatically saved. Scroll to the bottom to add a new person. </h4>
+  </div>
+    {{#each people}}
+    <div class="person-card existing" data-id="{{_id}}">
+      <img class="person-thumbnail" src="{{photoLink}}"/>
+      <div class="person-description">
+       <input name="name" type="text" class="person-name" value="{{name}}">
+       <input name="role" type="text" class="person-title" value="{{role}}">
+       <div class="spacer"></div>
+       <!-- have this dynamically resize later -->
+       <textarea name="description" class="person-bio" value="{{description}}" rows="5"></textarea>
+      </div>
+      <div class="form-group">
+       <label class="control-label" for="link">Link to Photo: </label>
+       <div class="surrounder">
+         <input name="photoLink" id="link" type="text" value="{{photoLink}}" placeholder="Link to your photo"/>
+       </div>
+      </div>
+      <span class="glyphicon glyphicon-remove" data-id="{{_id}}"></span>
+    </div>
+    {{/each}}
+    <form class="person-card making-new">
+      <h1> Add Person </h1>
+      <img id='add-photo-thumbnail' class="person-thumbnail" src="{{addPhotoLink}}"/>
+      <div class="person-description">
+        <input name="name" type="text" class="person-name" placeholder="Person's name">
+        <input name="role" type="text" class="person-title" placeholder="Person's role">
+        <div class="spacer"></div>
+        <!-- have this dynamically resize later -->
+        <textarea name="description" class="person-bio" rows="5" placeholder="Person's bio"></textarea>
+      </div>
+      <div class="form-group">
+        <label class="control-label" for="add-photo-link">Link to Photo: </label>
+        <div class="surrounder">
+          <input name="photoLink" id="add-photo-link" type="text" placeholder="Link to your photo"/>
+        </div>
+      </div>
+      <button type="submit" class="btn btn-success">Save</button>
+    </form>
+  </div>
+</template>
+

@@ -1,82 +1,56 @@
-if (People.find().count() === 0) {
-    if(!(typeof people === 'undefined')){
-        for(var i in people){
-            People.insert(people[i]);
-        }
-    }else{
-	console.log("people are undefined");
-    }
-}
-
-if (Projects.find().count() === 0) {
-	if(!(typeof projects === 'undefined')){
-		for(var i in projects){
-			Projects.insert(projects[i]);
-		}
-	} else {
-		console.log("projects are undefined");
+var thing;
+for(var i in people) {
+	thing = People.findOne(people[i]._id);
+	if (!thing) {
+		People.insert(people[i]);
 	}
+	// Create if entry doesn't exist. Otherwise, ignore.
+	// else if (thing !== people[i]) {
+	// 	People.update(thing, people[i]);
+	// }
 }
 
-if (Sigs.find().count() === 0) {
-	if(!(typeof sigs === 'undefined')){
-		for(var i in sigs){
-			Sigs.insert(sigs[i]);
-		}
-	} else {
-		console.log("sigs are undefined");
+for(var i in projects) {
+	thing = Projects.findOne(projects[i]._id);
+	if (!thing) {
+		Projects.insert(projects[i]);
 	}
+	// Create if entry doesn't exist. Otherwise, ignore.
+	// else if (thing !== projects[i]) {
+	// 	Projects.update(thing, projects[i]);
+	// }
 }
 
-if (Sprints.find().count() === 0) {
-	/*var projects = Projects.find().fetch();
-	for (var i = 0; i < projects.length; i++) {
-		Sprints.insert({
-			project: projects[i]._id,
-			range: ["2015-05-14", "2015-05-27"],
-			people: projects[i].people
-		});
-	}*/
-
-	/*Sprints.insert({
-		project: "proj_libero",
-		range: ["2015-05-14", "2015-05-27"],
-		people: ["ahollenbeck"]
-	});*/
-
-	if(!(typeof sprints === 'undefined')){
-		for(var i in sprints){
-			Sprints.insert(sprints[i]);
-		}
-	} else {
-		console.log("sprints are undefined");
+for(var i in sigs) {
+	thing = Sigs.findOne(sigs[i]._id);
+	if (!thing) {
+		Sigs.insert(sigs[i]);
 	}
+	// Create if entry doesn't exist. Otherwise, ignore.
+	// else if (thing !== sigs[i]) {
+	// 	Sigs.update(thing, sigs[i]);
+	// }
 }
 
-if (Stories.find().count() === 0) {
-	if(!(typeof stories === 'undefined')){
-		for(var i in stories){
-			Stories.insert(stories[i]);
-		}
-	} else {
-		console.log("stories are undefined");
+for(var i in sprints) {
+	thing = Sprints.findOne({ project: sprints[i].project });
+	// console.log(thing);
+	// console.log(sprints[i]);
+	if (!thing) {
+		Sprints.insert(sprints[i]);
 	}
-}
-
-if (Tasks.find().count() === 0) {
-	if(!(typeof tasks === 'undefined')){
-		for(var i in tasks){
-			Tasks.insert(tasks[i]);
-		}
-	} else {
-		console.log("tasks are undefined");
+	else {
+		// delete(thing._id); // sprints don't currently have custom things
 	}
+	// Create if entry doesn't exist. Otherwise, ignore.
+	// else if (thing !== sprints[i]) {
+	// 	Sprints.update(thing, sprints[i]);
+	// }
 }
-
 
 People.find().forEach(function (person) {
-	var peep = Meteor.users.findOne({ username: person._id });
-	if (!peep) {
+	thing = Meteor.users.findOne({ username: person._id });
+	if (!thing) {
 		Accounts.createUser({ username: person._id, password: 'password' });
 		console.log('Created user ' + person._id);
 	}

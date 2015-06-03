@@ -32,7 +32,6 @@ body {
     padding-right: 15px !important;
     padding-top: 5px !important;
     padding-bottom: 5px !important;*/
-    width: 75px;
     border: none;
     border-radius: 0px;
     text-align: center !important;
@@ -66,6 +65,7 @@ body {
     background-color: #FFF056;
     color: #333;
     border-radius: 0px;
+    cursor: pointer;
 }
 
 .navbar > .container-fluid .navbar-brand {
@@ -304,8 +304,6 @@ a.project-publication:hover {
     margin-bottom: 0px;
 }
 
-
-
 .task {
     margin-left: 50px;
     position: relative;
@@ -386,7 +384,7 @@ input[name="task"], textarea[name="task"] {
 }
 
 .select-points {
-    /*-webkit-appearance: none;*/
+    -webkit-appearance: none;
 }
 
 .remove-task, .remove-story {
@@ -434,8 +432,6 @@ h2.h-light {
     background-color: #dff0d8;
 }
 
-/*.highcharts-container{width:100% !important; height:100% !important;}*/
-
 .individual-points, .group-points {
     width: 100%;
     height: 145px;
@@ -472,15 +468,173 @@ h2.h-light {
     padding: 10px;
 }
 
-textarea{  
-  display:block;
-  overflow:hidden;
-  width:250px;
-  font-size:14px;
+.dropdown-menu button {
+    margin-top: 5px;
+    margin-bottom: 5px;
 }
 
-.task-options {
+/* Edit Page Styles */
+
+.profile-edit {
+    color: #333;    
+    font-weight: 600;
+    padding-bottom: 10px;
+    padding-top: 15px;
+}
+
+.profile-edit h1 {
+    margin-bottom: 10px;
+}
+
+.profile-edit h4 {
+    margin-bottom: 15px;
+}
+
+.profile-edit .person-thumbnail {
+    margin-bottom: 10px;
+}
+
+.profile-edit input[type=text], .profile-edit textarea {
+    border: 1px transparent;
+    display: block;
+    width: 100%;
+    color: rgb(51, 51, 51);
+}
+
+.profile-edit input[type=text]:focus, .profile-edit textarea:focus {
+    outline-offset: -3px;
+    outline: #86827F auto 5px;
+}
+
+.profile-edit .form-group {
+    margin-top: 20px;
+    clear: both;
+    overflow: hidden;
+}
+
+.profile-edit .form-group label {
+    float: left;
+    margin-right: 10px;
+    clear: both;
+}
+
+.profile-edit .form-group .surrounder {
+    overflow: hidden;
+}
+
+.profile-edit .person-card {
+    position: relative;
+}
+
+.profile-edit .person-card .glyphicon-remove {
     position: absolute;
-    top: -5px;
+    right: 0;
+    top: 0;
+    font-size: 24px;
 }
 
+.making-new input, .making-new textarea{
+    border: default;
+}
+
+.profile-edit .project-edit {
+    width: 100%;
+}
+
+.profile-edit .project-edit video.projects-banner {
+    height: auto;
+}
+
+.profile-edit .projects-list-item {
+    position: relative;
+}
+
+.profile-edit .projects-list-item .glyphicon {
+    font-size: 22px;
+    cursor: pointer;
+    position: absolute;
+    top: 0px;
+}
+
+.profile-edit .projects-list-item .glyphicon-minus {    
+    right: 50px;
+}
+
+.profile-edit .projects-list-item .glyphicon-eye-open {
+    right: 100px;
+}
+
+.project-edit input.proj-title {
+    font-size: 30px;
+    margin-top: 20px;
+    margin-bottom: 10px;
+    line-height: 1.1;
+    font-weight: 500;
+}
+
+.project-edit textarea {
+    font-weight: 300;
+    font-size: 21px;
+    margin-top: 15px;
+    margin-bottom: 15px;
+}
+
+.project-edit .project-publication-name {
+    font-weight: 300;
+}
+
+.project-edit .publications-edit strong input {
+    display: inline;
+    width: 36%;
+    margin-bottom: 2px;
+}
+
+.project-edit .publications-edit .form-group {
+    margin-top: 5px;
+}
+
+.project-edit-lists div {
+    position: relative;
+    margin-bottom: 8px;
+}
+
+.project-edit .project-edit-lists div:hover .glyphicon-remove {
+    display: inline-block;
+}
+
+.project-edit .project-edit-lists .glyphicon-remove {
+    font-size: 16px;
+    color: #ADA7A4;
+    display: none;
+}
+
+.project-edit-lists a {
+    display: inline-block;
+    margin-top: 5px;
+}
+
+.project-edit .images-edit textarea {
+    font-family: 'Lato', sans-serif;
+    font-size: 14px;
+    font-weight: normal;
+}
+
+.project-edit textarea {
+    resize: vertical;
+}
+
+
+/*.profile-edit .form-group > input {
+    width: auto;
+}*/
+
+/*.profile-edit .person-name {
+    font-size: 2em;
+    font-weight: 700;
+}
+
+.profile-edit .person-title {
+    font-size: 1.2em;
+    font-weight: 300;
+    text-transform: uppercase;
+}*/

@@ -1,0 +1,37 @@
+<template name="Person">
+  <div class="person-card" id="person-{{_id}}">
+    <img class="person-thumbnail" src="{{photoLink}}"/>
+    <div class="person-description">
+      <div class="person-name">{{name}}</div>
+      <div class="person-title">{{role}}</div>
+      <div class="spacer"></div>
+      <div class="person-bio">
+       {{{description}}}
+      </div>
+    </div>
+  </div>
+<!-- going simple
+<div class="flip-container" ontouchstart="this.classList.toggle('hover');">
+  <div class="flipper">
+    <div class="front">
+      <img class="person-photo" src="{{ photoLink}}"/>
+
+      </div>
+    <div class="back">
+      <div class="person-card">
+	<div class="person-name-title">
+	  <img class="person-thumbnail" src="{{photoLink}}"/>
+	  <div class="person-name">{{name}}</div>
+	  <div class="person-title">{{role}}</div>
+	</div>
+	<div class="spacer"></div>
+	<div class="person-bio">
+	  {{{description}}}
+	</div>
+
+      </div>
+    </div>
+  </div>
+</div>
+-->
+</template>

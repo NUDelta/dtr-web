@@ -77,7 +77,7 @@ function computeWorth(person) {
     else if (person.role.toLowerCase() === 'undergrad researcher') {
         return 7;
     }
-    else if (person.role.toLowerCase() === 'alum') {
+    else if (person.role.toLowerCase() === 'alumni') {
         return 6;
     }
     else {

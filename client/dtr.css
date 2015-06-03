@@ -638,3 +638,8 @@ h2.h-light {
     font-weight: 300;
     text-transform: uppercase;
 }*/
+
+.task-options {
+    position: absolute;
+    top: -5px;
+}

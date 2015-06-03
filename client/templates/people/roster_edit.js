@@ -5,7 +5,17 @@ Template.rosterEdit.helpers({
                 return computeWorth(y) - computeWorth(x);
             }
             else {
-                return x.name.toLowerCase() > y.name.toLowerCase();
+                var A = x.name.toLowerCase();
+                var B = y.name.toLowerCase();
+                if (A < B){
+                   return -1;
+                }
+                else if (A > B){
+                    return  1;
+                }
+                else{
+                    return 0;
+                }
             }
         });
     },

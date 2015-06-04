@@ -7,11 +7,11 @@
           <video class="projects-banner" controls="controls" poster="{{ video_poster }}">
               <source src="{{ video }}" type='video/mp4'/>
           </video>
-          <p>{{ video_about }}</p>
+          <div class="paragraph"> {{{ video_about }}} </div>
         {{/if}}
         {{#if banner}}
           <img class="projects-banner" src="{{ banner }}"/>
-          <p>{{ about }}</p>
+          <div class="paragraph"> {{{ about }}} </div>
         {{/if}}
         <div class="row">
           {{#each get_array images}}

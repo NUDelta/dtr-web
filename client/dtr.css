@@ -234,6 +234,12 @@ textarea {
     border-bottom: none;
 }
 
+.jumbotron .paragraph {
+    font-weight: 300;
+    margin-bottom: 15px;
+    font-size: 21px;
+}
+
 .jumbotron p {
     font-weight: 300;
 }

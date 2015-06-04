@@ -9,7 +9,10 @@ mizzao:bootstrap-3
 iron:router
 manuelschoebel:wait-on-lib
 accounts-password
+<<<<<<< HEAD
 copleykj:jquery-autosize
 rubaxa:sortable
+=======
 mizzao:jquery-ui
 sacha:spin
+>>>>>>> c89ded00c6855e8805ec53606d87f4f82b449705

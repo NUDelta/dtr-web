@@ -1,5 +1,14 @@
 Template.sprintTask.events({
-	'keyup input': function(e) {
+	'keydown textarea.form-task': function(e) {
+		if (e.which == 13) {
+			e.preventDefault();
+			var nextTextarea = $('textarea')[$('textarea').index(e.target)+1];
+			if (nextTextarea) {
+				nextTextarea.focus();
+			}
+		}
+	},
+	'keyup textarea.form-task': function(e) {
 		Tasks.update(this._id, {$set: {description: e.target.value}});
 	},
 	'change select': function(e) {
@@ -12,7 +21,6 @@ Template.sprintTask.events({
 	},
 	'click .toggle-DTR': function(e) {
 		var toggle = $(e.target).data('toggle');
-		console.log(toggle);
 		switch (toggle) {
 			case 'D':
 				Tasks.update(this._id, {$set: {D: !this.D}});
@@ -43,18 +51,14 @@ Template.sprintTask.events({
 			console.log('user has not claimed this task.');
 		} else {
 			currentPeople.splice(index, 1);
-			console.log(currentPeople);
 			Tasks.update(this._id, {$set: {people: currentPeople}});
 		}
 	}
 });
 
-Template.sprintTask.rendered = function() {
-	$('#select-points option').removeAttr('selected');
-	var points = this.points;
-	/*$('#select-points-' + this._id + ' option[value="' + points + '"]').attr('selected', 'selected');*/
-	$('#select-points-task0 option[value=8]').attr('selected', 'selected');
-};
+Template.sprintTask.onRendered(function() {
+	
+});
 
 Template.sprintTask.helpers({
 	select1: function() {
@@ -81,6 +85,9 @@ Template.sprintTask.helpers({
 	available: function(taskId) {
 		return Tasks.findOne(taskId).people.length === 0 && Projects.findOne().people.indexOf(Meteor.user().username) !== -1;
 	},
+	userPerson: function() {
+		return People.findOne(Meteor.user().username);
+	},
 	initials: function(personId) {
 		var fullName = People.findOne(personId).name,
 		splitName = fullName.split(' '),
@@ -95,5 +102,10 @@ Template.sprintTask.helpers({
 	},
 	stage3: function() {
 		return Sprints.findOne().stage === "3";
+	},
+	autosize: function() {
+		Meteor.defer(function() {
+			$('textarea').autosize().show().trigger('autosize.resize');
+		});
 	}
-})
+});

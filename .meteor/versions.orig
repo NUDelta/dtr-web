@@ -55,8 +55,11 @@ reactive-var@1.0.5
 reload@1.1.3
 retry@1.0.3
 routepolicy@1.0.5
+<<<<<<< HEAD
 rubaxa:sortable@1.2.0
+=======
 sacha:spin@2.0.4
+>>>>>>> c89ded00c6855e8805ec53606d87f4f82b449705
 service-configuration@1.0.4
 session@1.1.0
 sha@1.0.3

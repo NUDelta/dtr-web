@@ -234,12 +234,6 @@ textarea {
     border-bottom: none;
 }
 
-.jumbotron .paragraph {
-    font-weight: 300;
-    margin-bottom: 15px;
-    font-size: 21px;
-}
-
 .jumbotron p {
     font-weight: 300;
 }
@@ -390,7 +384,7 @@ input[name="task"], textarea[name="task"] {
 }
 
 .select-points {
-    -webkit-appearance: none;
+    /*-webkit-appearance: none;*/
 }
 
 .remove-task, .remove-story {
@@ -474,6 +468,20 @@ h2.h-light {
     padding: 10px;
 }
 
+<<<<<<< HEAD
+textarea{  
+  display:block;
+  overflow:hidden;
+  width:250px;
+  font-size:14px;
+}
+
+.task-options {
+    position: absolute;
+    top: -5px;
+}
+
+=======
 .dropdown-menu button {
     margin-top: 5px;
     margin-bottom: 5px;
@@ -644,8 +652,4 @@ h2.h-light {
     font-weight: 300;
     text-transform: uppercase;
 }*/
-
-.task-options {
-    position: absolute;
-    top: -5px;
-}
+>>>>>>> c89ded00c6855e8805ec53606d87f4f82b449705

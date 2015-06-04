@@ -3,14 +3,15 @@
 		<div class="panel-body">
 			<form class="main form page">
 				<div class="form-group">
-					<textarea name="story" id="story" class="form-control form-story form-vanish" placeholder="Add a user story" rows="1">{{description}}</textarea>
+					<textarea name="story" id="story" class="form-control form-story form-vanish" placeholder="Add a user story" rows="1">{{description}}</textarea>{{autosize}}
 					<span class="glyphicon glyphicon-remove remove-story" aria-hidden="true"></span>
-					{{#each tasks}}
-						{{> sprintTask}}
-					{{/each}}
+					<div id="sortable-{{_id}}">
+						{{#each tasks}}
+							{{> sprintTask}}
+						{{/each}}
+					</div>
 					<div class="task">
-						<span class="glyphicon glyphicon-remove dummy-remove-task" aria-hidden="true"></span>
-						<input name="task" type="text" placeholder="Add a task" class="form-control dtr-content form-add-task form-vanish"/>
+						<textarea name="task" type="text" placeholder="Add a task" class="form-control dtr-content form-add-task form-vanish" rows="1"></textarea>
 					</div>
 				</div>
 			</form>

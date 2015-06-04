@@ -26,6 +26,7 @@ Template.sprintStory.events({
 		Tasks.insert({
 			storyId: this._id,
 			project: this.project,
+			index: Tasks.find({storyId: this._id}).count()+1,
 			description: '',
 			people: [],
 			points: 1,

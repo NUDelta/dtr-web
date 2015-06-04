@@ -5,7 +5,7 @@
 				<div class="form-group">
 					<textarea name="story" id="story" class="form-control form-story form-vanish" placeholder="Add a user story" rows="1">{{description}}</textarea>{{autosize}}
 					<span class="glyphicon glyphicon-remove remove-story" aria-hidden="true"></span>
-					<div id="sortableList">
+					<div id="sortable-{{_id}}">
 						{{#each tasks}}
 							{{> sprintTask}}
 						{{/each}}

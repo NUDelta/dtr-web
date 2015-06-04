@@ -56,13 +56,9 @@ Template.sprintTask.events({
 	}
 });
 
-Template.sprintTask.rendered = function() {
-	console.log('rendered');
-	$('#select-points option').removeAttr('selected');
-	var points = this.points;
-	/*$('#select-points-' + this._id + ' option[value="' + points + '"]').attr('selected', 'selected');*/
-	$('#select-points-task0 option[value=8]').attr('selected', 'selected');
-};
+Template.sprintTask.onRendered(function() {
+	
+});
 
 Template.sprintTask.helpers({
 	select1: function() {

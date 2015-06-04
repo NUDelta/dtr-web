@@ -1,5 +1,5 @@
 <template name="sprintTask">
-	<div class="task {{#if ownTask this}}own-task{{/if}}">
+	<div data-id="{{_id}}" class="task {{#if ownTask this}}own-task{{/if}}">
     	
     	<span class="glyphicon glyphicon-resize-vertical reorder-task" aria-hidden="true"></span>
       	<textarea name="task" class="autoExpand form-control form-task form-vanish" placeholder="Describe your task" value="{{description}}" rows="1"></textarea>{{autosize}}

@@ -1,3 +1,15 @@
+Template.sprintItem.onRendered(function() {
+	var storiesCursor = Stories.find(),
+	story;
+	storiesCursor.forEach(function(story) {
+		console.log(document.getElementById('sortable-' + story._id));
+		Sortable.create(document.getElementById('sortable-' + story._id), {
+			handle: '.reorder-task',
+			animation: 150
+		});
+	});
+});
+
 Template.sprintItem.helpers({
 	stories: function() {
 		return Stories.find({sprintId: this._id});
@@ -127,4 +139,4 @@ Template.sprintItem.events({
 	'click .done-stage-2': function(e) {
 		Sprints.update(this._id, {$set: {stage: "3"}});
 	}
-})
+});

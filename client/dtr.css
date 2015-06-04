@@ -274,6 +274,7 @@ video.projects-banner {
     max-width: inherit;
     width: 100%;
     height: auto;
+    margin-bottom: 1em;
 }
 
 .project-image {

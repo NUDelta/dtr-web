@@ -25,5 +25,8 @@ Template.login.events({
 Template.login.helpers({
 	'loggedIn': function() {
 		return !!Meteor.user();
+	},
+	'isAdmin': function(){
+		return Meteor.user().username == 'hzhang';
 	}
 })

@@ -53,9 +53,28 @@ Projects.allow({
 });
 
 Sigs = new Mongo.Collection("sigs");
+
+GlobalSprints = new Mongo.Collection("globalSprints");
+GlobalSprints.allow({
+	insert: function() {
+		return true;
+	},
+	update: function() {
+		return true;
+	},
+	remove: function() {
+		return true;
+	}
+});
 Sprints = new Mongo.Collection("sprints");
 Sprints.allow({
+	insert: function() {
+		return true;
+	},
 	update: function() {
+		return true;
+	},
+	remove: function() {
 		return true;
 	}
 });

@@ -32,6 +32,13 @@ for(var i in sigs) {
 	// }
 }
 
+for (var i in apps) {
+	thing = Apps.findOne(apps[i]);
+	if (!thing) {
+		Apps.insert(apps[i]);
+	}
+}
+
 // for(var i in sprints) {
 // 	thing = Sprints.findOne({ project: sprints[i].project });
 // 	// console.log(thing);
@@ -55,4 +62,3 @@ People.find().forEach(function (person) {
 		console.log('Created user ' + person._id);
 	}
 });
-

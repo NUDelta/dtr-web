@@ -2,6 +2,10 @@ Meteor.publish('people', function() {
 	return People.find();
 });
 
+Meteor.publish('applications', function() {
+	return Apps.find();
+});
+
 Meteor.publish('projects', function(proj) {
 	if (proj !== undefined)
 		return Projects.find({_id: proj});
@@ -13,7 +17,7 @@ Meteor.publish('sigs', function() {
 	return Sigs.find();
 });
 Meteor.publish('globalSprints', function(){
-	return GlobalSprints.find();	
+	return GlobalSprints.find();
 });
 Meteor.publish('sprints', function(proj) {
 	return Sprints.find({project: proj});

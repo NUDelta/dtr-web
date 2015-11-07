@@ -17,6 +17,7 @@ Template.Projects.helpers({
     },
     
     learn_more: function(text) {
-  	return text.split(" ").splice(0,30).join(" ") + "...";
+	if (text.length < 140) return text
+  	return text.split(" ").splice(0,20).join(" ") + "...";
     }
 });

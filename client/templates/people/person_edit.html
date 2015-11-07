@@ -24,7 +24,7 @@
       {{#each projects}}
         <div class="projects-list-item">
           <h4 span data-toggle="{{_id}}"><a href="">{{title}}</a></h4>
-          <a href="/projects/{{shorten _id}}"><span title="Open up live project page!" class="glyphicon glyphicon-eye-open"></span></a>
+          <a target="_blank" href="/projects/{{shorten _id}}"><span title="Open up live project page!" class="glyphicon glyphicon-eye-open"></span></a>
           <span title="Open up project edit page" data-toggle="{{_id}}" class="glyphicon glyphicon-minus"></span>
           <span title="Delete project" data-toggle="{{_id}}" class="glyphicon glyphicon-remove"></span>
         </div>

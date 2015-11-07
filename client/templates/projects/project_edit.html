@@ -68,14 +68,25 @@
         </div>
       </div>
       <div class="row">
+        <div class="col-lg-6 col-md-6 project-edit-lists project-sprintVideos-edit">
+          <h3>Sprint Videos</h3>
+	  <div class="form-group">
+            <label class="control-label" for="sprint-videos-link">Sprint Video Embed Code: </label>
+            <div class="surrounder">
+              <input class="normal-edit" name="sprintvideos" id="sprint-videos-link" type="text" value="{{ sprintvideos }}" placeholder="Your sprint video playlist embed code (optional)"/>
+            </div>
+	  </div>
+	</div>
+      </div>
+      <div class="row">
         <div class="col-lg-6 col-md-6 project-edit-lists project-team-edit">
           <h3>Team</h3>
           {{#each people}}
           <div>
             <span class="project-person-name">{{find_person this}}</span>
-            {{#unless teammate_is_current_user this}}
-              <span class="glyphicon glyphicon-remove" data-uid="{{this}}"></span>
-            {{/unless}}
+<!--            {{#unless teammate_is_current_user this}} -->
+<span class="glyphicon glyphicon-remove" data-uid="{{this}}"></span>
+<!--            {{/unless}} -->
           </div>
           {{/each}}
           <form id="add-teammate-form">

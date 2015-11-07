@@ -10,7 +10,7 @@ Meteor.publish('projects', function(proj) {
 	if (proj !== undefined)
 		return Projects.find({_id: proj});
 	else
-		return Projects.find();
+		return Projects.find({}, {sort: {title: 1}});
 });
 
 Meteor.publish('sigs', function() {

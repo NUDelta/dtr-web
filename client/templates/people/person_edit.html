@@ -5,11 +5,11 @@
       <h3 style="margin-top: 2px"> Changes will be saved automatically. </h3>
       <img class="person-thumbnail" src="{{person.photoLink}}"/>
       <div class="person-description">
-        <input name="name" type="text" class="person-name" value="{{person.name}}">
-        <input name="role" type="text" class="person-title" value="{{person.role}}">
+        <input name="name" type="text" class="person-name" placeholder="Name" value="{{person.name}}">
+        <input name="role" type="text" class="person-title" placeholder="Role" value="{{person.role}}">
         <div class="spacer"></div>
         <!-- have this dynamically resize later -->
-        <textarea name="description" class="person-bio" value="{{person.description}}" rows="5"></textarea>
+        <textarea name="description" class="person-bio" placeholder="Description" value="{{person.description}}" rows="5"></textarea>
       </div>
       <div class="form-group">
         <label class="control-label" for="link">Link to Photo: </label>

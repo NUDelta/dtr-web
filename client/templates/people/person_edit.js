@@ -23,7 +23,6 @@ Template.personEdit.events({
         }
     },
     'submit #add-new-project-form': function (e) {
-        console.log('hi');
         e.preventDefault();
         var name = e.target.projectname.value;
         var sig = e.target.signame.value;

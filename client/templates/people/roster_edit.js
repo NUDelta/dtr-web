@@ -50,17 +50,24 @@ Template.rosterEdit.events({
     },
     'submit form': function(e) {
         e.preventDefault();
+
         var person = {
             name: e.currentTarget.name.value,  
             role: e.currentTarget.role.value,  
             description: e.currentTarget.description.value,  
-            photoLink: e.currentTarget.photoLink.value,  
+            photoLink: e.currentTarget.photoLink.value,
+	    _id: firstInitialLastName(e.currentTarget.name.value)
         };
         People.insert(person);
         Session.set('add-photo-thumbnail', '');
         e.currentTarget.reset();
     } 
  });
+
+function firstInitialLastName(name){
+    var lastname = name.split(" ")
+    return (name[0] + lastname[lastname.length-1]).toLowerCase()
+}
 
 Template.rosterEdit.rendered = function () {
     Session.set('add-photo-thumbnail', '');

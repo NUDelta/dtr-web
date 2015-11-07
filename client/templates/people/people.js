@@ -1,6 +1,6 @@
 Template.People.helpers({
   people: function() {
-    return People.find().fetch().sort(function(x, y) {
+    return People.find({description: {$not : ""}}).fetch().sort(function(x, y) {
         if (computeWorth(y) !== computeWorth(x)) {
             return computeWorth(y) - computeWorth(x);
         }

@@ -14,7 +14,7 @@ Meteor.startup(function () {
 
   process.env.MAIL_URL = 'smtp://' + 
     encodeURIComponent("nudelta2015@gmail.com") + ':' + 
-    encodeURIComponent("mNAEI3j1hJkC1w8X1nS5Qvl") + '@' + 
+    encodeURIComponent(Meteor.settings.gmailKey) + '@' + 
     encodeURIComponent("smtp.gmail.com") + ':' + "465";
   
   // 2. Format the email

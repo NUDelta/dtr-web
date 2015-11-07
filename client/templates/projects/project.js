@@ -1,6 +1,6 @@
 Template.Project.helpers({
     video_with_src: function (){
-	return video.indexOf("youtube") == -1
+	return this.video.indexOf("youtube") == -1
     },
     people_list : function(){
 	   return People.find({ _id : { $in : this.people   }});

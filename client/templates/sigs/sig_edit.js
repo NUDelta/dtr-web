@@ -40,6 +40,7 @@ Template.sigEdit.events({
 	    about: $(e.target).find('[name=about]').val(),  
 	    banner: $(e.target).find('[name=banner]').val(),  
 	}
+
 	Sigs.update(currentSigId, {$set: sigProperties}, 
 		      function(error) { 
 			  if (error) {

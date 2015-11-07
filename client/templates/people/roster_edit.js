@@ -1,5 +1,6 @@
 Template.rosterEdit.helpers({
     people: function () {
+
         return People.find().fetch().sort(function(x, y) {
             if (computeWorth(y) !== computeWorth(x)) {
                 return computeWorth(y) - computeWorth(x);
@@ -17,7 +18,7 @@ Template.rosterEdit.helpers({
                     return 0;
                 }
             }
-        });
+        }).filter(function(x) { return computeWorth(x) > 0 })
     },
     addPhotoLink: function () {
         var photoLink = Session.get('add-photo-thumbnail');
@@ -74,7 +75,8 @@ Template.rosterEdit.rendered = function () {
     var availableTags = [
         'PhD Student',
         'Undergrad Researcher',
-        'Alumni'
+        'Alumni',
+	'Collaborator',
     ];
     $('.person-title').autocomplete({
         source: availableTags
@@ -97,7 +99,10 @@ function computeWorth(person) {
     else if (person.role.toLowerCase() === 'alumni') {
         return 6;
     }
+    else if (person.role.toLowerCase() == 'collaborator') {
+	return 0; // don't display them 
+    }
     else {
-        return 0;
+        return 1;
     }
 }

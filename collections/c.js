@@ -53,6 +53,39 @@ Projects.allow({
 });
 
 Sigs = new Mongo.Collection("sigs");
+Sigs.allow({
+	insert: function (userId, doc) {
+		var username = Meteor.users.findOne(userId).username;
+		if (doc.people.indexOf(username) !== -1 || admins.indexOf(username) !== -1) {
+			return true;
+		}
+		else {
+			return false;
+		}
+	},
+	update: function (userId, doc, fields, modifier) {
+		var username = Meteor.users.findOne(userId).username;
+		if (doc.people.indexOf(username) !== -1 || admins.indexOf(username) !== -1) {
+			return true;
+		}
+		else {
+			return false;
+		}
+	},
+	remove: function (userId, doc) {
+		var username = Meteor.users.findOne(userId).username;
+		if (doc.people.indexOf(username) !== -1 || admins.indexOf(username) !== -1) {
+			return true;
+		}
+		else {
+			return false;
+		}
+	}
+});
+
+
+
+
 
 GlobalSprints = new Mongo.Collection("globalSprints");
 GlobalSprints.allow({

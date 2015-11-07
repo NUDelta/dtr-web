@@ -18,6 +18,19 @@
         </div>
       </div>
     </div>
+    
+
+    <div class="person-card">
+      <h1> SIGs </h1>
+      {{#each sigs}}
+        <div class="projects-list-item">
+          <h4 span data-toggle="{{_id}}"><a href="">{{title}}</a></h4>
+          <a target="_blank" href="/sigs/{{_id}}"><span title="Open up live sig page!" class="glyphicon glyphicon-eye-open"></span></a>
+<a target="_blank" href="/Sigs/{{_id}}/edit"><span title="Open up SIG edit page" class="glyphicon glyphicon-minus"></span></a>
+        </div>
+       {{/each}}
+    </div>
+
     <div class="person-card">
       <h1> Projects </h1>
       <h3 style="margin-top: 2px"> All of these changes will also be saved automatically. </h3>

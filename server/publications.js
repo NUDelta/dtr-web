@@ -16,6 +16,7 @@ Meteor.publish('projects', function(proj) {
 Meteor.publish('sigs', function() {
 	return Sigs.find();
 });
+
 Meteor.publish('globalSprints', function(){
 	return GlobalSprints.find();
 });

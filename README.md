@@ -35,4 +35,6 @@ You probably won't need to do this too often, but you won't be able to deploy wi
 
 2. Update the `app` property in `mup.json` to point to your current DTR directory.
 
+3. `mup deploy` to deploy!
+
 TODO: We need to test if emails are working properly.

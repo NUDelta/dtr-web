@@ -22,6 +22,7 @@ DTR Website
 * Login Info: message Kevin on Slack
 
 **SSHing into the machine:**
+
 1. Login and add your SSH key to our [DigitalOcean account](https://cloud.digitalocean.com/settings/security). If you haven't generated an SSH key before, see [this](https://www.digitalocean.com/community/tutorials/how-to-set-up-ssh-keys--2).
 
 2. `ssh root@dtr.northwestern.edu`
@@ -29,6 +30,7 @@ DTR Website
 You probably won't need to do this too often, but you won't be able to deploy without your SSH key added.
 
 **Deploying:**
+
 1. Make sure you don't track further changes to the mup.json (will screw others up). Use `git update-index --assume-unchanged mup.json`
 
 2. Update the `app` property in `mup.json` to point to your current DTR directory.

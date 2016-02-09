@@ -17,18 +17,11 @@ Template.Projects.helpers({
     },
     
     learn_more: function(text) {
-	if (text.length < 140) return text
-	
-	tl = text.split(" ").splice(0,20);
-	text_out = tl[0];
-	for (var i = 1; i < tl.length; i++) {
-	    if(text_out.length + tl[i].length + 1 < 140) { 
-		text_out += " ";
-		text_out += tl[i]
-	    }else {
-		return text_out + "...";
-	    }
-	}
-  	return text_out + "...";
-    }
+	var n = 140;
+	var isTooLong = text.length > n,
+                   s_ = isTooLong ? text.substr(0,n-1) : text;
+
+         s_ = isTooLong ? s_.substr(0,s_.lastIndexOf(' ')) : s_;
+         return  isTooLong ? s_ + ' ...' : s_;
+    }	
 });

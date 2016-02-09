@@ -18,6 +18,17 @@ Template.Projects.helpers({
     
     learn_more: function(text) {
 	if (text.length < 140) return text
-  	return text.split(" ").splice(0,20).join(" ") + "...";
+	
+	tl = text.split(" ").splice(0,20);
+	text_out = tl[0];
+	for (var i = 1; i < tl.length; i++) {
+	    if(text_out.length + tl[i].length + 1 < 140) { 
+		text_out += " ";
+		text_out += tl[i]
+	    }else {
+		return text_out + "...";
+	    }
+	}
+  	return text_out + "...";
     }
 });

@@ -16,10 +16,13 @@ Template.changePassword.events({
 	    if(typeof err === 'undefined'){
 		console.log("email added")
 		Meteor.call("sendVerificationEmail", email, function(err){
-		    if(typeof err === 'undefined')
+		    if(typeof err === 'undefined'){
 			console.log("verification email sent")
-		    else
+		    alert("We just sent you a verification email. If you didn't get it, please let the webmaster know.")
+		    }
+		    else{
 			console.log(err)
+}
 		})
 	    }else {
 		console.log(err)

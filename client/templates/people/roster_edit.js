@@ -75,12 +75,14 @@ Template.rosterEdit.rendered = function () {
     var availableTags = [
         'PhD Student',
         'Undergrad Researcher',
-        'Alumni',
-	'Collaborator',
+        'Collaborator',
+	'Alumni'
     ];
+
     $('.person-title').autocomplete({
         source: availableTags
     });
+
 };
 
 function computeWorth(person) {
@@ -96,8 +98,11 @@ function computeWorth(person) {
     else if (person.role.toLowerCase() === 'undergrad researcher') {
         return 7;
     }
-    else if (person.role.toLowerCase() === 'alumni') {
+    else if (person.role.toLowerCase() === 'top dog') {
         return 6;
+    }
+    else if (person.role.toLowerCase() === 'alumni') {
+        return 5;
     }
     else if (person.role.toLowerCase() == 'collaborator') {
 	return 0; // don't display them 

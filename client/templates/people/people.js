@@ -29,11 +29,17 @@ function computeWorth(person) {
     else if (person.role.toLowerCase() === 'phd student') {
         return 8;
     }
-    else if (person.role.toLowerCase() === 'undergrad researcher') {
+    else if (person.role.toLowerCase() === 'postbac researcher') {
         return 7;
     }
-    else if (person.role.toLowerCase() === 'alum') {
+    else if (person.role.toLowerCase() === 'undergrad researcher') {
         return 6;
+    }
+    else if (person.role.toLowerCase() === 'top dog') {
+	return 5;
+    }
+    else if (person.role.toLowerCase() === 'alumni') {
+        return 4;
     }
     else {
         return 0;

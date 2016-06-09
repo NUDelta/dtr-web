@@ -15,6 +15,7 @@ People.allow({
 		}
 	},
 	remove: function (userId, doc) {
+		var username = Meteor.users.findOne(userId).username;
 		if (admins.indexOf(username) !== -1) {
 			return true;
 		}

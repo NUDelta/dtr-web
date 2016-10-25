@@ -34,6 +34,6 @@ You can make all of your changes and deploy to the server from your local setup.
 
 1. Make sure you don't track further changes to the mup.json (will screw others up). Use `git update-index --assume-unchanged mup.json`
 2. Update the `app` property in `mup.json` to point to your current local working DTR directory.
-3. `mup deploy` to deploy!
+3. `mupx deploy` to deploy!
 
 TODO: We need to test if emails are working properly.

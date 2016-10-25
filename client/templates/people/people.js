@@ -23,6 +23,9 @@ function computeWorth(person) {
     if (person._id === 'hzhang') {
         return 10;
     }
+    else if (person._id === 'eorourke') {
+        return 9.5;
+    }
     else if (person._id === 'lgerber') {
         return 9;
     }

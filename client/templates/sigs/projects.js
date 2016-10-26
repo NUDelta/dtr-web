@@ -4,12 +4,31 @@ Template.Projects.helpers({
     },
     
     sig_project: function(sig_id) {
-  	return Projects.find({sig: sig_id});
+  	return Projects.find({sig: sig_id}, {sort: {title: 1}});
     },
     
 
     people_list : function(){
-	return People.find({ _id : { $in : this.people}});
+	var team =  People.find({ _id : { $in : this.people}}).fetch();
+	
+	return team.sort(function(x, y) {
+            if (computeWorth(y) !== computeWorth(x)) {
+                return computeWorth(x) - computeWorth(y);
+            }
+            else {
+                var A = x.name.toLowerCase();
+                var B = y.name.toLowerCase();
+                if (A < B){
+                    return -1;
+                }
+                else if (A > B){
+                    return  1;
+                }
+                else{
+                    return 0;
+                }
+            }
+        }).filter(function(x) { return computeWorth(x) > 0 })
     },
     
     proj_id : function(){
@@ -25,3 +44,4 @@ Template.Projects.helpers({
          return  isTooLong ? s_ + ' ...' : s_;
     }	
 });
+

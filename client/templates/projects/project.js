@@ -3,7 +3,25 @@ Template.Project.helpers({
 	return this.video.indexOf("youtube") == -1
     },
     people_list : function(){
-	   return People.find({ _id : { $in : this.people   }});
+	var members = People.find({ _id : { $in : this.people   }}).fetch();
+	return members.sort(function(x, y) {
+            if (computeWorth(y) !== computeWorth(x)) {
+                return computeWorth(x) - computeWorth(y);
+            }
+            else {
+                var A = x.name.toLowerCase();
+                var B = y.name.toLowerCase();
+                if (A < B){
+                    return -1;
+                }
+                else if (A > B){
+                    return  1;
+                }
+                else{
+                    return 0;
+                }
+            }
+        }).filter(function(x) { return computeWorth(x) > 0 })
     },
     // this is repeated code...do something about this in the future
     get_array: function (array) {

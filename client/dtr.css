@@ -76,6 +76,10 @@ body {
     margin: 0 5px 0 5px;
 }
 /* general content styling */
+p.font-small {
+    font-size: 80% !important;
+}
+
 .dtr-content h3 {
     color: #333;
     font-weight: 600;

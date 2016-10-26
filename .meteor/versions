@@ -53,7 +53,6 @@ meteor@1.1.10
 meteor-base@1.0.1
 minifiers@1.1.7
 minimongo@1.0.10
-mizzao:bootstrap-3@3.3.1_1
 mizzao:build-fetcher@0.2.0
 mizzao:jquery-ui@1.11.4
 mobile-experience@1.0.1
@@ -86,6 +85,7 @@ standard-minifiers@1.0.2
 templating@1.1.5
 templating-tools@1.0.0
 tracker@1.0.9
+twbs:bootstrap@3.3.6
 ui@1.0.8
 underscore@1.0.4
 url@1.0.5

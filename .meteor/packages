@@ -4,7 +4,6 @@
 # 'meteor add' and 'meteor remove' will edit this file for you,
 # but you can also edit it by hand.
 
-mizzao:bootstrap-3
 iron:router
 manuelschoebel:wait-on-lib
 accounts-password
@@ -20,7 +19,6 @@ mobile-experience
 mongo
 blaze-html-templates
 session
-jquery
 tracker
 logging
 reload
@@ -29,3 +27,4 @@ ejson
 spacebars
 check
 email
+twbs:bootstrap

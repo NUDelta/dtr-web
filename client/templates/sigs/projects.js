@@ -1,6 +1,6 @@
 Template.Projects.helpers({
     sigs: function() {
-	return Sigs.find();
+	return Sigs.find().sort({title: 1});
     },
     
     sig_project: function(sig_id) {

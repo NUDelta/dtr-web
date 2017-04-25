@@ -1,4 +1,4 @@
-admins = ['hzhang', 'kchen'];
+admins = ['hzhang', 'kchen', 'jshi'];
 
 People = new Mongo.Collection("people");
 People.allow({

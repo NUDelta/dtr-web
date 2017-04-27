@@ -53,16 +53,16 @@ Template.rosterEdit.events({
         e.preventDefault();
 
         var person = {
-            name: e.currentTarget.name.value,  
-            role: e.currentTarget.role.value,  
-            description: e.currentTarget.description.value,  
+            name: e.currentTarget.name.value,
+            role: e.currentTarget.role.value,
+            description: e.currentTarget.description.value,
             photoLink: e.currentTarget.photoLink.value,
-	    _id: firstInitialLastName(e.currentTarget.name.value)
+        _id: firstInitialLastName(e.currentTarget.name.value)
         };
         People.insert(person);
         Session.set('add-photo-thumbnail', '');
         e.currentTarget.reset();
-    } 
+    }
  });
 
 function firstInitialLastName(name){
@@ -76,7 +76,7 @@ Template.rosterEdit.rendered = function () {
         'PhD Student',
         'Undergrad Researcher',
         'Collaborator',
-	'Alumni'
+    'Alumni'
     ];
 
     $('.person-title').autocomplete({
@@ -105,7 +105,7 @@ function computeWorth(person) {
         return 5;
     }
     else if (person.role.toLowerCase() == 'collaborator') {
-	return 0; // don't display them 
+    return 0; // don't display them
     }
     else {
         return 1;

@@ -1,12 +1,12 @@
 Template.personEdit.events({
-	'change input, change textarea': function (e) {
-		var attribute = e.currentTarget.name;
-		var value = e.currentTarget.value;
-		var update = {}
-		update[attribute] = value;
+    'change input, change textarea': function (e) {
+        var attribute = e.currentTarget.name;
+        var value = e.currentTarget.value;
+        var update = {}
+        update[attribute] = value;
 
-		People.update(this.person._id, {$set: update});
-	},
+        People.update(this.person._id, {$set: update});
+    },
     'click .projects-list-item .glyphicon-minus, click .projects-list-item h4': function (e) {
         var id = e.currentTarget.getAttribute('data-toggle');
         $('#' + id).slideToggle(600);

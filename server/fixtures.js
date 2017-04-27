@@ -1,5 +1,5 @@
 var thing;
-for(var i in people) {
+for (var i in people) {
     thing = People.findOne(people[i]._id);
     if (!thing) {
         People.insert(people[i]);
@@ -10,7 +10,7 @@ for(var i in people) {
     // }
 }
 
-for(var i in projects) {
+for (var i in projects) {
     thing = Projects.findOne(projects[i]._id);
     if (!thing) {
         Projects.insert(projects[i]);
@@ -21,7 +21,7 @@ for(var i in projects) {
     // }
 }
 
-for(var i in sigs) {
+for (var i in sigs) {
     thing = Sigs.findOne(sigs[i]._id);
     if (!thing) {
         Sigs.insert(sigs[i]);
@@ -55,10 +55,10 @@ for (var i in apps) {
 // 	// }
 // }
 
-People.find().forEach(function (person) {
-    thing = Meteor.users.findOne({ username: person._id });
+People.find().forEach(function(person) {
+    thing = Meteor.users.findOne({username: person._id});
     if (!thing) {
-        Accounts.createUser({ username: person._id, password: 'password' });
+        Accounts.createUser({username: person._id, password: 'password'});
         console.log('Created user ' + person._id);
     }
 });

@@ -1,25 +1,25 @@
-DTR Website
-==============
+# DTR Website
 
 1. create settings.json that looks like this:
 
 ```
-  {
-         "gmailKey": "NUDELTA GMAIL PASSWORD HERE
-  }
+{
+    "gmailKey": "NUDELTA GMAIL PASSWORD HERE"
+}
 ```
 
-3. meteor run --settings settings.json
+1. meteor run --settings settings.json
 
-4. meteor deploy APP_NAME --settings settings.json
+2. meteor deploy APP_NAME --settings settings.json
 
 ## Deploy Information
 
 **Vitals:**
-* Machine IP: _192.241.188.11_
-* Web Url: http://dtr.northwestern.edu
-* Service: DigitalOcean
-* Login Info: message Kevin on Slack
+
+- Machine IP: _192.241.188.11_
+- Web Url: <http://dtr.northwestern.edu>
+- Service: DigitalOcean
+- Login Info: message Kevin on Slack
 
 **SSHing into the machine:**
 
@@ -29,8 +29,7 @@ DTR Website
 
 You probably won't need to do this too often, but you won't be able to deploy without your SSH key added.
 
-**Deploying:**
-You can make all of your changes and deploy to the server from your local setup.
+**Deploying:** You can make all of your changes and deploy to the server from your local setup.
 
 1. Make sure you don't track further changes to the mup.json (will screw others up). Use `git update-index --assume-unchanged mup.json`
 2. Update the `app` property in `mup.json` to point to your current local working DTR directory.

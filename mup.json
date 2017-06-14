@@ -15,10 +15,10 @@
 
   "appName": "dtr",
 
-  "app": "/Users/aspin/DTRweb",
+  "app": "/Users/josh/Code/DTRweb",
 
   "env": {
-    "ROOT_URL": "http://159.203.104.179",
+    "ROOT_URL": "http://dtr.northwestern.edu",
     "PORT": 80
   },
   "deployCheckWaitTime": 15

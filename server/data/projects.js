@@ -268,4 +268,4 @@ projects = [
         "publications": [],
         "design_log": ""
     }
-]
+];

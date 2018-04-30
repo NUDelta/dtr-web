@@ -1,42 +1,42 @@
-var thing;
-for (var i in people) {
-    thing = People.findOne(people[i]._id);
-    if (!thing) {
-        People.insert(people[i]);
-    }
-    // Create if entry doesn't exist. Otherwise, ignore.
-    // else if (thing !== people[i]) {
-    // 	People.update(thing, people[i]);
-    // }
+let thing;
+for (let i in people) {
+  thing = People.findOne(people[i]._id);
+  if (!thing) {
+    People.insert(people[i]);
+  }
+  // Create if entry doesn't exist. Otherwise, ignore.
+  // else if (thing !== people[i]) {
+  // 	People.update(thing, people[i]);
+  // }
 }
 
-for (var i in projects) {
-    thing = Projects.findOne(projects[i]._id);
-    if (!thing) {
-        Projects.insert(projects[i]);
-    }
-    // Create if entry doesn't exist. Otherwise, ignore.
-    // else if (thing !== projects[i]) {
-    // 	Projects.update(thing, projects[i]);
-    // }
+for (let i in projects) {
+  thing = Projects.findOne(projects[i]._id);
+  if (!thing) {
+    Projects.insert(projects[i]);
+  }
+  // Create if entry doesn't exist. Otherwise, ignore.
+  // else if (thing !== projects[i]) {
+  // 	Projects.update(thing, projects[i]);
+  // }
 }
 
-for (var i in sigs) {
-    thing = Sigs.findOne(sigs[i]._id);
-    if (!thing) {
-        Sigs.insert(sigs[i]);
-    }
-    // Create if entry doesn't exist. Otherwise, ignore.
-    // else if (thing !== sigs[i]) {
-    // 	Sigs.update(thing, sigs[i]);
-    // }
+for (let i in sigs) {
+  thing = Sigs.findOne(sigs[i]._id);
+  if (!thing) {
+    Sigs.insert(sigs[i]);
+  }
+  // Create if entry doesn't exist. Otherwise, ignore.
+  // else if (thing !== sigs[i]) {
+  // 	Sigs.update(thing, sigs[i]);
+  // }
 }
 
-for (var i in apps) {
-    thing = Apps.findOne(apps[i]);
-    if (!thing) {
-        Apps.insert(apps[i]);
-    }
+for (let i in apps) {
+  thing = Apps.findOne(apps[i]);
+  if (!thing) {
+    Apps.insert(apps[i]);
+  }
 }
 
 // for(var i in sprints) {
@@ -56,9 +56,9 @@ for (var i in apps) {
 // }
 
 People.find().forEach(function(person) {
-    thing = Meteor.users.findOne({username: person._id});
-    if (!thing) {
-        Accounts.createUser({username: person._id, password: 'password'});
-        console.log('Created user ' + person._id);
-    }
+  thing = Meteor.users.findOne({username: person._id});
+  if (!thing) {
+    Accounts.createUser({username: person._id, password: 'password'});
+    console.log('Created user ' + person._id);
+  }
 });

@@ -18,7 +18,7 @@ Template.Projects.helpers({
   },
 
   people_list: function() {
-    var team = People.find({
+    const team = People.find({
       _id: {
         $in: this.people
       }
@@ -28,8 +28,8 @@ Template.Projects.helpers({
       if (computeWorth(y) !== computeWorth(x)) {
         return computeWorth(x) - computeWorth(y);
       } else {
-        var A = x.name.toLowerCase();
-        var B = y.name.toLowerCase();
+        const A = x.name.toLowerCase();
+        const B = y.name.toLowerCase();
         if (A < B) {
           return -1;
         } else if (A > B) {
@@ -48,11 +48,11 @@ Template.Projects.helpers({
   },
 
   learn_more: function(text) {
-    var n = 140;
-    var isTooLong = text.length > n,
-      s_ = isTooLong
-        ? text.substr(0, n - 1)
-        : text;
+    const n = 140;
+    const isTooLong = text.length > n;
+    let s_ = isTooLong
+      ? text.substr(0, n - 1)
+      : text;
 
     s_ = isTooLong
       ? s_.substr(0, s_.lastIndexOf(' '))

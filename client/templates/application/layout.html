@@ -2,8 +2,8 @@
     <nav id="header" class="navbar navbar-default">
         <div class="container-fluid">
             <div class="row">
-                <div class="col-lg-8 col-lg-offset-2 col-md-8 col-md-offset-2">
-       <!-- Brand and toggle get grouped for better mobile display -->
+                <div class="col-lg-10 col-lg-offset-2 col-md-10 col-md-offset-2">
+                    <!-- Brand and toggle get grouped for better mobile display -->
                     <div class="navbar-header">
                         <button type="button" class="navbar-toggle collapsed" data-toggle="collapse" data-target="#dtr-nav-collapse">
                             <span class="sr-only">Toggle navigation</span>
@@ -37,6 +37,7 @@
 <template name='navItems'>
     <li class="navitem {{ activeIfTemplateIs 'Vision' }}"><a href="{{ pathFor 'Vision'}}">Vision <span class="sr-only">(current)</span></a></li>
     <li class="navitem {{ activeIfTemplateIs 'Method' }}"><a href="{{ pathFor 'Method'}}">Method</a></li>
+    <li class="navitem {{ activeIfTemplateIs 'HowWeWork' }}"><a href="{{ pathFor 'HowWeWork'}}">How We Work</a></li>
     <li class="navitem {{ activeIfTemplateIs 'People' }}"><a href="{{ pathFor 'People'}}">People</a></li>
     <li class="navitem {{ activeIfTemplateIs 'Projects' }}"><a href="{{pathFor 'Projects'}}">Projects</a></li>
     <li class="navitem {{ activeIfTemplateIs 'Apply' }}"><a href="{{pathFor 'Apply'}}">Apply</a></li>

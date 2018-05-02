@@ -92,6 +92,10 @@ p.font-small {
     border-bottom: 1px solid #333;
 }
 
+.dtr-content h4 {
+    /*color: #333;*/
+}
+
 .dtr-content ul {
     color: #333;
     list-style-type: none;
@@ -144,6 +148,29 @@ textarea {
     border: 2px solid #333;
 }
 
+.padding-0 {
+    padding-right: 0 !important;
+    padding-left: 0 !important;
+}
+
+/* How We Work */
+img.how-we-work {
+    width: 100%;
+    padding-right: 1rem;
+    padding-left: 1rem;
+    margin-bottom: 1rem;
+    margin-top: 1rem;
+}
+
+img.align-right {
+    float: right;
+    padding-right: 0rem;
+}
+
+img.align-left {
+    float: left;
+    padding-left: 0rem;
+}
 
 /* faq */
 

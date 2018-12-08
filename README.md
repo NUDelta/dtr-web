@@ -14,14 +14,14 @@
 
 ## Deploy Information
 
-**Vitals:**
+### Vitals
 
 - Machine IP: _192.241.188.11_
 - Web Url: <http://dtr.northwestern.edu>
 - Service: DigitalOcean
 - Login Info: message Kevin on Slack
 
-**SSHing into the machine:**
+### SSHing into the machine:
 
 1. Login and add your SSH key to our [DigitalOcean account](https://cloud.digitalocean.com/settings/security). If you haven't generated an SSH key before, see [this](https://www.digitalocean.com/community/tutorials/how-to-set-up-ssh-keys--2).
 2. Ask someone with root access (as of now, Kevin or Haoqi) to add you to the authorized SSH users. (Note to us: paste person's public ssh to a new line in `~/.ssh/authorized_keys`).
@@ -29,10 +29,10 @@
 
 You probably won't need to do this too often, but you won't be able to deploy without your SSH key added.
 
-**Deploying:** You can make all of your changes and deploy to the server from your local setup.
+### Deploying
+You can make all of your changes and deploy to the server from your local setup.
+1. Install [Meteor Up](http://meteor-up.com/getting-started.html) globally.
+2. Run `mup deploy` to deploy 
 
-1. Make sure you don't track further changes to the mup.json (will screw others up). Use `git update-index --assume-unchanged mup.json`
-2. Update the `app` property in `mup.json` to point to your current local working DTR directory.
-3. `mupx deploy` to deploy!
-
-TODO: We need to test if emails are working properly.
+### TODOs
+- Test if emails are working properly

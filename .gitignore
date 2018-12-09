@@ -218,5 +218,7 @@ $RECYCLE.BIN/
 # Windows shortcuts
 *.lnk
 
-
 # End of https://www.gitignore.io/api/vim,macos,linux,emacs,windows,webstorm,meteorjs
+
+# Custom
+settings.*.json

@@ -5,13 +5,14 @@
     ```
     {
       "private": {
-        "gmailKey": "NUDELTA GMAIL PASSWORD HERE"
+        "MAIL_URL": "mail URL here"
       },
       "public": {
     
       }
     }
     ```
+   Emails are sent using [SendGrid](https://sendgrid.com/). Ask Kapil for the details for the SMTP server used.
 2. Run `meteor --settings settings.dev.json` to start the local meteor server. View the local DB using `meteor mongo`.
 
 ## Deploy Information

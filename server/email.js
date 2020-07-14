@@ -11,15 +11,12 @@ Meteor.startup(function() {
   // 1. Set up stmp
   //   your_server would be something like 'smtp.gmail.com'
   //   and your_port would be a number like 25
-  const emailAddress = encodeURIComponent("nudelta2015@gmail.com");
-  const emailPwd = encodeURIComponent(Meteor.settings.private.gmailKey);
-  const emailServer = encodeURIComponent("smtp.gmail.com");
 
-  process.env.MAIL_URL = `smtp://${ emailAddress }:${ emailPwd }@${ emailServer }:465`;
+  process.env.MAIL_URL = Meteor.settings.private.MAIL_URL;
 
   // 2. Format the email
   //-- Set the from address
-  Accounts.emailTemplates.from = 'DTR Admin';
+  Accounts.emailTemplates.from = 'DTR Web Admin <nudelta2015@gmail.com>';
 
   //-- Application name
   Accounts.emailTemplates.siteName = 'DTR';

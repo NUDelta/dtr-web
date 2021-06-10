@@ -75,6 +75,7 @@ Template.rosterEdit.rendered = function () {
   const availableTags = [
     'PhD Student',
     'Undergrad Researcher',
+    'Grad Researcher',
     'Collaborator',
     'Alumni'
   ];
@@ -83,31 +84,4 @@ Template.rosterEdit.rendered = function () {
     source: availableTags
   });
 
-};
-
-const computeWorth = function (person) {
-  if (person._id === 'hzhang') {
-    return 10;
-  }
-  else if (person._id === 'lgerber') {
-    return 9;
-  }
-  else if (person.role.toLowerCase() === 'phd student') {
-    return 8;
-  }
-  else if (person.role.toLowerCase() === 'undergrad researcher') {
-    return 7;
-  }
-  else if (person.role.toLowerCase() === 'top dog') {
-    return 6;
-  }
-  else if (person.role.toLowerCase() === 'alumni') {
-    return 5;
-  }
-  else if (person.role.toLowerCase() === 'collaborator') {
-    return 0; // don't display them
-  }
-  else {
-    return 1;
-  }
 };

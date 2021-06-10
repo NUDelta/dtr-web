@@ -23,11 +23,14 @@ Template.rosterEdit.helpers({
   addPhotoLink: function () {
     let photoLink = Session.get('add-photo-thumbnail');
     if (!photoLink) {
-      return "http://images.wisegeek.com/green-frog.jpg";
+      return "/images/default-pic.png";
     }
     else {
       return photoLink;
     }
+  },
+  getProfilePic: function() {
+    return this.photoLink !== "" ? this.photoLink : "/images/default-pic.png";
   }
 });
 

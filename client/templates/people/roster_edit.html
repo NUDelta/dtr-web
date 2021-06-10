@@ -6,7 +6,7 @@
         </div>
         {{#each people}}
             <div class="person-card existing" data-id="{{_id}}">
-                <img class="person-thumbnail" src="{{photoLink}}"/>
+                <img class="person-thumbnail" src="{{getProfilePic}}"/>
                 <div class="person-description">
                     <input name="name" type="text" class="person-name" value="{{name}}">
                     <input name="role" type="text" class="person-title" value="{{role}}">

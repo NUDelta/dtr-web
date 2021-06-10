@@ -7,17 +7,22 @@ Template.personEdit.events({
 
     People.update(this.person._id, {$set: update});
   },
-  'click .projects-list-item .glyphicon-minus, click .projects-list-item h4': function (e) {
+  'click .projects-list-item .glyphicon-edit, click .projects-list-item .glyphicon-ok, click .projects-list-item h4': function (e) {
+    // get the id of the project edit button was clicked on
     const id = e.currentTarget.getAttribute('data-toggle');
-    $('#' + id).slideToggle(600);
+
+    // toggle edit/checkmark button and content
+    let transitionLength = 500;
+    $('span#' + id).fadeToggle(transitionLength);
+    $('div#' + id).slideToggle(transitionLength);
   },
-  'click .projects-list-item .glyphicon-remove': function (e) {
+  'click .projects-list-item .glyphicon-trash': function (e) {
     const id = e.currentTarget.getAttribute('data-toggle');
-    if (confirm('Are you sure you want to delete this project?')) {
+    if (confirm('Are you sure you want to delete this project? This action is permanent.')) {
       Projects.remove(id);
       Sigs.find().forEach(function (sig) {
         if (sig.projects.indexOf(id) !== -1) {
-          Sigs.update(sig, {$pull: {projects: id}});
+          Sigs.update(sig, { $pull: { projects: id } } );
         }
       })
     }
@@ -66,13 +71,29 @@ Template.personEdit.helpers({
   shorten: function (name) {
     // strips proj_
     return name.substring(5);
+  },
+  isAdmin: function() {
+    // fetch the current person
+    let currPerson = People.findOne(Meteor.user().username);
+
+    // check if person is either an admin or a phd student
+    let isAdmin = admins.includes(currPerson._id);
+    let isPhDStudent = currPerson.role.toLowerCase() === "phd student";
+    return isAdmin || isPhDStudent;
+  },
+  getProfilePic: function() {
+    // fetch the current person
+    let currPerson = People.findOne(Meteor.user().username);
+    return currPerson.photoLink !== "" ? currPerson.photoLink : "/images/default-pic.png";
   }
 });
+
 Template.personEdit.rendered = function () {
   const sigs = [];
   Sigs.find().forEach(function (sig) {
-    sigs.push(sig.title)
+    sigs.push(sig.title);
   });
+
   $('#add-new-project-sig').autocomplete({
     source: sigs
   });

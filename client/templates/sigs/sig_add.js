@@ -9,7 +9,14 @@ Template.sigSubmit.events({
       projects: [],
       people: []
     };
-    sig._id = Sigs.insert(sig);
-    Router.go('Projects');
+
+    Sigs.insert(sig, function (error) {
+      if (error) {
+        // TODO: create a useful error
+        alert(error);
+      } else {
+        alert("New SIG created successfully!");
+      }
+    });
   }
 });

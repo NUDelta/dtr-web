@@ -590,6 +590,13 @@ h2.h-light {
     font-size: 24px;
 }
 
+.profile-edit .person-card .glyphicon-trash {
+    position: absolute;
+    right: 0;
+    top: 0;
+    font-size: 24px;
+}
+
 .making-new input, .making-new textarea {
     border: default;
 }
@@ -613,7 +620,11 @@ h2.h-light {
     top: 0px;
 }
 
-.profile-edit .projects-list-item .glyphicon-minus {
+.profile-edit .projects-list-item .glyphicon-edit {
+    right: 50px;
+}
+
+.profile-edit .projects-list-item .glyphicon-ok {
     right: 50px;
 }
 

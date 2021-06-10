@@ -29,6 +29,6 @@ Template.login.helpers({
     return !!Meteor.user();
   },
   'isAdmin': function(){
-    return Meteor.user().username === 'hzhang';
+    return admins.includes(Meteor.user().username);
   }
 });

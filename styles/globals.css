@@ -12,3 +12,9 @@ body {
     Oxygen, Ubuntu, Cantarell, Fira Sans, Droid Sans, Helvetica Neue, sans-serif;
   font-weight: 300;
 }
+
+.prose a {
+  font-weight: 300;
+  background-color: #fff9bc;
+  text-decoration: none;
+}

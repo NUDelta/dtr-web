@@ -23,11 +23,11 @@ export default function Header(): JSX.Element {
           <a className="font-semibold text-4xl">DTR</a>
         </Link>
 
-        <nav className="flex space-x-4 items-center">
+        <nav className="flex space-x-2 items-center">
           {links.map(({ href, label }) => (
             <Link href={href} key={label}>
               <a
-                className={`py-3 px-3 ${
+                className={`py-3 px-3 hover:bg-yellow hover:text-black transition-colors ${
                   router.pathname === href ? "bg-yellow text-black" : ""
                 }`}
               >

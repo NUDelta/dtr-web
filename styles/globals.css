@@ -18,3 +18,9 @@ body {
   background-color: #fff9bc;
   text-decoration: none;
 }
+
+.prose h2 {
+  border-bottom: 1px solid black;
+  padding-bottom: 0.5rem;
+  margin-bottom: 1rem;
+}

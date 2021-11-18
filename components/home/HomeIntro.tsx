@@ -3,11 +3,9 @@ import React from "react";
 export default function HomeIntro(): JSX.Element {
   return (
     <div>
-      <h1 className="text-2xl font-medium border-b border-black pb-2 mb-2">
-        Design, Technology, and Research (DTR)
-      </h1>
-
       <div className="prose">
+        <h2 className="">Design, Technology, and Research (DTR)</h2>
+
         <p>
           At DTR, we develop systems that shape new experiences with people and
           technology. We are designers, builders, and researchers. We are
@@ -37,11 +35,11 @@ export default function HomeIntro(): JSX.Element {
           <a href="http://fuse.microsoft.com/research/award">
             Microsoft FUSE Labs Research Award
           </a>
-          ; Northwestern's{" "}
+          ; Northwestern&apos;{" "}
           <a href="http://www.mccormick.northwestern.edu/alumni/murphy-society-awards/">
             Murphy Society Grant
           </a>
-          ; and Northwestern's{" "}
+          ; and Northwestern&apso;{" "}
           <a href="http://www.northwestern.edu/provost/faculty-honors/digital-learning-fellowships/index.html">
             Office of the Provost Award for Digital Learning
           </a>

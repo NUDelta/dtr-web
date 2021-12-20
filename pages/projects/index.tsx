@@ -1,8 +1,8 @@
 import Link from "next/link";
 import React from "react";
-import Container from "../components/shared/Container";
-import Header from "../components/shared/Header";
-import { fetchSigs, SIG } from "../lib/airtable";
+import Container from "../../components/shared/Container";
+import Header from "../../components/shared/Header";
+import { fetchSigs, SIG } from "../../lib/airtable";
 
 interface ProjectProps {
   sigs: SIG[];

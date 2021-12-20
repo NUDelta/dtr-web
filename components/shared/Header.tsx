@@ -7,9 +7,9 @@ const links: { href: string; label: string }[] = [
   { href: "/", label: "Vision" },
   { href: "/method", label: "Method" },
   { href: "/howwework", label: "How We Work" },
-  { href: "/People", label: "People" },
-  { href: "/Projects", label: "Projects" },
-  { href: "/Apply", label: "Apply" },
+  { href: "/people", label: "People" },
+  { href: "/projects", label: "Projects" },
+  { href: "/apply", label: "Apply" },
   { href: "/faq", label: "FAQ" },
 ];
 

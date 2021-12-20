@@ -18,7 +18,7 @@ export default function Header(): JSX.Element {
 
   return (
     <header className="bg-black text-white">
-      <Container className="flex py-2 gap-4 items-center">
+      <Container className="flex py-2 gap-4 items-center max-w-6xl">
         <Link href="/">
           <a className="font-semibold text-4xl">DTR</a>
         </Link>

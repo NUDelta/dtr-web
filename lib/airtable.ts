@@ -57,6 +57,9 @@ export function sortPeople(people: Person[]): Person[] {
   let activePeople = people.filter((person) => {return person.status === "Active"});
   let alumniPeople = people.filter((person) => {return person.status === "Alumni"});
 
+  // special case for stella
+  let stella = people.filter((person) => {return person.name === "Stella"})
+
   // apply sorting based on role for each sublist
   let sortedSublists = [activePeople, alumniPeople].map((currPeople) => {
     // split people by role
@@ -91,7 +94,7 @@ export function sortPeople(people: Person[]): Person[] {
   });
 
   // combine sorted sublists and return
-  return [...sortedSublists[0], ...sortedSublists[1]];
+  return [...sortedSublists[0], ...stella, ...sortedSublists[1]];
 }
 
 export type Project = {

@@ -3,6 +3,7 @@ import React from "react";
 import Container from "../../components/shared/Container";
 import Header from "../../components/shared/Header";
 import { fetchSigs, SIG } from "../../lib/airtable";
+import ReactMarkdown from "react-markdown";
 
 interface ProjectProps {
   sigs: SIG[];
@@ -27,7 +28,9 @@ export default function Projects({ sigs }: ProjectProps): JSX.Element {
                 />
               )}
 
-              <div className="prose-lg my-8">{sig.description}</div>
+              <div className="prose-lg my-8">
+                <ReactMarkdown linkTarget="_blank">{sig.description}</ReactMarkdown>
+              </div>
 
               <div className="grid grid-cols-2 gap-4 my-16">
                 {sig.projects.map((project) => (
@@ -39,8 +42,12 @@ export default function Projects({ sigs }: ProjectProps): JSX.Element {
                     </Link>
 
                     <div className="prose mt-4">
-                      {project.description?.substring(0, 140)}
-                      {(project.description?.length ?? 0) > 140 ? "..." : ""}
+                    <ReactMarkdown linkTarget="_blank">
+                        {
+                          (project.description?.substring(0, 140) ?? "") +
+                          ((project.description?.length ?? 0) > 140 ? "..." : "")
+                        }
+                      </ReactMarkdown>
                     </div>
                   </div>
                 ))}

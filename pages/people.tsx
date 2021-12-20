@@ -32,7 +32,7 @@ export default function People({ people }: PeopleProps): JSX.Element {
                 <h3 className="uppercase text-gray-500 mb-4">{person.title}</h3>
 
                 <div className="prose">
-                  <ReactMarkdown>{person.bio}</ReactMarkdown>
+                  <ReactMarkdown linkTarget="_blank">{person.bio}</ReactMarkdown>
                 </div>
               </div>
             </div>

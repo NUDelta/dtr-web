@@ -4,6 +4,7 @@ import Header from "../../components/shared/Header";
 import Container from "../../components/shared/Container";
 import { getAllProjectIds, getProject, Project } from "../../lib/airtable";
 import { GetStaticPaths, GetStaticProps } from "next";
+import ReactMarkdown from "react-markdown";
 
 interface IndividualProjectPageProps {
   project: Project;
@@ -28,7 +29,9 @@ export default function IndividualProjectPage({
             />
           )}
 
-          <div className="prose-lg my-8">{project.description}</div>
+          <div className="prose-lg my-8">
+            <ReactMarkdown linkTarget="_blank">{project.description ?? ""}</ReactMarkdown>
+          </div>
 
           <div className="grid grid-cols-2 gap-8 mb-12">
             {project.images.explainerImages.map((img, i) => (
@@ -38,7 +41,9 @@ export default function IndividualProjectPage({
                   className="w-full mb-4"
                   alt={`${project.name} ${i}`}
                 />
-                <p className="text-sm">{img.description}</p>
+                <p className="text-sm">
+                  <ReactMarkdown linkTarget="_blank">{img.description}</ReactMarkdown>
+                </p>
               </div>
             ))}
           </div>

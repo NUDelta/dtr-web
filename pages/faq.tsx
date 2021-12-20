@@ -3,7 +3,7 @@ import Link from "next/link";
 import Container from "../components/shared/Container";
 import Header from "../components/shared/Header";
 
-export default function Apply(): JSX.Element {
+export default function Faq(): JSX.Element {
   return (
     <main>
       <Header />

@@ -11,6 +11,8 @@ export type Person = {
   id: string;
   name: string;
   title: string;
+  role: string;
+  status: string;
   bio: string;
   photoUrl: string;
 };
@@ -30,6 +32,8 @@ export async function fetchPeople(): Promise<Person[]> {
               id: record.id,
               name: record.get("name") as string,
               title: record.get("title") as string,
+              role: record.get("role") as string,
+              status: record.get("status") as string,
               bio: record.get("bio") as string,
               photoUrl: record.get("photo_url") as string,
             });
@@ -46,6 +50,48 @@ export async function fetchPeople(): Promise<Person[]> {
         }
       );
   });
+}
+
+export function sortPeople(people: Person[]): Person[] {
+  // split active and alumni
+  let activePeople = people.filter((person) => {return person.status === "Active"});
+  let alumniPeople = people.filter((person) => {return person.status === "Alumni"});
+
+  // apply sorting based on role for each sublist
+  let sortedSublists = [activePeople, alumniPeople].map((currPeople) => {
+    // split people by role
+    let faculty = currPeople.filter((person) => {return person.role === "Faculty"});
+    let phd = currPeople.filter((person) => {return ["Ph.D. Student", "Ph.D. Candidate"].includes(person.role)});
+    let masters = currPeople.filter((person) => {return person.role === "Masters Student Researcher"});
+    let ugrads = currPeople.filter((person) => {return person.role === "Undergraduate Student Researcher"});
+
+    // sort faculty
+    const facultyOrder: Record<string, number> = {};
+    facultyOrder["Haoqi Zhang"] = 1;
+    facultyOrder["Eleanor \"Nell\" O'Rourke"] = 2;
+    facultyOrder["Matt Easterday"] = 3;
+    facultyOrder["Liz Gerber"] = 4;
+    faculty.sort((a, b) => {return facultyOrder[a.name] - facultyOrder[b.name]});
+
+    // sort phd students/candidates
+    const phdOrder: Record<string, number> = {};
+    phdOrder["Ph.D. Candidate"] = 1;
+    phdOrder["Ph.D. Student"] = 2;
+    phd.sort((a, b) => {
+      if (phdOrder[a.role] !== phdOrder[b.role]) { return phdOrder[a.role] - phdOrder[b.role] };
+      return a.name.localeCompare(b.name);
+    });
+
+    // sort masters and undergrad
+    masters.sort((a, b) => { return a.name.localeCompare(b.name); });
+    ugrads.sort((a, b) => { return a.name.localeCompare(b.name); });
+
+    // return combined sorted subarrays
+    return [...faculty, ...phd, ...masters, ...ugrads];
+  });
+
+  // combine sorted sublists and return
+  return [...sortedSublists[0], ...sortedSublists[1]];
 }
 
 export type Project = {

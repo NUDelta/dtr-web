@@ -6,11 +6,11 @@ import { useRouter } from "next/router";
 const links: { href: string; label: string }[] = [
   { href: "/", label: "Vision" },
   { href: "/method", label: "Method" },
-  { href: "/HowWeWork", label: "How We Work" },
+  { href: "/howwework", label: "How We Work" },
   { href: "/People", label: "People" },
   { href: "/Projects", label: "Projects" },
   { href: "/Apply", label: "Apply" },
-  { href: "/Faq", label: "FAQ" },
+  { href: "/faq", label: "FAQ" },
 ];
 
 export default function Header(): JSX.Element {

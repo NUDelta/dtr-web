@@ -13,14 +13,23 @@ body {
   font-weight: 300;
 }
 
-.prose a {
+.prose a,
+.prose-lg a {
   font-weight: 300;
   background-color: #fff9bc;
   text-decoration: none;
+  transition: background-color 150ms ease-in-out;
 }
 
-.prose h2 {
+.prose a:hover,
+.prose-lg a:hover {
+  background-color: #f5ed9c;
+}
+
+.prose h2,
+.prose-lg h2 {
   border-bottom: 1px solid black;
   padding-bottom: 0.5rem;
   margin-bottom: 1rem;
+  font-weight: 600;
 }

@@ -97,6 +97,7 @@ export function sortPeople(people: Person[]): Person[] {
   return [...sortedSublists[0], ...stella, ...sortedSublists[1]];
 }
 
+// TODO: add demo and sprint videos
 export type Project = {
   id: string;
   name: string;
@@ -161,12 +162,13 @@ export type SIG = {
   name: string;
   description: string;
   bannerImageUrl: string | null;
-  members: string[];
+  members: Person[];
   projects: Project[];
 };
 
 export async function fetchSigs(): Promise<SIG[]> {
-  return new Promise((resolve, reject) => {
+  return new Promise(async (resolve, reject) => {
+    const people = await fetchPeople();
     const results: SIG[] = [];
 
     base("SIGs")
@@ -184,13 +186,30 @@ export async function fetchSigs(): Promise<SIG[]> {
               projectIds.map((projectId) => getProject(projectId))
             );
 
+            const fetchedMembers = record.get("members") as string[];
+            const facultyMentors = people.filter((person) => {
+              return (record.get("faculty_mentors") as string[]).includes(person.id)
+            });
+            const sigHeads = people.filter((person) => {
+              return (record.get("sig_head") as string[] ?? []).includes(person.id)
+            });
+            const members = [
+              ...Array.from(new Set(sortPeople([
+                ...facultyMentors,
+                ...sigHeads,
+                ...people.filter((person) => {
+                  return fetchedMembers.includes(person.name)
+                })
+              ])))
+            ];
+
             results.push({
               id: record.id,
               name: record.get("name") as string,
               description: record.get("description") as string,
               bannerImageUrl:
                 (record.get("banner_image_url") as string) ?? null,
-              members: record.get("members") as string[],
+              members,
               projects,
             });
           }

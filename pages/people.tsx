@@ -4,6 +4,7 @@ import Container from "../components/shared/Container";
 import Header from "../components/shared/Header";
 import { fetchPeople, sortPeople, Person } from "../lib/airtable";
 import ReactMarkdown from "react-markdown";
+import PlaceHolderImg from "../components/people/default-pic.png";
 
 interface PeopleProps {
   people: Person[];
@@ -22,7 +23,7 @@ export default function People({ people }: PeopleProps): JSX.Element {
             <div key={person.id} className="flex gap-4">
               <div className="w-52 flex-shrink-0">
                 <Image
-                  src={person.photoUrl}
+                  src={person.photoUrl === "" ? PlaceHolderImg : person.photoUrl}
                   width={200}
                   height={200}
                   alt={person.name}

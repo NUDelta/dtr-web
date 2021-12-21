@@ -35,7 +35,7 @@ export async function fetchPeople(): Promise<Person[]> {
               role: record.get("role") as string,
               status: record.get("status") as string,
               bio: record.get("bio") as string,
-              photoUrl: record.get("photo_url") as string,
+              photoUrl: (record.get("photo_url") as string) ?? "",
             });
           });
 

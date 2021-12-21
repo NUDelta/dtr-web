@@ -60,6 +60,7 @@ export default function Projects({ sigs }: ProjectProps): JSX.Element {
                 ))}
               </div>
 
+              {/* TODO: abstract this out as a component so that it can be used for project pages too */}
               {/* Members of SIG */}
               <div className="w-full">
                 <h2 className="font-bold text-2xl mb-2 pb-2 border-b border-black">

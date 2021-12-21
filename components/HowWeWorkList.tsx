@@ -15,7 +15,7 @@ import CommunityBbq from "./how-we-work-images/community-bbq.png";
 
 export default function HowWeWorkList(): JSX.Element {
   return (
-    <div className="space-y-24 max-w-4xl mx-auto">
+    <div className="space-y-10 max-w-4xl mx-auto">
       <style jsx>{`
         .section-header {
           margin: 0;

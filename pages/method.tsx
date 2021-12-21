@@ -11,8 +11,8 @@ const Home: NextPage = () => {
     <div>
       <Header />
 
-      <Container className="mt-8">
-        <div className="prose mx-auto">
+      <Container className="mt-8 max-w-4xl">
+        <div className="prose mx-auto max-w-4xl">
           <h2>DTR at a glance</h2>
           <p>
             Students participate in DTR through fast-paced, quarter-long

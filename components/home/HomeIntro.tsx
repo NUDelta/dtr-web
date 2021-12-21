@@ -35,11 +35,11 @@ export default function HomeIntro(): JSX.Element {
           <a href="http://fuse.microsoft.com/research/award">
             Microsoft FUSE Labs Research Award
           </a>
-          ; Northwestern&apos;{" "}
+          ; Northwestern’s{" "}
           <a href="http://www.mccormick.northwestern.edu/alumni/murphy-society-awards/">
             Murphy Society Grant
           </a>
-          ; and Northwestern&apso;{" "}
+          ; and Northwestern’s{" "}
           <a href="http://www.northwestern.edu/provost/faculty-honors/digital-learning-fellowships/index.html">
             Office of the Provost Award for Digital Learning
           </a>

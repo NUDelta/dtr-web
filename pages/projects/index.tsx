@@ -14,7 +14,7 @@ export default function Projects({ sigs }: ProjectProps): JSX.Element {
     <main>
       <Header />
 
-      <Container className="mt-10 max-w-5xl">
+      <Container className="mt-8 max-w-4xl">
         <div className="space-y-8">
           {/* SIG component */}
           {sigs.map((sig) => (
@@ -41,8 +41,10 @@ export default function Projects({ sigs }: ProjectProps): JSX.Element {
                 {sig.projects.map((project) => (
                   <div key={project.id} className="mb-4">
                     <Link href={`/projects/${project.id}`}>
-                      <a className="font-semibold text-xl bg-yellow hover:bg-dark-yellow transition-colors px-4 py-2">
-                        {project.name}
+                      <a>
+                        <h2 className="font-semibold text-xl bg-yellow hover:bg-dark-yellow transition-colors p-2 break-normal">
+                          {project.name}
+                        </h2>
                       </a>
                     </Link>
 
@@ -66,8 +68,8 @@ export default function Projects({ sigs }: ProjectProps): JSX.Element {
 
                 {/* separate members of SIG into faculty, phd students, and ms/ugrad students */}
                 <div className="grid grid-cols-2 grid-rows-2 grid-flow-col auto-cols-max">
-                  {["Faculty", "Ph.D. Students", "Masters/Undergraduate Students"].map((role) => (
-                    <div key={`${sig.id}-${role}`} className={`${role === "Masters/Undergraduate Students" ? "row-span-2": ""} mb-2`}>
+                  {["Faculty", "Ph.D. Students", "Masters and Undergraduate Students"].map((role) => (
+                    <div key={`${sig.id}-${role}`} className={`${role === "Masters and Undergraduate Students" ? "row-span-2": ""} mb-2`}>
                       <h3 className="font-bold text-xl mb-2">
                         {role}
                       </h3>
@@ -77,7 +79,7 @@ export default function Projects({ sigs }: ProjectProps): JSX.Element {
                         let filterArr: string[] = [];
                         if (role == "Faculty") { filterArr = ["Faculty"]; }
                         if (role == "Ph.D. Students") { filterArr = ["Ph.D. Student", "Ph.D. Candidate"]; }
-                        if (role == "Masters/Undergraduate Students") { filterArr = ["Masters Student Researcher", "Undergraduate Student Researcher"]; }
+                        if (role == "Masters and Undergraduate Students") { filterArr = ["Masters Student Researcher", "Undergraduate Student Researcher"]; }
 
                         return filterArr.includes(member.role);
                       }).map((member) => (

@@ -8,11 +8,11 @@ export default function Faq(): JSX.Element {
     <main>
       <Header />
 
-      <Container className="mt-20">
+      <Container className="mt-8  max-w-4xl">
         <div className="prose-lg">
           <h2>Frequently Asked Questions</h2>
 
-          <div className="space-y-8">
+          <div className="space-y-6">
             {questionsAndAnswers.map((qa, i) => (
               <div key={i} className="">
                 <h5 className="font-medium">{qa.question}</h5>
@@ -27,7 +27,7 @@ export default function Faq(): JSX.Element {
 }
 
 type QA = {
-  question: string;
+  question: string | JSX.Element;
   answer: JSX.Element;
 };
 
@@ -113,7 +113,7 @@ const questionsAndAnswers: QA[] = [
     answer: (
       <>
         DTR satisfies the project requirement &amp; Interfaces depth
-        requirement. Depending on the focus of the project you work on, you\n
+        requirement. Depending on the focus of the project you work on, you
         may be able to petition for DTR to count for other depth requirements
         (e.g., CogSys or Systems).
       </>
@@ -143,8 +143,11 @@ const questionsAndAnswers: QA[] = [
     ),
   },
   {
-    question:
-      "I have no experience with ____(fill in the blank)____. Can I still apply?",
+    question: (
+      <>
+      I have no experience with <u>&nbsp;&nbsp;&nbsp;&nbsp;(fill in the blank)&nbsp;&nbsp;&nbsp;&nbsp;</u>. Can I still apply?
+      </>
+    ),
     answer: (
       <>
         Absolutely. We find that while prior experience matters, students who

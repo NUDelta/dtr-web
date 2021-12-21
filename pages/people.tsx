@@ -15,7 +15,7 @@ export default function People({ people }: PeopleProps): JSX.Element {
       <Header />
 
       {/* Active faculty and students in DTR */}
-      <Container className="mt-20">
+      <Container className="mt-8 max-w-4xl">
         <div className="space-y-8">
           {people.filter((person) => {return person.status === "Active"})
           .map((person) => (
@@ -43,7 +43,7 @@ export default function People({ people }: PeopleProps): JSX.Element {
       </Container>
 
       {/* Alums of DTR */}
-      <Container className="mt-20">
+      <Container className="mt-8  max-w-4xl">
         <div className="prose-lg mb-5">
           <h2>Alumni</h2>
         </div>

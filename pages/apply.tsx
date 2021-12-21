@@ -8,7 +8,7 @@ export default function Apply(): JSX.Element {
     <main>
       <Header />
 
-      <Container className="mt-20">
+      <Container className="mt-8 max-w-4xl">
         <div className="prose mx-auto">
           <h2>Interested in joining us? Follow the steps below:</h2>
           <ol>
@@ -76,7 +76,9 @@ export default function Apply(): JSX.Element {
           <p>
             Should you have any questions, don&apos;t hesitate to reach out to{" "}
             <a href="mailto:hq@northwestern.edu">Haoqi</a> or{" "}
-            <a href="/People">anyone else in DTR</a>.
+            <Link href="/people">
+              <a>anyone else in DTR</a>
+            </Link>
           </p>
 
           <div>

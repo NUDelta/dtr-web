@@ -18,12 +18,12 @@ export default function Header(): JSX.Element {
 
   return (
     <header className="bg-black text-white">
-      <Container className="flex py-2 gap-4 items-center max-w-3xl">
+      <Container className="flex py-2 gap-6 items-center max-w-6xl">
         <Link href="/">
           <a className="font-semibold text-4xl">DTR</a>
         </Link>
 
-        <nav className="flex space-x-2 items-center">
+        <nav className="flex space-x-4 items-center">
           {links.map(({ href, label }) => (
             <Link href={href} key={label}>
               <a

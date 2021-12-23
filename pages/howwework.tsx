@@ -1,6 +1,6 @@
 import Header from "../components/shared/Header";
 import Container from "../components/shared/Container";
-import HowWeWorkList from "../components/HowWeWorkList";
+import HowWeWorkList from "../components/how-we-work/HowWeWorkList";
 
 export default function HowWeWork(): JSX.Element {
   return (

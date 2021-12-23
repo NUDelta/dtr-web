@@ -1,17 +1,17 @@
 import React from "react";
 import Image from "next/image";
 
-import ProblemsHow from "./how-we-work-images/problems-how.png";
-import ProblemsPyrus from "./how-we-work-images/problems-pyrus.png";
-import ProblemsProcess from "./how-we-work-images/problems-process.jpg";
+import ProblemsHow from "./assets/problems-how.png";
+import ProblemsPyrus from "./assets/problems-pyrus.png";
+import ProblemsProcess from "./assets/problems-process.jpg";
 
-import ResearchSccs from "./how-we-work-images/research-sccs.png";
-import ResearchSig from "./how-we-work-images/research-sig.png";
-import ResearchOpenhouse from "./how-we-work-images/research-openhouse.png";
+import ResearchSccs from "./assets/research-sccs.png";
+import ResearchSig from "./assets/research-sig.png";
+import ResearchOpenhouse from "./assets/research-openhouse.png";
 
-import CommunityUist from "./how-we-work-images/community-uist.png";
-import CommunityCircle from "./how-we-work-images/community-circle.png";
-import CommunityBbq from "./how-we-work-images/community-bbq.png";
+import CommunityUist from "./assets/community-uist.png";
+import CommunityCircle from "./assets/community-circle.png";
+import CommunityBbq from "./assets/community-bbq.png";
 
 export default function HowWeWorkList(): JSX.Element {
   return (

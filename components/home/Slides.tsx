@@ -1,6 +1,5 @@
-import React from "react";
-import Image from "next/image";
 import { Carousel } from "react-responsive-carousel";
+import Image from "next/image";
 
 import image1 from "./assets/1.jpg";
 import image2 from "./assets/2.jpg";

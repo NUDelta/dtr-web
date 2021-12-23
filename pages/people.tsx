@@ -4,7 +4,7 @@ import Container from "../components/shared/Container";
 import Header from "../components/shared/Header";
 import { fetchPeople, sortPeople, Person } from "../lib/airtable";
 import ReactMarkdown from "react-markdown";
-import PlaceHolderImg from "../components/people/default-pic.png";
+import PlaceHolderImg from "../components/people/assets/default-pic.png";
 
 interface PeopleProps {
   people: Person[];

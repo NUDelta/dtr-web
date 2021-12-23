@@ -4,6 +4,7 @@ import Container from "../../components/shared/Container";
 import { getAllProjectIds, getProject, Project } from "../../lib/airtable";
 import { GetStaticPaths, GetStaticProps } from "next";
 import ReactMarkdown from "react-markdown";
+import ReactPlayer from "react-player/youtube"
 
 interface IndividualProjectPageProps {
   project: Project;
@@ -18,8 +19,10 @@ export default function IndividualProjectPage({
 
       <Container className="mt-20 max-w-5xl">
         <div className="bg-gray-50 p-4">
-          <h2 className="font-semibold text-2xl mb-4">{project.name}</h2>
+          {/* Title */}
+          <h2 className="font-semibold text-3xl mb-4">{project.name}</h2>
 
+          {/* Banner Image */}
           {project.images.bannerImageUrl && (
             <img
               src={project.images.bannerImageUrl}
@@ -28,11 +31,15 @@ export default function IndividualProjectPage({
             />
           )}
 
+          {/* Description */}
           <div className="prose-lg my-8">
-            <ReactMarkdown linkTarget="_blank">{project.description ?? ""}</ReactMarkdown>
+            <ReactMarkdown linkTarget="_blank">
+              {project.description}
+            </ReactMarkdown>
           </div>
 
-          <div className="grid grid-cols-2 gap-8 mb-12">
+         {/* Extra images */}
+          <div className="grid grid-cols-2 gap-8 mb-8">
             {project.images.explainerImages.map((img, i) => (
               <div key={`img-${i}`}>
                 <img
@@ -41,19 +48,22 @@ export default function IndividualProjectPage({
                   alt={`${project.name} ${i}`}
                 />
                 <p className="text-sm">
-                  <ReactMarkdown linkTarget="_blank">{img.description}</ReactMarkdown>
+                  <ReactMarkdown linkTarget="_blank">
+                    {`Figure ${i + 1}: ${img.description}`}
+                  </ReactMarkdown>
                 </p>
               </div>
             ))}
           </div>
 
+          {/* Publications or Additional Content (e.g., Slides) */}
           {project.publications.length > 0 && (
-            <div className="w-96">
+            <div className="w-full mb-8">
               <h2 className="font-bold text-2xl mb-2 pb-2 border-b border-black">
                 Publications
               </h2>
 
-              <ul className="font-medium prose mb-12">
+              <ul className="font-medium prose max-w-none">
                 {project.publications.map((publication) => (
                   <li key={publication.id}>
                     <a href={publication.url} target="_blank" rel="noreferrer">{publication.name}</a>,{" "}
@@ -64,7 +74,28 @@ export default function IndividualProjectPage({
             </div>
           )}
 
-          <div className="w-96">
+          {/* Demo Video */}
+          {project.demo_video !== null && (
+            <div className="w-full mb-8">
+            <h2 className="font-bold text-2xl mb-2 pb-2 border-b border-black">
+              Demo video
+            </h2>
+            <ReactPlayer url={project.demo_video} controls={true}/>
+          </div>
+          )}
+
+          {/* Sprint Video */}
+          {project.sprint_video !== null && (
+            <div className="w-full mb-8">
+            <h2 className="font-bold text-2xl mb-2 pb-2 border-b border-black">
+              Sprint Video
+            </h2>
+            <ReactPlayer url={project.sprint_video} controls={true}/>
+          </div>
+          )}
+
+          {/* Team Members */}
+          <div className="w-full">
             <h2 className="font-bold text-2xl mb-2 pb-2 border-b border-black">
               Team
             </h2>

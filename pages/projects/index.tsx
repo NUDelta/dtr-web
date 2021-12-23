@@ -20,7 +20,7 @@ export default function Projects({ sigs }: ProjectProps): JSX.Element {
           {sigs.map((sig) => (
             <div key={sig.id} className="bg-gray-50 p-8">
               {/* SIG name */}
-              <h2 className="font-semibold text-2xl mb-4">{sig.name}</h2>
+              <h2 className="font-semibold text-3xl mb-4">{sig.name}</h2>
 
               {/* SIG banner image */}
               {sig.bannerImageUrl && (

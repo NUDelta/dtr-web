@@ -23,7 +23,7 @@ export default function People({ people }: PeopleProps): JSX.Element {
             <div key={person.id} className="flex gap-4">
               <div className="w-52 flex-shrink-0">
                 <Image
-                  src={person.photoUrl === "" ? PlaceHolderImg : person.photoUrl}
+                  src={person.photoUrl ?? PlaceHolderImg}
                   width={200}
                   height={200}
                   alt={person.name}
@@ -52,7 +52,7 @@ export default function People({ people }: PeopleProps): JSX.Element {
             <div key={person.id} className="flex gap-4">
               <div className="w-52 flex-shrink-0">
                 <Image
-                  src={person.photoUrl}
+                  src={person.photoUrl ?? PlaceHolderImg}
                   width={200}
                   height={200}
                   alt={person.name}

@@ -14,8 +14,9 @@ export type Person = {
   role: string;
   status: string;
   bio: string;
-  photoUrl: string;
+  photoUrl: string | null;
 };
+
 
 export async function fetchPeople(): Promise<Person[]> {
   return new Promise((resolve, reject) => {
@@ -34,8 +35,8 @@ export async function fetchPeople(): Promise<Person[]> {
               title: record.get("title") as string,
               role: record.get("role") as string,
               status: record.get("status") as string,
-              bio: record.get("bio") as string,
-              photoUrl: (record.get("photo_url") as string) ?? "",
+              bio: (record.get("bio") as string) ?? "",
+              photoUrl: (record.get("photo_url") as string) ?? null,
             });
           });
 
@@ -50,7 +51,8 @@ export async function fetchPeople(): Promise<Person[]> {
         }
       );
   });
-}
+};
+
 
 export function sortPeople(people: Person[]): Person[] {
   // split active and alumni
@@ -101,9 +103,12 @@ export function sortPeople(people: Person[]): Person[] {
 export type Project = {
   id: string;
   name: string;
-  description: string | null;
+  description: string;
+  status: string;
   members: string[];
   images: ProjectImages;
+  demo_video: string | null;
+  sprint_video: string | null;
   publications: ProjectPublication[];
 };
 
@@ -126,6 +131,9 @@ export async function getProject(
         id: record.id,
         name: record.get("name") as string,
         description: (record.get("description") as string) ?? null,
+        status: record.get("status"),
+        demo_video: (record.get("demo_video")) ?? null,
+        sprint_video: (record.get("sprint_video")) ?? null,
         members: record.get("members") as string[],
       };
 

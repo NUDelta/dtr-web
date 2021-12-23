@@ -31,10 +31,10 @@ export async function fetchPeople(): Promise<Person[]> {
           records.forEach(function (record) {
             results.push({
               id: record.id,
-              name: record.get("name") as string,
-              title: record.get("title") as string,
-              role: record.get("role") as string,
-              status: record.get("status") as string,
+              name: (record.get("name") as string) ?? "",
+              title: (record.get("title") as string) ?? "",
+              role: (record.get("role") as string) ?? "Undergraduate Student Researcher",
+              status: (record.get("status") as string) ?? "Active",
               bio: (record.get("bio") as string) ?? "",
               photoUrl: (record.get("photo_url") as string) ?? null,
             });
@@ -99,16 +99,15 @@ export function sortPeople(people: Person[]): Person[] {
   return [...sortedSublists[0], ...stella, ...sortedSublists[1]];
 }
 
-// TODO: add demo and sprint videos
 export type Project = {
   id: string;
   name: string;
   description: string;
   status: string;
-  members: string[];
-  images: ProjectImages;
   demo_video: string | null;
   sprint_video: string | null;
+  members: string[];
+  images: ProjectImages;
   publications: ProjectPublication[];
 };
 
@@ -128,13 +127,13 @@ export async function getProject(
       }
 
       const partialProject = {
-        id: record.id,
-        name: record.get("name") as string,
-        description: (record.get("description") as string) ?? null,
-        status: record.get("status"),
-        demo_video: (record.get("demo_video")) ?? null,
-        sprint_video: (record.get("sprint_video")) ?? null,
-        members: record.get("members") as string[],
+        id: record.id as string,
+        name: (record.get("name") as string) ?? "",
+        description: (record.get("description") as string) ?? "",
+        status: (record.get("status") as string) ?? "Active",
+        demo_video: (record.get("demo_video") as string) ?? null,
+        sprint_video: (record.get("sprint_video") as string) ?? null,
+        members: (record.get("members") as string[]) ?? [],
       };
 
       if (!getAllData) {
@@ -185,22 +184,24 @@ export async function fetchSigs(): Promise<SIG[]> {
       })
       .eachPage(
         async function page(records, fetchNextPage) {
-          // This function (`page`) will get called for each page of records.
-
+          // parse out info for each record
           for (const record of records) {
-            const projectIds = record.get("projects") as string[];
-
+            // projects associated with SIG
+            const projectIds = (record.get("projects") as string[]) ?? [];
             const projects = await Promise.all(
               projectIds.map((projectId) => getProject(projectId))
             );
 
-            const fetchedMembers = record.get("members") as string[];
+            // get students on each proj, SIG faculty mentors, and SIG heads
+            const fetchedMembers = (record.get("members") as string[]) ?? [];
             const facultyMentors = people.filter((person) => {
-              return (record.get("faculty_mentors") as string[]).includes(person.id)
+              return ((record.get("faculty_mentors") as string[]) ?? []).includes(person.id);
             });
+
             const sigHeads = people.filter((person) => {
-              return (record.get("sig_head") as string[] ?? []).includes(person.id)
+              return ((record.get("sig_head") as string[]) ?? []).includes(person.id);
             });
+
             const members = [
               ...Array.from(new Set(sortPeople([
                 ...facultyMentors,
@@ -211,12 +212,12 @@ export async function fetchSigs(): Promise<SIG[]> {
               ])))
             ];
 
+            // add results
             results.push({
               id: record.id,
-              name: record.get("name") as string,
-              description: record.get("description") as string,
-              bannerImageUrl:
-                (record.get("banner_image_url") as string) ?? null,
+              name: (record.get("name") as string) ?? "",
+              description: (record.get("description") as string) ?? "",
+              bannerImageUrl: (record.get("banner_image_url") as string) ?? null,
               members,
               projects,
             });
@@ -243,9 +244,7 @@ type ProjectImages = {
   }[];
 };
 
-export async function fetchProjectImages(
-  imageDocId: string
-): Promise<ProjectImages> {
+export async function fetchProjectImages(imageDocId: string): Promise<ProjectImages> {
   return new Promise((resolve, reject) => {
     base("Project Images").find(imageDocId, function (err, record) {
       if (err) {
@@ -257,8 +256,8 @@ export async function fetchProjectImages(
         return;
       }
 
+      // get all additional images for the project
       const explainerImages: ProjectImages["explainerImages"] = [];
-
       [1, 2, 3, 4, 5].map((i) => {
         const imageUrl = record.get(`image_${i}_url`) as string;
         const description = record.get(`image_${i}_description`) as string;
@@ -286,9 +285,7 @@ type ProjectPublication = {
   url: string;
 };
 
-export async function fetchPublications(
-  publicationDocId: string
-): Promise<ProjectPublication[]> {
+export async function fetchPublications(publicationDocId: string): Promise<ProjectPublication[]> {
   return new Promise((resolve, reject) => {
     base("Project Publications").find(publicationDocId, function (err, record) {
       if (err) {

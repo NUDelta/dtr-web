@@ -1,11 +1,11 @@
-import React from "react";
-import Link from "next/link";
-import Container from "../components/shared/Container";
 import Header from "../components/shared/Header";
+import Container from "../components/shared/Container";
+import Link from "next/link";
+
 
 export default function Apply(): JSX.Element {
   return (
-    <main>
+    <div>
       <Header />
 
       <Container className="mt-8">
@@ -93,6 +93,6 @@ export default function Apply(): JSX.Element {
           </div>
         </div>
       </Container>
-    </main>
+    </div>
   );
-}
+};

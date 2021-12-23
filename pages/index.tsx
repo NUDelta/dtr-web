@@ -1,10 +1,9 @@
-import type { NextPage } from "next";
-import HomeIntro from "../components/home/HomeIntro";
-import Slides from "../components/home/Slides";
-import Container from "../components/shared/Container";
 import Header from "../components/shared/Header";
+import Container from "../components/shared/Container";
+import Slides from "../components/home/Slides";
+import HomeIntro from "../components/home/HomeIntro";
 
-const Home: NextPage = () => {
+export default function Home(): JSX.Element {
   return (
     <div>
       <Header />
@@ -21,5 +20,3 @@ const Home: NextPage = () => {
     </div>
   );
 };
-
-export default Home;

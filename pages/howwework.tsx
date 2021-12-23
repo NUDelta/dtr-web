@@ -1,10 +1,10 @@
-import HowWeWorkList from "../components/HowWeWorkList";
-import Container from "../components/shared/Container";
 import Header from "../components/shared/Header";
+import Container from "../components/shared/Container";
+import HowWeWorkList from "../components/HowWeWorkList";
 
 export default function HowWeWork(): JSX.Element {
   return (
-    <main>
+    <div>
       <Header />
 
       <Container className="mt-8">
@@ -33,6 +33,6 @@ export default function HowWeWork(): JSX.Element {
           <HowWeWorkList />
         </div>
       </Container>
-    </main>
+    </div>
   );
-}
+};

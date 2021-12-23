@@ -12,11 +12,12 @@ interface PeopleProps {
 
 export default function People({ people }: PeopleProps): JSX.Element {
   return (
-    <main>
+    <div>
       <Header />
 
-      {/* Active faculty and students in DTR */}
       <Container className="mt-8">
+        {/* TODO: this should be abstracted into a component that can display either active members or alums */}
+        {/* Active faculty and students in DTR */}
         <div className="space-y-8 max-w-4xl mx-auto mb-8">
           {people.filter((person) => {return person.status === "Active"})
           .map((person) => (
@@ -26,7 +27,7 @@ export default function People({ people }: PeopleProps): JSX.Element {
                   src={person.photoUrl ?? PlaceHolderImg}
                   width={200}
                   height={200}
-                  alt={person.name}
+                  alt={`Headshot of ${person.name}`}
                 />
               </div>
 
@@ -71,7 +72,7 @@ export default function People({ people }: PeopleProps): JSX.Element {
           ))}
         </div>
       </Container>
-    </main>
+    </div>
   );
 }
 

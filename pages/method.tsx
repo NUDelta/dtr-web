@@ -1,8 +1,7 @@
-import type { NextPage } from "next";
-import Container from "../components/shared/Container";
 import Header from "../components/shared/Header";
+import Container from "../components/shared/Container";
 
-const Home: NextPage = () => {
+export default function Method(): JSX.Element {
   return (
     <div>
       <Header />
@@ -86,5 +85,3 @@ const Home: NextPage = () => {
     </div>
   );
 };
-
-export default Home;

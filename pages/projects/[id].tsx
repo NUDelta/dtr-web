@@ -1,20 +1,17 @@
-import React from "react";
 import Header from "../../components/shared/Header";
 import Container from "../../components/shared/Container";
-import { getAllProjectIds, getProject, Project } from "../../lib/airtable";
 import { GetStaticPaths, GetStaticProps } from "next";
 import ReactMarkdown from "react-markdown";
 import ReactPlayer from "react-player/youtube"
+import { getAllProjectIds, getProject, Project } from "../../lib/airtable";
 
 interface IndividualProjectPageProps {
   project: Project;
 }
 
-export default function IndividualProjectPage({
-  project,
-}: IndividualProjectPageProps): JSX.Element {
+export default function IndividualProjectPage({project}: IndividualProjectPageProps): JSX.Element {
   return (
-    <main>
+    <div>
       <Header />
 
       <Container className="mt-20 max-w-5xl">
@@ -108,7 +105,7 @@ export default function IndividualProjectPage({
           </div>
         </div>
       </Container>
-    </main>
+    </div>
   );
 }
 

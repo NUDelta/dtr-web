@@ -1,17 +1,18 @@
-import React from "react";
-import Link from "next/link";
-import Container from "../components/shared/Container";
 import Header from "../components/shared/Header";
+import Container from "../components/shared/Container";
+import Link from "next/link";
+
 
 export default function Faq(): JSX.Element {
   return (
-    <main>
+    <div>
       <Header />
 
       <Container className="mt-8">
         <div className="prose max-w-4xl mx-auto">
           <h2>Frequently Asked Questions</h2>
 
+          {/* Populate questions and answers */}
           <div className="space-y-6">
             {questionsAndAnswers.map((qa, i) => (
               <div key={i} className="">
@@ -22,7 +23,7 @@ export default function Faq(): JSX.Element {
           </div>
         </div>
       </Container>
-    </main>
+    </div>
   );
 }
 
@@ -31,6 +32,9 @@ type QA = {
   answer: JSX.Element;
 };
 
+/**
+ * List of frequently asked questions (and answers).
+ */
 const questionsAndAnswers: QA[] = [
   {
     question: "When is DTR offered?",
@@ -55,12 +59,13 @@ const questionsAndAnswers: QA[] = [
     answer: (
       <>
         We meet for a single 3 hour meeting each week, and a separate one hour
-        SIG meeting. The longer meeting is used mainly for hackathons, pair
-        research, and demos. We require all students be able to make the longer
-        meeting. The time for that meeting is scheduled by polling students to
-        find the best mutually agreeable meeting time. Typically it&apos;s
-        Thursday afternoon or Friday, but it really depends on everyone&apos;s
-        schedule.
+        SIG meeting. The longer meeting is used for
+        (1) Mysore--a structured learning and practice time where students work on their projects while a mentor provides feedback;
+        (2) Pair Research; and
+        (3) a Status Update presentation/activity from one project team.
+        We require all students be able to make the longer meeting.
+        The time for that meeting is scheduled by polling students to find the best mutually agreeable meeting time.
+        Typically it&apos;s Thursday afternoon or Friday, but it really depends on everyone&apos;s schedule.
       </>
     ),
   },

@@ -1,9 +1,9 @@
-import Link from "next/link";
-import React from "react";
-import Container from "../../components/shared/Container";
 import Header from "../../components/shared/Header";
-import { fetchSigs, SIG } from "../../lib/airtable";
+import Container from "../../components/shared/Container";
+import Link from "next/link";
 import ReactMarkdown from "react-markdown";
+import { fetchSigs, SIG } from "../../lib/airtable";
+
 
 interface ProjectProps {
   sigs: SIG[];
@@ -11,7 +11,7 @@ interface ProjectProps {
 
 export default function Projects({ sigs }: ProjectProps): JSX.Element {
   return (
-    <main>
+    <div>
       <Header />
 
       <Container className="mt-8">
@@ -42,7 +42,7 @@ export default function Projects({ sigs }: ProjectProps): JSX.Element {
                   <div key={project.id} className="mb-4">
                     <Link href={`/projects/${project.id}`}>
                       <a>
-                        <h2 className="font-semibold text-xl bg-yellow hover:bg-dark-yellow transition-colors p-2 break-normal">
+                        <h2 className="font-semibold text-2xl bg-yellow hover:bg-dark-yellow transition-colors p-2 break-normal">
                           {project.name}
                         </h2>
                       </a>
@@ -97,7 +97,7 @@ export default function Projects({ sigs }: ProjectProps): JSX.Element {
           ))}
         </div>
       </Container>
-    </main>
+    </div>
   );
 }
 

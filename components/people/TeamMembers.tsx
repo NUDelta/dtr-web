@@ -49,7 +49,7 @@ interface MembersForRoleProps {
   members: Person[];
 }
 
-function MembersForRole({ members}: MembersForRoleProps): JSX.Element {
+function MembersForRole({ members }: MembersForRoleProps): JSX.Element {
   const memberCount = members.length;
 
   return (

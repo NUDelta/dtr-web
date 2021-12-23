@@ -1,8 +1,4 @@
 import type { NextPage } from "next";
-import Head from "next/head";
-import Image from "next/image";
-import HomeIntro from "../components/home/HomeIntro";
-import Slides from "../components/home/Slides";
 import Container from "../components/shared/Container";
 import Header from "../components/shared/Header";
 
@@ -11,8 +7,8 @@ const Home: NextPage = () => {
     <div>
       <Header />
 
-      <Container className="mt-8 max-w-4xl">
-        <div className="prose mx-auto max-w-4xl">
+      <Container className="mt-8">
+        <div className="prose max-w-4xl mx-auto">
           <h2>DTR at a glance</h2>
           <p>
             Students participate in DTR through fast-paced, quarter-long

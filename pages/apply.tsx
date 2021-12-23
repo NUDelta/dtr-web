@@ -8,8 +8,8 @@ export default function Apply(): JSX.Element {
     <main>
       <Header />
 
-      <Container className="mt-8 max-w-4xl">
-        <div className="prose mx-auto">
+      <Container className="mt-8">
+        <div className="prose max-w-4xl mx-auto">
           <h2>Interested in joining us? Follow the steps below:</h2>
           <ol>
             <li>

@@ -10,15 +10,17 @@ html,
 body {
   font-family: "Lato", -apple-system, BlinkMacSystemFont, Segoe UI, Roboto,
     Oxygen, Ubuntu, Cantarell, Fira Sans, Droid Sans, Helvetica Neue, sans-serif;
-  font-weight: 300;
+  font-weight: 400;
 }
 
 .prose a,
 .prose-lg a {
-  font-weight: 300;
+  font-weight: 400;
   background-color: #fff9bc;
   text-decoration: none;
   transition: background-color 150ms ease-in-out;
+  padding-left: 0.25em;
+  padding-right: 0.25em;
 }
 
 .prose a:hover,

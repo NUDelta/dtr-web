@@ -8,14 +8,14 @@ export default function Faq(): JSX.Element {
     <main>
       <Header />
 
-      <Container className="mt-8  max-w-4xl">
-        <div className="prose-lg">
+      <Container className="mt-8">
+        <div className="prose max-w-4xl mx-auto">
           <h2>Frequently Asked Questions</h2>
 
           <div className="space-y-6">
             {questionsAndAnswers.map((qa, i) => (
               <div key={i} className="">
-                <h5 className="font-medium">{qa.question}</h5>
+                <h5 className="text-lg font-semibold">{qa.question}</h5>
                 {qa.answer}
               </div>
             ))}

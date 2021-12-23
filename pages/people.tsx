@@ -16,8 +16,8 @@ export default function People({ people }: PeopleProps): JSX.Element {
       <Header />
 
       {/* Active faculty and students in DTR */}
-      <Container className="mt-8 max-w-4xl">
-        <div className="space-y-8">
+      <Container className="mt-8">
+        <div className="space-y-8 max-w-4xl mx-auto mb-8">
           {people.filter((person) => {return person.status === "Active"})
           .map((person) => (
             <div key={person.id} className="flex gap-4">
@@ -34,21 +34,19 @@ export default function People({ people }: PeopleProps): JSX.Element {
                 <h2 className="text-2xl font-medium">{person.name}</h2>
                 <h3 className="uppercase text-gray-500 mb-4">{person.title}</h3>
 
-                <div className="prose">
+                <div className="prose max-w-none">
                   <ReactMarkdown linkTarget="_blank">{person.bio}</ReactMarkdown>
                 </div>
               </div>
             </div>
           ))}
         </div>
-      </Container>
 
-      {/* Alums of DTR */}
-      <Container className="mt-8  max-w-4xl">
-        <div className="prose-lg mb-5">
+       {/* Alums of DTR */}
+        <div className="prose-lg mb-5 max-w-4xl mx-auto">
           <h2>Alumni</h2>
         </div>
-        <div className="space-y-8">
+        <div className="space-y-8 max-w-4xl mx-auto">
           {people.filter((person) => {return person.status === "Alumni"})
           .map((person) => (
             <div key={person.id} className="flex gap-4">
@@ -62,10 +60,10 @@ export default function People({ people }: PeopleProps): JSX.Element {
               </div>
 
               <div>
-                <h2 className="text-2xl font-medium">{person.name}</h2>
+                <h2 className="text-2xl font-medium mb-2">{person.name}</h2>
                 <h3 className="uppercase text-gray-500 mb-4">{person.title}</h3>
 
-                <div className="prose">
+                <div className="prose max-w-none">
                   <ReactMarkdown linkTarget="_blank">{person.bio}</ReactMarkdown>
                 </div>
               </div>

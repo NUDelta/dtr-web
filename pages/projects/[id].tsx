@@ -1,5 +1,4 @@
 import React from "react";
-import Link from "next/link";
 import Header from "../../components/shared/Header";
 import Container from "../../components/shared/Container";
 import { getAllProjectIds, getProject, Project } from "../../lib/airtable";
@@ -57,7 +56,7 @@ export default function IndividualProjectPage({
               <ul className="font-medium prose mb-12">
                 {project.publications.map((publication) => (
                   <li key={publication.id}>
-                    <a href={publication.url} target="_blank">{publication.name}</a>,{" "}
+                    <a href={publication.url} target="_blank" rel="noreferrer">{publication.name}</a>,{" "}
                     {publication.conference}
                   </li>
                 ))}

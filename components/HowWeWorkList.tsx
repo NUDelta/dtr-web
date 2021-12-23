@@ -15,7 +15,7 @@ import CommunityBbq from "./how-we-work-images/community-bbq.png";
 
 export default function HowWeWorkList(): JSX.Element {
   return (
-    <div className="space-y-10 max-w-4xl mx-auto">
+    <div className="space-y-8 max-w-4xl mx-auto">
       <style jsx>{`
         .section-header {
           margin: 0;
@@ -24,11 +24,11 @@ export default function HowWeWorkList(): JSX.Element {
 
       {sections.map((section, i) => (
         <div key={i}>
-          <h2 className="text-2xl border-b border-black font-semibold mb-8">
+          <h2 className="text-2xl border-b border-black font-semibold mb-4">
             {section.title}
           </h2>
 
-          <div className="space-y-8">
+          <div className="space-y-4">
             {section.subsections.map((subsection, j) => (
               <div
                 key={`subsection-${i}-${j}`}
@@ -174,7 +174,7 @@ const sections: Section[] = [
         description: (
           <>
             We provide coordinated opportunities, such as{" "}
-            <a href="http://pairresearch.io/">Pair Research</a> to offer and
+            <a href="http://pairresearch.io/" target="_blank" rel="noreferrer">Pair Research</a> to offer and
             receive help with other students and faculty to overcome obstacles
             in our work. We believe every community member has areas of
             expertise that can be shared. Help-seeking from anyone in our 30
@@ -207,12 +207,12 @@ const sections: Section[] = [
             We have a strong culture of students and faculty gathering outside
             of class times. Every week, a passionate squad of board gamers meet,
             while a subset of the lab have started their own intramural ultimate
-            frisbee team. Every quarter, we host four social events: 1)
-            community potluck dinners at faculty homes, 2) social outings, which
-            in the past has included ice skating, yoga, and escape rooms 3) a
+            frisbee team. Every quarter, we host four social events: (1)
+            community potluck dinners at faculty homes; (2) social outings, which
+            in the past has included ice skating, yoga, and escape rooms; (3) a
             DTRager which starts with a Saturday evening party, and continues to
             a Sunday morning lab session of collective research work over
-            catered breakfast and 4) a themed hackathon, where we spend a night
+            catered breakfast; and (4) a themed hackathon, where we spend a night
             playing with new tech.
           </>
         ),

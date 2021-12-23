@@ -16,6 +16,7 @@ export default function Slides(): JSX.Element {
         swipeable={true}
         autoPlay={true}
         showStatus={false}
+        infiniteLoop={true}
       >
         <div>
           <Image src={image1} alt="image1" layout="responsive" />

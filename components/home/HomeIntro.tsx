@@ -7,7 +7,7 @@ export default function HomeIntro(): JSX.Element {
         <h2 className="">Design, Technology, and Research (DTR)</h2>
 
         <p>
-          At DTR, we develop systems that shape new experiences with people and
+          In DTR, we develop systems that shape new experiences with people and
           technology. We are designers, builders, and researchers. We are
           undergrads, grads, and faculty. We are a community who support one
           another, work hard together, learn together, laugh together, have a

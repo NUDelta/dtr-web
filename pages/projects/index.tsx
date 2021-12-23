@@ -2,7 +2,7 @@ import Link from "next/link";
 import React from "react";
 import Container from "../../components/shared/Container";
 import Header from "../../components/shared/Header";
-import { fetchPeople, fetchSigs, SIG } from "../../lib/airtable";
+import { fetchSigs, SIG } from "../../lib/airtable";
 import ReactMarkdown from "react-markdown";
 
 interface ProjectProps {
@@ -14,8 +14,8 @@ export default function Projects({ sigs }: ProjectProps): JSX.Element {
     <main>
       <Header />
 
-      <Container className="mt-8 max-w-4xl">
-        <div className="space-y-8">
+      <Container className="mt-8">
+        <div className="space-y-8 max-w-4xl mx-auto">
           {/* SIG component */}
           {sigs.map((sig) => (
             <div key={sig.id} className="bg-gray-50 p-8">
@@ -32,12 +32,12 @@ export default function Projects({ sigs }: ProjectProps): JSX.Element {
               )}
 
               {/* SIG description */}
-              <div className="prose-lg my-8">
+              <div className="prose-lg my-4">
                 <ReactMarkdown linkTarget="_blank">{sig.description}</ReactMarkdown>
               </div>
 
               {/* Projects in SIG */}
-              <div className="grid grid-cols-2 gap-4 my-16">
+              <div className="grid grid-cols-2 gap-4 my-10">
                 {sig.projects.map((project) => (
                   <div key={project.id} className="mb-4">
                     <Link href={`/projects/${project.id}`}>
@@ -48,13 +48,13 @@ export default function Projects({ sigs }: ProjectProps): JSX.Element {
                       </a>
                     </Link>
 
-                    <div className="prose mt-4">
-                    <ReactMarkdown linkTarget="_blank">
-                        {
-                          (project.description?.substring(0, 140) ?? "") +
-                          ((project.description?.length ?? 0) > 140 ? "..." : "")
-                        }
-                      </ReactMarkdown>
+                    <div className="prose mt-2">
+                      <ReactMarkdown linkTarget="_blank">
+                          {
+                            (project.description?.substring(0, 140) ?? "") +
+                            ((project.description?.length ?? 0) > 140 ? "..." : "")
+                          }
+                        </ReactMarkdown>
                     </div>
                   </div>
                 ))}

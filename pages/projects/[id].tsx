@@ -3,6 +3,7 @@ import Container from "../../components/shared/Container";
 import { GetStaticPaths, GetStaticProps } from "next";
 import ReactMarkdown from "react-markdown";
 import ReactPlayer from "react-player/youtube"
+import TeamMembers from "../../components/people/TeamMembers";
 import { getAllProjectIds, getProject, Project } from "../../lib/airtable";
 
 interface IndividualProjectPageProps {
@@ -97,11 +98,7 @@ export default function IndividualProjectPage({project}: IndividualProjectPagePr
               Team
             </h2>
 
-            <ul className="font-medium">
-              {project.members.map((member) => (
-                <li key={member}>{member}</li>
-              ))}
-            </ul>
+            <TeamMembers groupId={project.id} members={project.members} />
           </div>
         </div>
       </Container>

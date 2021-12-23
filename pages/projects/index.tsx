@@ -2,6 +2,7 @@ import Header from "../../components/shared/Header";
 import Container from "../../components/shared/Container";
 import Link from "next/link";
 import ReactMarkdown from "react-markdown";
+import TeamMembers from "../../components/people/TeamMembers";
 import { fetchSigs, SIG } from "../../lib/airtable";
 
 
@@ -60,38 +61,13 @@ export default function Projects({ sigs }: ProjectProps): JSX.Element {
                 ))}
               </div>
 
-              {/* TODO: abstract this out as a component so that it can be used for project pages too */}
               {/* Members of SIG */}
               <div className="w-full">
                 <h2 className="font-bold text-2xl mb-2 pb-2 border-b border-black">
                   Team
                 </h2>
 
-                {/* separate members of SIG into faculty, phd students, and ms/ugrad students */}
-                <div className="grid grid-cols-2 grid-rows-2 grid-flow-col auto-cols-max">
-                  {["Faculty", "Ph.D. Students", "Masters and Undergraduate Students"].map((role) => (
-                    <div key={`${sig.id}-${role}`} className={`${role === "Masters and Undergraduate Students" ? "row-span-2": ""} mb-2`}>
-                      <h3 className="font-bold text-xl mb-2">
-                        {role}
-                      </h3>
-
-                    <ul className="font-medium">
-                      {sig.members.filter((member) => {
-                        let filterArr: string[] = [];
-                        if (role == "Faculty") { filterArr = ["Faculty"]; }
-                        if (role == "Ph.D. Students") { filterArr = ["Ph.D. Student", "Ph.D. Candidate"]; }
-                        if (role == "Masters and Undergraduate Students") { filterArr = ["Masters Student Researcher", "Undergraduate Student Researcher"]; }
-
-                        return filterArr.includes(member.role);
-                      }).map((member) => (
-                        <li key={member.name}>
-                          {member.status == "Alumni" ? "🎓" : ""} {member.name}
-                        </li>
-                      ))}
-                    </ul>
-                      </div>
-                    ))}
-                </div>
+                <TeamMembers groupId={sig.id} members={sig.members} />
               </div>
             </div>
           ))}
@@ -99,7 +75,7 @@ export default function Projects({ sigs }: ProjectProps): JSX.Element {
       </Container>
     </div>
   );
-}
+};
 
 export async function getStaticProps() {
   const sigs = await fetchSigs();
@@ -109,4 +85,4 @@ export async function getStaticProps() {
       sigs,
     },
   };
-}
+};

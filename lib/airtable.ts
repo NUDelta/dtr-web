@@ -56,14 +56,14 @@ export async function fetchPeople(): Promise<Person[]> {
 
 export function sortPeople(people: Person[]): Person[] {
   // split active and alumni
-  let activePeople = people.filter((person) => {return person.status === "Active"});
-  let alumniPeople = people.filter((person) => {return person.status === "Alumni"});
+  let activePeople: Person[] = people.filter((person) => {return person.status === "Active"});
+  let alumniPeople: Person[] = people.filter((person) => {return person.status === "Alumni"});
 
   // special case for stella
-  let stella = people.filter((person) => {return person.name === "Stella"})
+  let stella: Person[] = people.filter((person) => {return person.name === "Stella"})
 
   // apply sorting based on role for each sublist
-  let sortedSublists = [activePeople, alumniPeople].map((currPeople) => {
+  let sortedSublists: Person[][] = [activePeople, alumniPeople].map((currPeople) => {
     // split people by role
     let faculty = currPeople.filter((person) => {return person.role === "Faculty"});
     let phd = currPeople.filter((person) => {return ["Ph.D. Student", "Ph.D. Candidate"].includes(person.role)});
@@ -99,6 +99,7 @@ export function sortPeople(people: Person[]): Person[] {
   return [...sortedSublists[0], ...stella, ...sortedSublists[1]];
 }
 
+// TODO: this can be optimized for data usage by only including needed info for Person
 export type Project = {
   id: string;
   name: string;
@@ -106,7 +107,7 @@ export type Project = {
   status: string;
   demo_video: string | null;
   sprint_video: string | null;
-  members: string[];
+  members: Person[];
   images: ProjectImages;
   publications: ProjectPublication[];
 };
@@ -115,7 +116,9 @@ export async function getProject(
   projectId: string,
   getAllData = false
 ): Promise<Project> {
-  return new Promise((resolve, reject) => {
+  return new Promise(async (resolve, reject) => {
+    const people = await fetchPeople();
+
     base("Projects").find(projectId, async function (err, record) {
       if (err) {
         reject(err);
@@ -126,6 +129,14 @@ export async function getProject(
         return;
       }
 
+      // get people associated with the project
+      const fetchedMembers: string[] = (record.get("members") as string[]) ?? [];
+      const peopleOnProj: Person[] = sortPeople(
+        people.filter((person) => {
+          return fetchedMembers.includes(person.name)
+        })
+      );
+
       const partialProject = {
         id: record.id as string,
         name: (record.get("name") as string) ?? "",
@@ -133,7 +144,7 @@ export async function getProject(
         status: (record.get("status") as string) ?? "Active",
         demo_video: (record.get("demo_video") as string) ?? null,
         sprint_video: (record.get("sprint_video") as string) ?? null,
-        members: (record.get("members") as string[]) ?? [],
+        members: peopleOnProj,
       };
 
       if (!getAllData) {
@@ -149,11 +160,11 @@ export async function getProject(
         return;
       }
 
-      const imageDocId = record.get("images") as string[];
-      const images = await fetchProjectImages(imageDocId[0]);
+      const imageDocId: string[] = record.get("images") as string[];
+      const images: ProjectImages = await fetchProjectImages(imageDocId[0]);
 
-      const publicationDocId = record.get("publications") as string[];
-      const publications = await fetchPublications(publicationDocId[0]);
+      const publicationDocId: string[] = record.get("publications") as string[];
+      const publications: ProjectPublication[] = await fetchPublications(publicationDocId[0]);
 
       resolve({
         ...partialProject,
@@ -164,6 +175,7 @@ export async function getProject(
   });
 }
 
+// TODO: this can be optimized for data usage by only including needed info for Person/Project
 export type SIG = {
   id: string;
   name: string;
@@ -187,22 +199,22 @@ export async function fetchSigs(): Promise<SIG[]> {
           // parse out info for each record
           for (const record of records) {
             // projects associated with SIG
-            const projectIds = (record.get("projects") as string[]) ?? [];
-            const projects = await Promise.all(
+            const projectIds: string[] = (record.get("projects") as string[]) ?? [];
+            const projects: Project[] = await Promise.all(
               projectIds.map((projectId) => getProject(projectId))
             );
 
             // get students on each proj, SIG faculty mentors, and SIG heads
-            const fetchedMembers = (record.get("members") as string[]) ?? [];
-            const facultyMentors = people.filter((person) => {
+            const fetchedMembers: string[] = (record.get("members") as string[]) ?? [];
+            const facultyMentors: Person[] = people.filter((person) => {
               return ((record.get("faculty_mentors") as string[]) ?? []).includes(person.id);
             });
 
-            const sigHeads = people.filter((person) => {
+            const sigHeads: Person[] = people.filter((person) => {
               return ((record.get("sig_head") as string[]) ?? []).includes(person.id);
             });
 
-            const members = [
+            const members: Person[] = [
               ...Array.from(new Set(sortPeople([
                 ...facultyMentors,
                 ...sigHeads,
@@ -300,9 +312,9 @@ export async function fetchPublications(publicationDocId: string): Promise<Proje
       const publications: ProjectPublication[] = [];
 
       [1, 2, 3, 4, 5].map((i) => {
-        const name = record.get(`publication_${i}_name`) as string;
-        const conference = record.get(`publication_${i}_conference`) as string;
-        const url = record.get(`publication_${i}_url`) as string;
+        const name: string = record.get(`publication_${i}_name`) as string;
+        const conference: string = record.get(`publication_${i}_conference`) as string;
+        const url: string = record.get(`publication_${i}_url`) as string;
 
         if (name && conference && url) {
           publications.push({

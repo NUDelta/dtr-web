@@ -35,9 +35,9 @@ export default function People({ people }: PeopleProps): JSX.Element {
                 <h2 className="text-2xl font-medium">{person.name}</h2>
                 <h3 className="uppercase text-gray-500 mb-4">{person.title}</h3>
 
-                <div className="prose max-w-none">
-                  <ReactMarkdown linkTarget="_blank">{person.bio}</ReactMarkdown>
-                </div>
+                <ReactMarkdown linkTarget="_blank" className="prose max-w-none">
+                  {person.bio}
+                </ReactMarkdown>
               </div>
             </div>
           ))}
@@ -64,9 +64,9 @@ export default function People({ people }: PeopleProps): JSX.Element {
                 <h2 className="text-2xl font-medium mb-2">{person.name}</h2>
                 <h3 className="uppercase text-gray-500 mb-4">{person.title}</h3>
 
-                <div className="prose max-w-none">
-                  <ReactMarkdown linkTarget="_blank">{person.bio}</ReactMarkdown>
-                </div>
+                <ReactMarkdown linkTarget="_blank" className="prose max-w-none">
+                  {person.bio}
+                </ReactMarkdown>
               </div>
             </div>
           ))}

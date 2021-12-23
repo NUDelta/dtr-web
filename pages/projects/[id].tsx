@@ -30,11 +30,9 @@ export default function IndividualProjectPage({project}: IndividualProjectPagePr
           )}
 
           {/* Description */}
-          <div className="prose-lg my-8">
-            <ReactMarkdown linkTarget="_blank">
-              {project.description}
-            </ReactMarkdown>
-          </div>
+          <ReactMarkdown linkTarget="_blank" className="prose-lg my-8">
+            {project.description}
+          </ReactMarkdown>
 
          {/* Extra images */}
           <div className="grid grid-cols-2 gap-8 mb-8">
@@ -43,13 +41,15 @@ export default function IndividualProjectPage({project}: IndividualProjectPagePr
                 <img
                   src={img.url}
                   className="w-full mb-4"
-                  alt={`${project.name} ${i}`}
+                  alt={`${project.name} image ${i + 1}`}
                 />
-                <p className="text-sm">
-                  <ReactMarkdown linkTarget="_blank">
-                    {`Figure ${i + 1}: ${img.description}`}
-                  </ReactMarkdown>
-                </p>
+                {img.description.trim() !== "" ?
+                  (
+                    <ReactMarkdown linkTarget="_blank" className="text-sm">
+                      {`Figure ${i + 1}: ${img.description}`}
+                    </ReactMarkdown>
+                  ) : <></>
+                }
               </div>
             ))}
           </div>

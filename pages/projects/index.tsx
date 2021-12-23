@@ -33,9 +33,9 @@ export default function Projects({ sigs }: ProjectProps): JSX.Element {
               )}
 
               {/* SIG description */}
-              <div className="prose-lg my-4">
-                <ReactMarkdown linkTarget="_blank">{sig.description}</ReactMarkdown>
-              </div>
+              <ReactMarkdown linkTarget="_blank" className="prose-lg my-4">
+                {sig.description}
+              </ReactMarkdown>
 
               {/* Projects in SIG */}
               <div className="grid grid-cols-2 gap-4 my-10">
@@ -49,14 +49,12 @@ export default function Projects({ sigs }: ProjectProps): JSX.Element {
                       </a>
                     </Link>
 
-                    <div className="prose mt-2">
-                      <ReactMarkdown linkTarget="_blank">
-                          {
-                            (project.description?.substring(0, 140) ?? "") +
-                            ((project.description?.length ?? 0) > 140 ? "..." : "")
-                          }
-                        </ReactMarkdown>
-                    </div>
+                    <ReactMarkdown linkTarget="_blank" className="prose mt-2">
+                        {
+                          (project.description?.substring(0, 140) ?? "") +
+                          ((project.description?.length ?? 0) > 140 ? "..." : "")
+                        }
+                    </ReactMarkdown>
                   </div>
                 ))}
               </div>

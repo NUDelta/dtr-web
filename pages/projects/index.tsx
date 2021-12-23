@@ -3,7 +3,7 @@ import Container from "../../components/shared/Container";
 import Link from "next/link";
 import ReactMarkdown from "react-markdown";
 import TeamMembers from "../../components/people/TeamMembers";
-import { fetchSigs, SIG } from "../../lib/airtable";
+import { fetchSigs, SIG } from "../../lib/sig";
 
 
 interface ProjectProps {

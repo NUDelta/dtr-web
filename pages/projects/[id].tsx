@@ -4,7 +4,7 @@ import { GetStaticPaths, GetStaticProps } from "next";
 import ReactMarkdown from "react-markdown";
 import ReactPlayer from "react-player/youtube"
 import TeamMembers from "../../components/people/TeamMembers";
-import { getAllProjectIds, getProject, Project } from "../../lib/airtable";
+import { getAllProjectIds, getProject, Project } from "../../lib/project";
 
 interface IndividualProjectPageProps {
   project: Project;

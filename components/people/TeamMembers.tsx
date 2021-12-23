@@ -1,4 +1,4 @@
-import { Person } from "../../lib/airtable";
+import { Person } from "../../lib/people";
 
 interface TeamMemberProps {
     groupId: string;

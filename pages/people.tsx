@@ -1,6 +1,6 @@
 import Container from "../components/shared/Container";
 import Header from "../components/shared/Header";
-import { fetchPeople, sortPeople, Person } from "../lib/airtable";
+import { fetchPeople, sortPeople, Person } from "../lib/people";
 import PeopleProfiles from "../components/people/PeopleProfiles";
 
 

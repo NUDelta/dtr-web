@@ -1,6 +1,6 @@
 import Image from "next/image";
 import ReactMarkdown from "react-markdown";
-import { Person } from "../../lib/airtable";
+import { Person } from "../../lib/people";
 import PlaceHolderImg from "./assets/default-pic.png";
 
 

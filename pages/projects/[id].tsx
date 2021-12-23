@@ -63,7 +63,7 @@ export default function IndividualProjectPage({project}: IndividualProjectPagePr
 
               <ul className="font-medium prose max-w-none">
                 {project.publications.map((publication) => (
-                  <li key={publication.id}>
+                  <li key={publication.id} className="list-none">
                     <a href={publication.url} target="_blank" rel="noreferrer">{publication.name}</a>,{" "}
                     {publication.conference}
                   </li>

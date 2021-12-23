@@ -56,11 +56,11 @@ function MembersForRole({ members }: MembersForRoleProps): JSX.Element {
     <ul className="font-medium">
       {
         memberCount > 0 ? members.map((member) => (
-          <li key={member.name}>
+          <li key={member.name} className="list-none">
             {member.status == "Alumni" ? "🎓" : ""} {member.name}
           </li>
         )) :
-        <li className="italic">
+        <li className="italic list-none">
           None
         </li>
       }

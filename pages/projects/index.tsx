@@ -82,5 +82,6 @@ export async function getStaticProps() {
     props: {
       sigs,
     },
+    revalidate: 60,
   };
 };

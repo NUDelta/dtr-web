@@ -121,6 +121,7 @@ export const getStaticProps: GetStaticProps = async (query) => {
     props: {
       project,
     },
+    revalidate: 60,
   };
 };
 
@@ -133,6 +134,6 @@ export const getStaticPaths: GetStaticPaths = async () => {
         id: projectId,
       },
     })),
-    fallback: false,
+    fallback: 'blocking',
   };
 };

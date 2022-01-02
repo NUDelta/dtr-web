@@ -2,7 +2,7 @@ import Header from "../../components/shared/Header";
 import Container from "../../components/shared/Container";
 import { GetStaticPaths, GetStaticProps } from "next";
 import ReactMarkdown from "react-markdown";
-import ReactPlayer from "react-player/youtube"
+import ReactPlayer from "react-player/youtube";
 import TeamMembers from "../../components/people/TeamMembers";
 import { getAllProjectIds, getProject, Project } from "../../lib/project";
 
@@ -10,7 +10,9 @@ interface IndividualProjectPageProps {
   project: Project;
 }
 
-export default function IndividualProjectPage({project}: IndividualProjectPageProps): JSX.Element {
+export default function IndividualProjectPage({
+  project,
+}: IndividualProjectPageProps): JSX.Element {
   return (
     <div>
       <Header />
@@ -34,7 +36,7 @@ export default function IndividualProjectPage({project}: IndividualProjectPagePr
             {project.description}
           </ReactMarkdown>
 
-         {/* Extra images */}
+          {/* Extra images */}
           <div className="grid grid-cols-2 gap-8 mb-8">
             {project.images.explainerImages.map((img, i) => (
               <div key={`img-${i}`}>
@@ -43,13 +45,13 @@ export default function IndividualProjectPage({project}: IndividualProjectPagePr
                   className="w-full mb-4"
                   alt={`${project.name} image ${i + 1}`}
                 />
-                {img.description.trim() !== "" ?
-                  (
-                    <ReactMarkdown linkTarget="_blank" className="text-sm">
-                      {`Figure ${i + 1}: ${img.description}`}
-                    </ReactMarkdown>
-                  ) : <></>
-                }
+                {img.description.trim() !== "" ? (
+                  <ReactMarkdown linkTarget="_blank" className="text-sm">
+                    {`Figure ${i + 1}: ${img.description}`}
+                  </ReactMarkdown>
+                ) : (
+                  <></>
+                )}
               </div>
             ))}
           </div>
@@ -64,8 +66,10 @@ export default function IndividualProjectPage({project}: IndividualProjectPagePr
               <ul className="font-medium prose max-w-none">
                 {project.publications.map((publication) => (
                   <li key={publication.id} className="list-none">
-                    <a href={publication.url} target="_blank" rel="noreferrer">{publication.name}</a>,{" "}
-                    {publication.conference}
+                    <a href={publication.url} target="_blank" rel="noreferrer">
+                      {publication.name}
+                    </a>
+                    , {publication.conference}
                   </li>
                 ))}
               </ul>
@@ -75,21 +79,21 @@ export default function IndividualProjectPage({project}: IndividualProjectPagePr
           {/* Demo Video */}
           {project.demo_video !== null && (
             <div className="w-full mb-8">
-            <h2 className="font-bold text-2xl mb-2 pb-2 border-b border-black">
-              Demo video
-            </h2>
-            <ReactPlayer url={project.demo_video} controls={true}/>
-          </div>
+              <h2 className="font-bold text-2xl mb-2 pb-2 border-b border-black">
+                Demo video
+              </h2>
+              <ReactPlayer url={project.demo_video} controls={true} />
+            </div>
           )}
 
           {/* Sprint Video */}
           {project.sprint_video !== null && (
             <div className="w-full mb-8">
-            <h2 className="font-bold text-2xl mb-2 pb-2 border-b border-black">
-              Sprint Video
-            </h2>
-            <ReactPlayer url={project.sprint_video} controls={true}/>
-          </div>
+              <h2 className="font-bold text-2xl mb-2 pb-2 border-b border-black">
+                Sprint Video
+              </h2>
+              <ReactPlayer url={project.sprint_video} controls={true} />
+            </div>
           )}
 
           {/* Team Members */}
@@ -109,6 +113,10 @@ export default function IndividualProjectPage({project}: IndividualProjectPagePr
 export const getStaticProps: GetStaticProps = async (query) => {
   const project = await getProject(query.params?.id as string, true);
 
+  if (!project) {
+    console.log(`Project ${query.params?.id} not found`);
+  }
+
   return {
     props: {
       project,
@@ -125,6 +133,6 @@ export const getStaticPaths: GetStaticPaths = async () => {
         id: projectId,
       },
     })),
-    fallback: true,
+    fallback: false,
   };
 };

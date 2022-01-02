@@ -3,6 +3,8 @@ import { Person, fetchPeople, sortPeople } from "./people";
 import { Project, getProject } from "./project";
 
 // TODO: this can be optimized for data usage by only including needed info for Person/Project
+// Needed Person data for SIG display: id, name, role, status
+// Needed Project data for SIG display: id, name, description, status
 export type SIG = {
   id: string;
   name: string;

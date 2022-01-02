@@ -2,6 +2,7 @@ import { base } from "./airtable";
 import { Person, fetchPeople, sortPeople } from "./people";
 
 // TODO: this can be optimized for data usage by only including needed info for Person
+// Needed Person data for Project display: id, name, role, status
 export type Project = {
   id: string;
   name: string;

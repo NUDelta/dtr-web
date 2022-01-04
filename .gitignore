@@ -452,3 +452,4 @@ $RECYCLE.BIN/
 # End of https://www.toptal.com/developers/gitignore/api/vim,linux,macos,emacs,nextjs,windows,webstorm,sublimetext,visualstudiocode,node,yarn
 
 .env.local
+.vercel

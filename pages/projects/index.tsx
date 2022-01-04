@@ -4,6 +4,7 @@ import Link from "next/link";
 import ReactMarkdown from "react-markdown";
 import TeamMembers from "../../components/people/TeamMembers";
 import { fetchSigs, SIG } from "../../lib/sig";
+import { revalidateTime } from "../../lib/consts";
 
 
 interface ProjectProps {
@@ -82,6 +83,6 @@ export async function getStaticProps() {
     props: {
       sigs,
     },
-    revalidate: 60,
+    revalidate: revalidateTime,
   };
 };

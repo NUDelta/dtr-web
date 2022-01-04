@@ -1,6 +1,7 @@
 import Container from "../components/shared/Container";
 import Header from "../components/shared/Header";
 import { fetchPeople, sortPeople, Person } from "../lib/people";
+import { revalidateTime } from "../lib/consts";
 import PeopleProfiles from "../components/people/PeopleProfiles";
 
 
@@ -35,6 +36,6 @@ export async function getStaticProps() {
     props: {
       people,
     },
-    revalidate: 60,
+    revalidate: revalidateTime,
   };
 };

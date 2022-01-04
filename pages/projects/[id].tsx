@@ -5,6 +5,7 @@ import ReactMarkdown from "react-markdown";
 import ReactPlayer from "react-player/youtube";
 import TeamMembers from "../../components/people/TeamMembers";
 import { getAllProjectIds, getProject, Project } from "../../lib/project";
+import { revalidateTime } from "../../lib/consts";
 
 interface IndividualProjectPageProps {
   project: Project;
@@ -121,7 +122,7 @@ export const getStaticProps: GetStaticProps = async (query) => {
     props: {
       project,
     },
-    revalidate: 60,
+    revalidate: revalidateTime,
   };
 };
 

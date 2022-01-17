@@ -83,7 +83,16 @@ export default function IndividualProjectPage({
               <h2 className="font-bold text-2xl mb-2 pb-2 border-b border-black">
                 Demo video
               </h2>
-              <ReactPlayer url={project.demo_video} controls={true} />
+
+              <div className="player-wrapper">
+                <ReactPlayer
+                  url={project.demo_video}
+                  className="react-player"
+                  width="100%"
+                  height="100%"
+                  controls={true}
+                />
+              </div>
             </div>
           )}
 
@@ -135,6 +144,6 @@ export const getStaticPaths: GetStaticPaths = async () => {
         id: projectId,
       },
     })),
-    fallback: 'blocking',
+    fallback: "blocking",
   };
 };

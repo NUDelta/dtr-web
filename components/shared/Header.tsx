@@ -36,7 +36,7 @@ export default function Header(): JSX.Element {
       </Container>
 
       {isMenuOpen && (
-        <div className="px-4 mt-8">
+        <div className="px-4 py-8">
           <Nav />
         </div>
       )}

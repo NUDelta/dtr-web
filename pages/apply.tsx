@@ -11,7 +11,7 @@ export default function Apply(): JSX.Element {
       <Container className="mt-8">
         <div className="prose max-w-4xl mx-auto">
           <h2>Interested in joining us? Follow the steps below:</h2>
-          <ol className="list-decimal">
+          <ol>
             <li>
               Learn more about DTR by{" "}
               <Link href="/">

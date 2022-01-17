@@ -31,7 +31,8 @@ export default function Method(): JSX.Element {
             Below is a rough schedule for the course. Students meet with the
             instructor weeks prior to signing up for the course to determine a
             research direction.
-            <ul className="list-disc">
+          </p>
+          <ul>
               <li>
                 <span className="font-bold">Weeks 0 to 2:</span> Learn relevant web, mobile, and wearable technologies.
               </li>
@@ -44,8 +45,7 @@ export default function Method(): JSX.Element {
               <li>
               <span className="font-bold">Weeks 8 to 10:</span> Analyze collected data. Write academic papers for submission to top conferences. Report findings to a general audience on DTR website.
               </li>
-            </ul>
-          </p>
+          </ul>
 
           <h2>Getting started</h2>
           <p>

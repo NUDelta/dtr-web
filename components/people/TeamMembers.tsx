@@ -55,16 +55,16 @@ function MembersForRole({ members }: MembersForRoleProps): JSX.Element {
   const memberCount = members.length;
 
   return (
-    <ul className="font-medium space-y-1">
+    <ul className="font-medium list-none">
       {memberCount > 0 ? (
         members.map((member) => (
-          <li key={member.name} className="list-none">
-            {member.status == "Alumni" ? <>🎓 &nbsp;</> : ""}
+          <li key={member.name}>
+            {member.status == "Alumni" ? <>🎓&nbsp;</> : ""}
             {member.name}
           </li>
         ))
       ) : (
-        <li className="italic list-none">None</li>
+        <li className="italic">None</li>
       )}
     </ul>
   );

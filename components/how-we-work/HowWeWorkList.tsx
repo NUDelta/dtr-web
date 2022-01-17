@@ -173,7 +173,7 @@ const sections: Section[] = [
         description: (
           <>
             We provide coordinated opportunities, such as{" "}
-            <a href="http://pairresearch.io/" target="_blank" rel="noreferrer">Pair Research</a> to offer and
+            <a href="https://www.pairresearch.io/" target="_blank" rel="noreferrer">Pair Research</a> to offer and
             receive help with other students and faculty to overcome obstacles
             in our work. We believe every community member has areas of
             expertise that can be shared. Help-seeking from anyone in our 30

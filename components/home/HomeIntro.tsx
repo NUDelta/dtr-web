@@ -18,27 +18,51 @@ export default function HomeIntro(): JSX.Element {
         <p className="text-xs">
           DTR projects are made possible through generously support from
           National Science Foundation grants in{" "}
-          <a href="http://www.nsf.gov/awardsearch/showAward?AWD_ID=1618096">
+          <a
+            target="_blank"
+            rel="noreferrer"
+            href="https://www.nsf.gov/awardsearch/showAward?AWD_ID=1618096"
+          >
             Cyber-Human Systems
           </a>
           ,{" "}
-          <a href="http://www.nsf.gov/awardsearch/showAward?AWD_ID=1623635">
+          <a
+            target="_blank"
+            rel="noreferrer"
+            href="https://www.nsf.gov/awardsearch/showAward?AWD_ID=1623635"
+          >
             Cyberlearning
           </a>
           , and{" "}
-          <a href="http://www.nsf.gov/awardsearch/showAward?AWD_ID=1464315">
+          <a
+            target="_blank"
+            rel="noreferrer"
+            href="https://www.nsf.gov/awardsearch/showAward?AWD_ID=1464315"
+          >
             the Research Initiation Initiative
           </a>
           ; a{" "}
-          <a href="http://fuse.microsoft.com/research/award">
+          <a
+            target="_blank"
+            rel="noreferrer"
+            href="http://fuse.microsoft.com/research/award"
+          >
             Microsoft FUSE Labs Research Award
           </a>
           ; Northwestern’s{" "}
-          <a href="http://www.mccormick.northwestern.edu/alumni/murphy-society-awards/">
+          <a
+            target="_blank"
+            rel="noreferrer"
+            href="https://www.mccormick.northwestern.edu/alumni/murphy-society-awards/"
+          >
             Murphy Society Grant
           </a>
           ; and Northwestern’s{" "}
-          <a href="http://www.northwestern.edu/provost/faculty-honors/digital-learning-fellowships/index.html">
+          <a
+            target="_blank"
+            rel="noreferrer"
+            href="https://www.northwestern.edu/provost/faculty-honors/digital-learning-fellowships/index.html"
+          >
             Office of the Provost Award for Digital Learning
           </a>
           .

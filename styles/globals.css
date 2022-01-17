@@ -13,22 +13,14 @@ body {
   font-weight: 400;
 }
 
-ul li {
-  list-style-type: disc;
-}
-
-ol li {
-  list-style-type: decimal;
-}
-
 .prose a,
 .prose-lg a {
   font-weight: 400;
   background-color: #fff9bc;
   text-decoration: none;
   transition: background-color 150ms ease-in-out;
-  padding-left: 0.25em;
-  padding-right: 0.25em;
+  padding-left: 0.1em;
+  padding-right: 0.1em;
 }
 
 .prose a:hover,
@@ -42,4 +34,15 @@ ol li {
   padding-bottom: 0.5rem;
   margin-bottom: 1rem;
   font-weight: 600;
+}
+
+.player-wrapper {
+  position: relative;
+  padding-top: 56.25%; /* Player ratio: 100 / (1280 / 720) */
+}
+
+.react-player {
+  position: absolute;
+  top: 0;
+  left: 0;
 }

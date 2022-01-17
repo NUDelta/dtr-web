@@ -14,7 +14,7 @@ function MyApp({ Component, pageProps }: AppProps) {
           content="14ltX0knmJHA_JnO3Z428TX8YioIFSWFy1yABn_Qh10"
         />
         <link
-          href="//fonts.googleapis.com/css?family=Lato:100,300,400,700,900,100italic,300italic,400italic,700italic,900italic"
+          href="https://fonts.googleapis.com/css?family=Lato:100,300,400,700,900,100italic,300italic,400italic,700italic,900italic"
           rel="stylesheet"
           type="text/css"
         />

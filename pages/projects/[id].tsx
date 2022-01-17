@@ -18,8 +18,8 @@ export default function IndividualProjectPage({
     <div>
       <Header />
 
-      <Container className="mt-20 max-w-5xl">
-        <div className="bg-gray-50 p-4">
+      <Container className="mt-20">
+        <div className="bg-gray-50 p-4 max-w-4xl mx-auto">
           {/* Title */}
           <h2 className="font-semibold text-3xl mb-4">{project.name}</h2>
 
@@ -83,7 +83,16 @@ export default function IndividualProjectPage({
               <h2 className="font-bold text-2xl mb-2 pb-2 border-b border-black">
                 Demo video
               </h2>
-              <ReactPlayer url={project.demo_video} controls={true} />
+
+              <div className="player-wrapper">
+                <ReactPlayer
+                  url={project.demo_video}
+                  className="react-player"
+                  width="100%"
+                  height="100%"
+                  controls={true}
+                />
+              </div>
             </div>
           )}
 
@@ -93,7 +102,16 @@ export default function IndividualProjectPage({
               <h2 className="font-bold text-2xl mb-2 pb-2 border-b border-black">
                 Sprint Video
               </h2>
-              <ReactPlayer url={project.sprint_video} controls={true} />
+
+              <div className="player-wrapper">
+                <ReactPlayer
+                  url={project.sprint_video}
+                  className="react-player"
+                  width="100%"
+                  height="100%"
+                  controls={true}
+                />
+              </div>
             </div>
           )}
 
@@ -135,6 +153,6 @@ export const getStaticPaths: GetStaticPaths = async () => {
         id: projectId,
       },
     })),
-    fallback: 'blocking',
+    fallback: "blocking",
   };
 };

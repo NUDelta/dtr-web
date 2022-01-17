@@ -6,7 +6,6 @@ import TeamMembers from "../../components/people/TeamMembers";
 import { fetchSigs, SIG } from "../../lib/sig";
 import { revalidateTime } from "../../lib/consts";
 
-
 interface ProjectProps {
   sigs: SIG[];
 }
@@ -39,7 +38,7 @@ export default function Projects({ sigs }: ProjectProps): JSX.Element {
               </ReactMarkdown>
 
               {/* Projects in SIG */}
-              <div className="grid grid-cols-2 gap-4 my-10">
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-4 my-10">
                 {sig.projects.map((project) => (
                   <div key={project.id} className="mb-4">
                     <Link href={`/projects/${project.id}`}>
@@ -51,10 +50,8 @@ export default function Projects({ sigs }: ProjectProps): JSX.Element {
                     </Link>
 
                     <ReactMarkdown linkTarget="_blank" className="prose mt-2">
-                        {
-                          (project.description?.substring(0, 140) ?? "") +
-                          ((project.description?.length ?? 0) > 140 ? "..." : "")
-                        }
+                      {(project.description?.substring(0, 140) ?? "") +
+                        ((project.description?.length ?? 0) > 140 ? "..." : "")}
                     </ReactMarkdown>
                   </div>
                 ))}
@@ -74,7 +71,7 @@ export default function Projects({ sigs }: ProjectProps): JSX.Element {
       </Container>
     </div>
   );
-};
+}
 
 export async function getStaticProps() {
   const sigs = await fetchSigs();
@@ -85,4 +82,4 @@ export async function getStaticProps() {
     },
     revalidate: revalidateTime,
   };
-};
+}

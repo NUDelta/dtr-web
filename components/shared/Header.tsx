@@ -18,7 +18,7 @@ export default function Header(): JSX.Element {
 
   return (
     <header className="bg-black text-white">
-      <Container className="flex justify-between py-2 gap-6 items-center max-w-6xl">
+      <Container className="flex justify-between md:justify-start py-2 gap-6 items-center max-w-6xl">
         <Link href="/">
           <a className="font-semibold text-4xl block">DTR</a>
         </Link>

@@ -13,22 +13,14 @@ body {
   font-weight: 400;
 }
 
-ul li {
-  list-style-type: disc;
-}
-
-ol li {
-  list-style-type: decimal;
-}
-
 .prose a,
 .prose-lg a {
   font-weight: 400;
   background-color: #fff9bc;
   text-decoration: none;
   transition: background-color 150ms ease-in-out;
-  padding-left: 0.25em;
-  padding-right: 0.25em;
+  padding-left: 0.1em;
+  padding-right: 0.1em;
 }
 
 .prose a:hover,

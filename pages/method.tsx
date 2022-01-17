@@ -31,7 +31,7 @@ export default function Method(): JSX.Element {
             Below is a rough schedule for the course. Students meet with the
             instructor weeks prior to signing up for the course to determine a
             research direction.
-            <ul>
+            <ul className="list-disc">
               <li>
                 <span className="font-bold">Weeks 0 to 2:</span> Learn relevant web, mobile, and wearable technologies.
               </li>

@@ -18,8 +18,8 @@ export default function IndividualProjectPage({
     <div>
       <Header />
 
-      <Container className="mt-20 max-w-5xl">
-        <div className="bg-gray-50 p-4">
+      <Container className="mt-20">
+        <div className="bg-gray-50 p-4 max-w-4xl mx-auto">
           {/* Title */}
           <h2 className="font-semibold text-3xl mb-4">{project.name}</h2>
 

@@ -44,7 +44,7 @@ export default function Apply(): JSX.Element {
               >
                 application form
               </a>{" "}
-              to tell us more about you, and when you can meet with us.
+              to tell us more about you, and when you can meet with us. To join DTR next quarter, submit your applications within a few days of the quarterly DTR Open House (usually in the middle of the quarter), or by week 5 or 6 of the current quarter. Applications received after this will be reviewed next quarter.
               <br />
             </li>
             <li>

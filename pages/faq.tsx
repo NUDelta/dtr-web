@@ -128,22 +128,12 @@ const questionsAndAnswers: QA[] = [
     question: "How do I know if I am well-prepared for DTR?",
     answer: (
       <>
-        Students entering DTR typically have taken a good number of technical
-        courses as well as a course in human computer interaction or
-        user-centered design. Most students entering DTR have prior experience
-        working on challenging personal or class projects. Students are not
+        Students entering DTR typically have taken a course in human-computer interaction or
+        user-centered design, and have experience implementing systems in code via courses or
+        personal projects (e.g., common data structure and algorithms; web or mobile development;
+        past software engineering internships; etc.). Most students entering DTR have
+        prior experience working on challenging personal or class projects. Students are not
         expected to have had prior research experience.
-      </>
-    ),
-  },
-  {
-    question: "What are my chances of getting in?",
-    answer: (
-      <>
-        Only one way to find out:{" "}
-        <Link href="/apply">
-          <a>APPLY!</a>
-        </Link>
       </>
     ),
   },
@@ -159,6 +149,17 @@ const questionsAndAnswers: QA[] = [
         bring with them a growth mindset excel. Many of the current DTR students
         came in without knowing the technologies they build on. They learned by
         doing, failing, and doing again.
+      </>
+    ),
+  },
+  {
+    question: "What are my chances of getting in?",
+    answer: (
+      <>
+        Only one way to find out:{" "}
+        <Link href="/apply">
+          <a>APPLY!</a>
+        </Link>
       </>
     ),
   },

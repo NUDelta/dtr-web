@@ -1,11 +1,10 @@
-import Header from "../../components/shared/Header";
-import Container from "../../components/shared/Container";
-import { GetStaticPaths, GetStaticProps } from "next";
+import { GetServerSideProps } from "next";
 import ReactMarkdown from "react-markdown";
 import ReactPlayer from "react-player/youtube";
 import TeamMembers from "../../components/people/TeamMembers";
-import { getAllProjectIds, getProject, Project } from "../../lib/project";
-import { revalidateTime } from "../../lib/consts";
+import Container from "../../components/shared/Container";
+import Header from "../../components/shared/Header";
+import { getProject, Project } from "../../lib/project";
 
 interface IndividualProjectPageProps {
   project: Project;
@@ -129,7 +128,7 @@ export default function IndividualProjectPage({
   );
 }
 
-export const getStaticProps: GetStaticProps = async (query) => {
+export const getServerSideProps: GetServerSideProps = async (query) => {
   const project = await getProject(query.params?.id as string, true);
 
   if (!project) {
@@ -140,19 +139,5 @@ export const getStaticProps: GetStaticProps = async (query) => {
     props: {
       project,
     },
-    revalidate: revalidateTime,
-  };
-};
-
-export const getStaticPaths: GetStaticPaths = async () => {
-  const projectIds = await getAllProjectIds();
-
-  return {
-    paths: projectIds.map((projectId) => ({
-      params: {
-        id: projectId,
-      },
-    })),
-    fallback: "blocking",
   };
 };

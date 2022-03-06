@@ -1,8 +1,8 @@
-import { Person } from "../../lib/people";
+import { PartialPerson, Person } from "../../lib/people";
 
 interface TeamMemberProps {
   groupId: string;
-  members: Person[];
+  members: PartialPerson[];
 }
 
 export default function TeamMembers({
@@ -48,7 +48,7 @@ export default function TeamMembers({
 }
 
 interface MembersForRoleProps {
-  members: Person[];
+  members: PartialPerson[];
 }
 
 function MembersForRole({ members }: MembersForRoleProps): JSX.Element {

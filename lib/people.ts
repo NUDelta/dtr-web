@@ -10,6 +10,14 @@ export type Person = {
   photoUrl: string | null;
 };
 
+export type PartialPerson = {
+  id: string;
+  name: string;
+  role: string;
+  status: string;
+  photoUrl: string | null;
+};
+
 export async function fetchPeople(): Promise<Person[]> {
   return new Promise((resolve, reject) => {
     const results: Person[] = [];

@@ -1,17 +1,14 @@
 import { base, getPhotoUrlFromAttachmentObj } from "./airtable";
-import { Person, fetchPeople, sortPeople } from "./people";
-import { Project, getProject } from "./project";
+import { Person, PartialPerson, fetchPeople, sortPeople } from "./people";
+import { Project, PartialProject, getProject } from "./project";
 
-// TODO: this can be optimized for data usage by only including needed info for Person/Project
-// Needed Person data for SIG display: id, name, role, status
-// Needed Project data for SIG display: id, name, description, status
 export type SIG = {
   id: string;
   name: string;
   description: string;
   bannerImageUrl: string | null;
-  members: Person[];
-  projects: Project[];
+  members: PartialPerson[];
+  projects: PartialProject[];
 };
 
 export async function fetchSigs(): Promise<SIG[]> {
@@ -33,6 +30,24 @@ export async function fetchSigs(): Promise<SIG[]> {
             const projects: Project[] = await Promise.all(
               projectIds.map((projectId) => getProject(projectId))
             );
+
+            const partialProjects: PartialProject[] = projects.map((project) => {
+              // pre-trim text not needed to be transferred over the wire since text can be long
+              // have at most 150 chars, removing partial words if they are cut
+              // from: https://stackoverflow.com/a/5454303
+              let maxCharLen = 150;
+              let preTrimmedDescription = (project.description?.substring(0, maxCharLen) ?? "");
+              preTrimmedDescription = preTrimmedDescription.substring(0,
+                Math.min(preTrimmedDescription.length, preTrimmedDescription.lastIndexOf(" ")));
+              preTrimmedDescription += (project.description?.length ?? 0) > maxCharLen ? "..." : "";
+
+              return {
+                id: project.id,
+                name: project.name,
+                description: preTrimmedDescription,
+                status: project.status
+              };
+            });
 
             // get students on each proj, SIG faculty mentors, and SIG heads
             const fetchedMembers: string[] =
@@ -63,6 +78,16 @@ export async function fetchSigs(): Promise<SIG[]> {
               ),
             ];
 
+            const partialMembers: PartialPerson[] = members.map((person) => {
+              return {
+                id: person.id,
+                name: person.name,
+                role: person.role,
+                status: person.status,
+                photoUrl: person.photoUrl,
+              }
+            });
+
             // add results
             results.push({
               id: record.id,
@@ -70,8 +95,8 @@ export async function fetchSigs(): Promise<SIG[]> {
               description: (record.get("description") as string) ?? "",
               bannerImageUrl:
                 getPhotoUrlFromAttachmentObj(record.get("banner_image_url") as Array<any>),
-              members,
-              projects,
+              members: partialMembers,
+              projects: partialProjects,
             });
           }
 

@@ -50,8 +50,7 @@ export default function Projects({ sigs }: ProjectProps): JSX.Element {
                     </Link>
 
                     <ReactMarkdown linkTarget="_blank" className="prose mt-2">
-                      {(project.description?.substring(0, 140) ?? "") +
-                        ((project.description?.length ?? 0) > 140 ? "..." : "")}
+                      {project.description}
                     </ReactMarkdown>
                   </div>
                 ))}

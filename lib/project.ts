@@ -1,8 +1,6 @@
-import { base } from "./airtable";
-import { Person, fetchPeople, sortPeople } from "./people";
+import { base, getPhotoUrlFromAttachmentObj } from "./airtable";
+import { Person, PartialPerson, fetchPeople, sortPeople } from "./people";
 
-// TODO: this can be optimized for data usage by only including needed info for Person
-// Needed Person data for Project display: id, name, role, status
 export type Project = {
   id: string;
   name: string;
@@ -10,9 +8,16 @@ export type Project = {
   status: string;
   demo_video: string | null;
   sprint_video: string | null;
-  members: Person[];
+  members: PartialPerson[];
   images: ProjectImages;
   publications: ProjectPublication[];
+};
+
+export type PartialProject = {
+  id: string;
+  name: string;
+  description: string;
+  status: string;
 };
 
 export async function getProject(
@@ -40,20 +45,31 @@ export async function getProject(
           return fetchedMembers.includes(person.name);
         })
       );
+      const partialPeopleOnProj: PartialPerson[] = peopleOnProj.map(
+        (person) => {
+          return {
+            id: person.id,
+            name: person.name,
+            role: person.role,
+            status: person.status,
+            photoUrl: person.photoUrl,
+          }
+        }
+      );
 
-      const partialProject = {
+      const partialProjectInfo = {
         id: record.id as string,
         name: (record.get("name") as string) ?? "",
         description: (record.get("description") as string) ?? "",
         status: (record.get("status") as string) ?? "Active",
         demo_video: (record.get("demo_video") as string) ?? null,
         sprint_video: (record.get("sprint_video") as string) ?? null,
-        members: peopleOnProj,
+        members: partialPeopleOnProj,
       };
 
       if (!getAllData) {
         resolve({
-          ...partialProject,
+          ...partialProjectInfo,
           images: {
             bannerImageUrl: null,
             explainerImages: [],
@@ -73,7 +89,7 @@ export async function getProject(
       );
 
       resolve({
-        ...partialProject,
+        ...partialProjectInfo,
         images,
         publications,
       });
@@ -106,7 +122,7 @@ export async function fetchProjectImages(
       // get all additional images for the project
       const explainerImages: ProjectImages["explainerImages"] = [];
       [1, 2, 3, 4, 5].map((i) => {
-        const imageUrl = record.get(`image_${i}_url`) as string;
+        const imageUrl = getPhotoUrlFromAttachmentObj(record.get(`image_${i}_url`) as Array<any>);
         const description = record.get(`image_${i}_description`) as string;
 
         if (imageUrl && description) {
@@ -118,7 +134,7 @@ export async function fetchProjectImages(
       });
 
       resolve({
-        bannerImageUrl: (record.get("banner_image_url") as string) ?? null,
+        bannerImageUrl: getPhotoUrlFromAttachmentObj(record.get("banner_image_url") as Array<any>),
         explainerImages,
       });
     });

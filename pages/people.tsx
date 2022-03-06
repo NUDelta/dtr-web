@@ -1,9 +1,7 @@
+import PeopleProfiles from "../components/people/PeopleProfiles";
 import Container from "../components/shared/Container";
 import Header from "../components/shared/Header";
-import { fetchPeople, sortPeople, Person } from "../lib/people";
-import { revalidateTime } from "../lib/consts";
-import PeopleProfiles from "../components/people/PeopleProfiles";
-
+import { fetchPeople, Person, sortPeople } from "../lib/people";
 
 interface PeopleProps {
   people: Person[];
@@ -18,7 +16,7 @@ export default function People({ people }: PeopleProps): JSX.Element {
         {/* Active faculty and students in DTR */}
         <PeopleProfiles peopleList={people} statusFilter="Active" />
 
-       {/* Alums of DTR */}
+        {/* Alums of DTR */}
         <div className="prose-lg mb-5 max-w-4xl mx-auto">
           <h2>Alumni</h2>
         </div>
@@ -27,15 +25,14 @@ export default function People({ people }: PeopleProps): JSX.Element {
       </Container>
     </div>
   );
-};
+}
 
-export async function getStaticProps() {
+export async function getServerSideProps() {
   const people = sortPeople(await fetchPeople());
 
   return {
     props: {
       people,
     },
-    revalidate: revalidateTime,
   };
-};
+}

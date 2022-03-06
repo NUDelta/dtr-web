@@ -12,7 +12,7 @@ export const base = Airtable.base(process.env.AIRTABLE_BASE_ID ?? "");
  * @param attachmentArr Array of objects, or undefined.
  * @returns String photo url.
  */
-export function getPhotoUrlFromAttachmentObj(attachmentArr: Array<any> | undefined) {
+export function getPhotoUrlFromAttachmentObj(attachmentArr: Array<any> | undefined): string | null {
   // check if array is undefined
   if (attachmentArr === undefined) {
     return null;

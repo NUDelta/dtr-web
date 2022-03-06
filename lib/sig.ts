@@ -1,4 +1,4 @@
-import { base } from "./airtable";
+import { base, getPhotoUrlFromAttachmentObj } from "./airtable";
 import { Person, fetchPeople, sortPeople } from "./people";
 import { Project, getProject } from "./project";
 
@@ -69,7 +69,7 @@ export async function fetchSigs(): Promise<SIG[]> {
               name: (record.get("name") as string) ?? "",
               description: (record.get("description") as string) ?? "",
               bannerImageUrl:
-                (record.get("banner_image_url") as string) ?? null,
+                getPhotoUrlFromAttachmentObj(record.get("banner_image_url") as Array<any>),
               members,
               projects,
             });

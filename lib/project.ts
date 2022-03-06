@@ -1,4 +1,4 @@
-import { base } from "./airtable";
+import { base, getPhotoUrlFromAttachmentObj } from "./airtable";
 import { Person, fetchPeople, sortPeople } from "./people";
 
 // TODO: this can be optimized for data usage by only including needed info for Person
@@ -106,7 +106,7 @@ export async function fetchProjectImages(
       // get all additional images for the project
       const explainerImages: ProjectImages["explainerImages"] = [];
       [1, 2, 3, 4, 5].map((i) => {
-        const imageUrl = record.get(`image_${i}_url`) as string;
+        const imageUrl = getPhotoUrlFromAttachmentObj(record.get(`image_${i}_url`) as Array<any>);
         const description = record.get(`image_${i}_description`) as string;
 
         if (imageUrl && description) {
@@ -118,7 +118,7 @@ export async function fetchProjectImages(
       });
 
       resolve({
-        bannerImageUrl: (record.get("banner_image_url") as string) ?? null,
+        bannerImageUrl: getPhotoUrlFromAttachmentObj(record.get("banner_image_url") as Array<any>),
         explainerImages,
       });
     });

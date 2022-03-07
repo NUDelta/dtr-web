@@ -89,13 +89,15 @@ const sections: Section[] = [
         title: "Communicating Research via Grants and Publications",
         description: (
           <>
-            Our undergraduates practice writing and submitting grant proposals
-            for their work, and regularly receive funding though Undergraduate
-            Research Grants for their projects. We publish research at
-            conferences like CHI, CSCW, UIST, and HCOMP that make substantial
-            contributions to a variety of academic disciplines. Our
-            undergraduates regularly compete in student research competitions,
-            often receiving awards for their research.
+            Our students practice writing and submitting grant proposals and
+            papers on their work. Undergraduates regularly receive funding
+            though <a href="https://undergradresearch.northwestern.edu/funding/ayurg/"
+            target="_blank" rel="noreferrer">Undergraduate Research Grants</a>
+            for their projects. We publish research at conferences like CHI,
+            CSCW, UIST, and HCOMP that make substantial contributions to a
+            variety of academic disciplines. Our undergraduates regularly
+            compete in student research competitions, often receiving awards
+            for their research.
           </>
         ),
         imagePath: ProblemsPyrus,
@@ -124,14 +126,14 @@ const sections: Section[] = [
         description: (
           <>
             We rethink the roles of undergraduates and graduate students in
-            research labs. Undergraduates learn to self direct through the whole
-            research process, from research questions to writing a conference
-            paper. Graduate students not only learn to self-direct through the
-            research process, but also learn to mentor undergraduates by
-            shadowing advisors in the first years to learn about mentoring and
-            critique. We believe that by distributing support across the
-            community, faculty can train more students in leading and mentoring
-            research.
+            research labs. Undergraduates and masters students learn to self
+            direct through the whole research process, from research questions
+            to writing a conference paper. Ph.D. students learn to
+            self-direct through the research process, and also learn to mentor
+            undergraduates and masters students by shadowing advisors in the
+            first years to learn about mentoring and critique. We believe
+            that by distributing support across the community, faculty can
+            train more students in leading and mentoring research.
           </>
         ),
         imagePath: ResearchSccs,
@@ -141,8 +143,8 @@ const sections: Section[] = [
         description: (
           <>
             We teach conceptual models of research and rigorous methodologies to
-            help strengthen our expertise (e.g. design arguments, research
-            canvases, synthesis trees, etc). We practice identifying the
+            help strengthen our expertise (e.g., design arguments, research
+            canvases, synthesis trees, etc.). We practice identifying the
             riskiest risks in our research and use agile methods to plan a slice
             of work that de-risks our research. We work in two-week sprints,
             where the sprint stories are conceived by students, rather than

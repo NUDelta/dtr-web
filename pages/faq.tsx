@@ -49,7 +49,7 @@ const questionsAndAnswers: QA[] = [
           EECS 315/497 course
         </a>{" "}
         every quarter. Students can start in any quarter. Most students choose
-        to continue in DTR till they graduate.
+        to continue in DTR until they graduate.
       </>
     ),
   },
@@ -73,8 +73,8 @@ const questionsAndAnswers: QA[] = [
     question: "What is the right time to join DTR?",
     answer: (
       <>
-        Whenever you are ready to grow. Most students join in Spring of their
-        sophomore or junior year.
+        Whenever you are ready to grow. Most undergradute students join in Spring of
+        their sophomore or junior year, and masters students in their first year.
       </>
     ),
   },
@@ -117,8 +117,8 @@ const questionsAndAnswers: QA[] = [
       "I am a CS/CE major. Does DTR count toward my major requirements?",
     answer: (
       <>
-        DTR satisfies the project requirement &amp; Interfaces depth
-        requirement. Depending on the focus of the project you work on, you
+        For undergraduates, DTR satisfies the project requirement &amp; Interfaces
+        depth requirement. Depending on the focus of the project you work on, you
         may be able to petition for DTR to count for other depth requirements
         (e.g., CogSys or Systems).
       </>

@@ -22,7 +22,7 @@ export default function PeopleProfiles({
         <div key={person.id} className="flex flex-col md:flex-row gap-4">
           <div className="w-52 flex-shrink-0">
             <Image
-              src={person.photoUrl ?? PlaceHolderImg}
+              src={person.profile_photo ?? PlaceHolderImg}
               width={200}
               height={200}
               alt={`Headshot of ${person.name}`}

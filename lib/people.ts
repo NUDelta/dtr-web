@@ -1,4 +1,5 @@
-import { base, getPhotoUrlFromAttachmentObj } from "./airtable";
+import { Attachment } from "airtable";
+import { base, getImgUrlFromAttachmentObj } from "./airtable";
 
 export type Person = {
   id: string;
@@ -7,7 +8,7 @@ export type Person = {
   role: string;
   status: string;
   bio: string;
-  photoUrl: string | null;
+  profile_photo: string | null;
 };
 
 export type PartialPerson = {
@@ -15,7 +16,7 @@ export type PartialPerson = {
   name: string;
   role: string;
   status: string;
-  photoUrl: string | null;
+  profile_photo: string | null;
 };
 
 export async function fetchPeople(): Promise<Person[]> {
@@ -38,7 +39,7 @@ export async function fetchPeople(): Promise<Person[]> {
                 "Undergraduate Student Researcher",
               status: (record.get("status") as string) ?? "Active",
               bio: (record.get("bio") as string) ?? "",
-              photoUrl: getPhotoUrlFromAttachmentObj(record.get("photo_url") as Array<any>),
+              profile_photo: getImgUrlFromAttachmentObj(record.get("profile_photo") as Attachment[]),
             });
           });
 

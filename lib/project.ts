@@ -1,4 +1,5 @@
-import { base, getPhotoUrlFromAttachmentObj } from "./airtable";
+import { Attachment } from "airtable";
+import { base, getImgUrlFromAttachmentObj } from "./airtable";
 import { Person, PartialPerson, fetchPeople, sortPeople } from "./people";
 
 export type Project = {
@@ -62,7 +63,7 @@ export async function getProject(
       const partialParsedProjInfo = {
         id: record.id as string,
         name: (record.get("name") as string) ?? "",
-        banner_image: getPhotoUrlFromAttachmentObj(record.get("banner_image") as Array<any>),
+        banner_image: getImgUrlFromAttachmentObj(record.get("banner_image") as Attachment[]),
         description: (record.get("description") as string) ?? "",
         status: (record.get("status") as string) ?? "Active",
         demo_video: (record.get("demo_video") as string) ?? null,
@@ -123,7 +124,7 @@ export async function fetchProjectImages(
       // get all additional images for the project
       const explainerImages: ProjectImages["explainerImages"] = [];
       [1, 2, 3, 4, 5].map((i) => {
-        const imageUrl = getPhotoUrlFromAttachmentObj(record.get(`image_${i}`) as Array<any>);
+        const imageUrl = getImgUrlFromAttachmentObj(record.get(`image_${i}`) as Attachment[]);
         const description = record.get(`image_${i}_description`) as string;
 
         if (imageUrl && description) {

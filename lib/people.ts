@@ -1,4 +1,5 @@
-import { base, getPhotoUrlFromAttachmentObj } from "./airtable";
+import { Attachment } from "airtable";
+import { base, getImgUrlFromAttachmentObj } from "./airtable";
 
 export type Person = {
   id: string;
@@ -38,7 +39,7 @@ export async function fetchPeople(): Promise<Person[]> {
                 "Undergraduate Student Researcher",
               status: (record.get("status") as string) ?? "Active",
               bio: (record.get("bio") as string) ?? "",
-              profile_photo: getPhotoUrlFromAttachmentObj(record.get("profile_photo") as Array<any>),
+              profile_photo: getImgUrlFromAttachmentObj(record.get("profile_photo") as Attachment[]),
             });
           });
 

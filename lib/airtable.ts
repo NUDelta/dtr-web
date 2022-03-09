@@ -1,4 +1,4 @@
-import Airtable from "airtable";
+import Airtable, { Attachment } from "airtable";
 
 Airtable.configure({
   endpointUrl: "https://api.airtable.com",
@@ -7,27 +7,29 @@ Airtable.configure({
 
 export const base = Airtable.base(process.env.AIRTABLE_BASE_ID ?? "");
 
-// TODO: refactor using Attachment[] type
 /**
  * Returns the photo url from Airtable's attachment array.
- * @param attachmentArr Array of objects, or undefined.
+ * @param attachmentArr Array of Airtable Attachments, or undefined.
  * @returns String photo url.
+ * Empty string if first attachment in attachmentArr isn't an image.
  */
-export function getPhotoUrlFromAttachmentObj(attachmentArr: Array<any> | undefined): string | null {
+export function getImgUrlFromAttachmentObj(
+  attachmentArr: Attachment[] | undefined
+): string | null {
   // check if array is undefined
   if (attachmentArr === undefined) {
     return null;
   }
 
   // if not undefined, return the first attachement that is an image
-  let photoUrl = "";
   if (Array.isArray(attachmentArr)) {
-    for (const currImg of attachmentArr) {
-      if (currImg.type.includes("image")) {
-        photoUrl = currImg.url;
-      }
+    // return the first image if its actually an image
+    let targetImg: Attachment = attachmentArr[0];
+    if (targetImg.type.includes("image")) {
+      return targetImg.url;
     }
   }
 
-  return photoUrl;
+  // default return if first attachment wasn't an img
+  return "";
 };

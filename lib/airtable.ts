@@ -7,6 +7,7 @@ Airtable.configure({
 
 export const base = Airtable.base(process.env.AIRTABLE_BASE_ID ?? "");
 
+// TODO: refactor using Attachment[] type
 /**
  * Returns the photo url from Airtable's attachment array.
  * @param attachmentArr Array of objects, or undefined.

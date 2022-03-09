@@ -23,9 +23,9 @@ export default function IndividualProjectPage({
           <h2 className="font-semibold text-3xl mb-4">{project.name}</h2>
 
           {/* Banner Image */}
-          {project.images.bannerImageUrl && (
+          {project.banner_image && (
             <img
-              src={project.images.bannerImageUrl}
+              src={project.banner_image}
               className="w-full"
               alt={project.name}
             />

@@ -4,6 +4,7 @@ import { Person, PartialPerson, fetchPeople, sortPeople } from "./people";
 export type Project = {
   id: string;
   name: string;
+  banner_image: string | null;
   description: string;
   status: string;
   demo_video: string | null;
@@ -16,6 +17,7 @@ export type Project = {
 export type PartialProject = {
   id: string;
   name: string;
+  banner_image: string | null;
   description: string;
   status: string;
 };
@@ -52,14 +54,15 @@ export async function getProject(
             name: person.name,
             role: person.role,
             status: person.status,
-            photoUrl: person.photoUrl,
+            profile_photo: person.profile_photo,
           }
         }
       );
 
-      const partialProjectInfo = {
+      const partialParsedProjInfo = {
         id: record.id as string,
         name: (record.get("name") as string) ?? "",
+        banner_image: getPhotoUrlFromAttachmentObj(record.get("banner_image") as Array<any>),
         description: (record.get("description") as string) ?? "",
         status: (record.get("status") as string) ?? "Active",
         demo_video: (record.get("demo_video") as string) ?? null,
@@ -69,9 +72,8 @@ export async function getProject(
 
       if (!getAllData) {
         resolve({
-          ...partialProjectInfo,
+          ...partialParsedProjInfo,
           images: {
-            bannerImageUrl: null,
             explainerImages: [],
           },
           publications: [],
@@ -89,7 +91,7 @@ export async function getProject(
       );
 
       resolve({
-        ...partialProjectInfo,
+        ...partialParsedProjInfo,
         images,
         publications,
       });
@@ -98,7 +100,6 @@ export async function getProject(
 };
 
 type ProjectImages = {
-  bannerImageUrl: string | null;
   explainerImages: {
     url: string;
     description: string;
@@ -122,7 +123,7 @@ export async function fetchProjectImages(
       // get all additional images for the project
       const explainerImages: ProjectImages["explainerImages"] = [];
       [1, 2, 3, 4, 5].map((i) => {
-        const imageUrl = getPhotoUrlFromAttachmentObj(record.get(`image_${i}_url`) as Array<any>);
+        const imageUrl = getPhotoUrlFromAttachmentObj(record.get(`image_${i}`) as Array<any>);
         const description = record.get(`image_${i}_description`) as string;
 
         if (imageUrl && description) {
@@ -134,7 +135,6 @@ export async function fetchProjectImages(
       });
 
       resolve({
-        bannerImageUrl: getPhotoUrlFromAttachmentObj(record.get("banner_image_url") as Array<any>),
         explainerImages,
       });
     });

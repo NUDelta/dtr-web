@@ -31,11 +31,11 @@ export default function HowWeWorkList(): JSX.Element {
             {section.subsections.map((subsection, j) => (
               <div
                 key={`subsection-${i}-${j}`}
-                className={`flex gap-4 ${
-                  i % 2 === 0 ? "flex-row-reverse" : "flex-row"
+                className={`flex flex-col gap-4 ${
+                  i % 2 === 0 ? "md:flex-row-reverse" : "md:flex-row"
                 }`}
               >
-                <div className="w-1/3">
+                <div className="w-full md:w-1/3">
                   <Image
                     src={subsection.imagePath}
                     alt={subsection.title}
@@ -43,7 +43,7 @@ export default function HowWeWorkList(): JSX.Element {
                   />
                 </div>
 
-                <div className="w-2/3 prose">
+                <div className="w-full md:w-2/3 prose">
                   <h3 className="section-header">{subsection.title}</h3>
                   {subsection.description}
                 </div>

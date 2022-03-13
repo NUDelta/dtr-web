@@ -37,7 +37,8 @@ export default function IndividualProjectPage({
           </ReactMarkdown>
 
           {/* Extra images */}
-          <div className="grid grid-cols-2 gap-8 mb-8">
+          <div className="grid grid-cols-1 md:grid-cols-2 md:grid-flow-col
+          md:auto-cols-max gap-8 mb-8">
             {project.images.explainerImages.map((img, i) => (
               <div key={`img-${i}`}>
                 <img

@@ -1,4 +1,4 @@
-import Image from "next/image";
+import Image, { StaticImageData } from "next/image";
 
 import ProblemsHow from "./assets/problems-how.png";
 import ProblemsPyrus from "./assets/problems-pyrus.png";

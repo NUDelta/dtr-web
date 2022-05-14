@@ -16,8 +16,8 @@ export default function HomeIntro(): JSX.Element {
         </p>
 
         <p className="text-xs">
-          DTR projects are made possible through generously support from
-          National Science Foundation grants in{" "}
+          DTR projects are generously supported by National Science Foundation
+          grants in{" "}
           <a
             target="_blank"
             rel="noreferrer"
@@ -33,13 +33,13 @@ export default function HomeIntro(): JSX.Element {
           >
             Cyberlearning
           </a>
-          , and{" "}
+          , and the{" "}
           <a
             target="_blank"
             rel="noreferrer"
             href="https://www.nsf.gov/awardsearch/showAward?AWD_ID=1464315"
           >
-            the Research Initiation Initiative
+            Research Initiation Initiative
           </a>
           ; a{" "}
           <a
@@ -49,21 +49,37 @@ export default function HomeIntro(): JSX.Element {
           >
             Microsoft FUSE Labs Research Award
           </a>
-          ; Northwestern’s{" "}
+          ; a Northwestern{" "}
           <a
             target="_blank"
             rel="noreferrer"
             href="https://www.mccormick.northwestern.edu/alumni/murphy-society-awards/"
           >
             Murphy Society Grant
-          </a>
-          ; and Northwestern’s{" "}
+          </a>{" "}
+          and{" "}
           <a
             target="_blank"
             rel="noreferrer"
             href="https://www.northwestern.edu/provost/faculty-honors/digital-learning-fellowships/index.html"
           >
             Office of the Provost Award for Digital Learning
+          </a>
+          ; and from Northwestern’s{" "}
+          <a
+            target="_blank"
+            rel="noreferrer"
+            href="http://cs.northwestern.edu/"
+          >
+            Department of Computer Science
+          </a>{" "}
+          and{" "}
+          <a
+            target="_blank"
+            rel="noreferrer"
+            href="http://segal.northwestern.edu/"
+          >
+            Segal Design Institute
           </a>
           .
         </p>

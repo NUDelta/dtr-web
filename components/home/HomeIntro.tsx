@@ -61,11 +61,11 @@ export default function HomeIntro(): JSX.Element {
           <a
             target="_blank"
             rel="noreferrer"
-            href="https://www.northwestern.edu/provost/faculty-honors/digital-learning-fellowships/index.html"
+            href="https://digitallearning.northwestern.edu/article/2017/04/17/their-own-words-pair-research"
           >
             Office of the Provost Award for Digital Learning
           </a>
-          ; and from Northwestern’s{" "}
+          ; and Northwestern’s{" "}
           <a
             target="_blank"
             rel="noreferrer"

@@ -12,6 +12,10 @@ import CommunityUist from "./assets/community-uist.png";
 import CommunityCircle from "./assets/community-circle.png";
 import CommunityBbq from "./assets/community-bbq.png";
 
+import WorkingGlance from "./assets/working-glance.png";
+import WorkingAgile from "./assets/working-agile.png";
+import WorkingGrowth from "./assets/working-growth.png";
+
 export default function HowWeWorkList(): JSX.Element {
   return (
     <div className="space-y-8 max-w-4xl mx-auto">
@@ -35,18 +39,32 @@ export default function HowWeWorkList(): JSX.Element {
                   i % 2 === 0 ? "md:flex-row-reverse" : "md:flex-row"
                 }`}
               >
-                <div className="w-full md:w-1/3">
-                  <Image
-                    src={subsection.imagePath}
-                    alt={subsection.title}
-                    layout="responsive"
-                  />
-                </div>
+              {subsection.imagePath !== null && (
+                  <>
+                      <div className="w-full md:w-1/3">
+                          <Image
+                              src={subsection.imagePath}
+                              alt={subsection.title}
+                              layout="responsive"
+                          />
+                      </div>
 
-                <div className="w-full md:w-2/3 prose">
-                  <h3 className="section-header">{subsection.title}</h3>
-                  {subsection.description}
-                </div>
+                      <div className="w-full md:w-2/3 prose">
+                          <h3 className="section-header">{subsection.title}</h3>
+                          {subsection.description}
+                      </div>
+                  </>
+              )}
+
+              {subsection.imagePath === null && (
+                  <>
+
+                      <div className="w-full md:w-2/3 prose">
+                          <h3 className="section-header">{subsection.title}</h3>
+                          {subsection.description}
+                      </div>
+                  </>
+              )}
               </div>
             ))}
           </div>
@@ -59,7 +77,7 @@ export default function HowWeWorkList(): JSX.Element {
 type SubSection = {
   title: string;
   description: JSX.Element;
-  imagePath: StaticImageData;
+  imagePath: StaticImageData | null;
 };
 
 type Section = {
@@ -221,4 +239,42 @@ const sections: Section[] = [
       },
     ],
   },
+    {
+        title: "Work Fast in a Quarter; Grow Across Quarters",
+        subsections: [
+            {
+                title: "DTR at a Glance        ",
+                description: (
+                    <>
+                        <p>
+                            Students participate in DTR for one or more quarters (intended to be repeated). The first time a student participates, the student meets with their mentor in the weeks before a session starts to brainstorm project ideas and research directions. They start with as many as 10-15 ideas, narrow down to a handful that the student’s most interested in, and then dive in to brainstorm and identify a specific project for the quarter. Once a project is identified, a student works individually or in a small group to drive the research.
+                        </p>
+                    </>
+                ),
+                imagePath: WorkingGlance,
+            },
+            {
+                title: "Working Agile During the Quarter        ",
+                description: (
+                    <>
+                        <p>
+                            During a single quarter, students explore and iterate over designs, prototype at varying fidelities, build working systems, conduct evaluative studies, and report findings through the DTR website. As a cohort, students demo their prototypes, provide and receive feedback, and help each other resolve technical challenges.
+                        </p>
+                    </>
+                ),
+                imagePath: WorkingAgile,
+            },
+            {
+                title: "Grow With Time        ",
+                description: (
+                    <>
+                        As a student grows and their project advances, the research work matures. A student continuing beyond a quarter may build a scalable, deployable system, conduct medium to large scale studies, write research papers, and present them at conferences. As students develop their design, technical, research, and communication skills, they are also expected to mentor other DTR students, and to help others with both technical challenges and the research process.
+
+
+                    </>
+                ),
+                imagePath: WorkingGrowth,
+            },
+        ],
+    },
 ];

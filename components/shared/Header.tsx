@@ -4,13 +4,13 @@ import { useRouter } from "next/router";
 import { useState } from "react";
 
 const links: { href: string; label: string }[] = [
-  { href: "/", label: "Vision" },
-  { href: "/method", label: "Method" },
-  { href: "/howwework", label: "How We Work" },
+  { href: "/how-we-work", label: "How We Work" },
+  { href: "/what-we-learn", label: "What We Learn" },
   { href: "/people", label: "People" },
   { href: "/projects", label: "Projects" },
   { href: "/apply", label: "Apply" },
   { href: "/faq", label: "FAQ" },
+  { href: "/letters", label: "Annual Letters and Resources" },
 ];
 
 export default function Header(): JSX.Element {
@@ -22,6 +22,7 @@ export default function Header(): JSX.Element {
         <Link href="/">
           <a className="font-semibold text-4xl block">DTR</a>
         </Link>
+
 
         <button
           className="border rounded px-4 py-2 border-opacity-50 md:hidden"

@@ -22,21 +22,20 @@ export default function Home(): JSX.Element {
         <Container className="mt-4">
             <div className="w-full bg-yellow pt-2 pb-2 rounded-lg">
                 <p className="text-center text-black">
-                    Want to learn more? Browse this website, watch the {" "}
+                    2022: Check out the {" "}
                     <a
-                        target="_blank"
-                        rel="noreferrer"
-                        href="https://forward.movie"
+                    target="_blank"
+                    rel="noreferrer"
+                    href="https://forward.movie"
                     >
-                        <span className="text-black font-bold link link-underline link-underline-black">DTR Documentary</span>
-                    </a>, {" "}
-                    and read the{" "}
+                    <span className="text-black font-bold link link-underline link-underline-black">DTR Documentary</span>
+                </a> and the first ever {" "}
                     <Link href="/letters">
                         <a>
-                            <span className="text-black font-bold link link-underline link-underline-black">DTR Annual Letters</span>
+                            <span className="text-black font-bold link link-underline link-underline-black">DTR Annual Letter</span>
                         </a>
                     </Link>
-                    .
+                    !
                 </p>
             </div>
         </Container>

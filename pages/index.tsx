@@ -28,12 +28,12 @@ export default function Home(): JSX.Element {
                         rel="noreferrer"
                         href="https://forward.movie"
                     >
-                        <span className="link link-underline link-underline-black text-black">DTR Documentary</span>
+                        <span className="text-black font-bold link link-underline link-underline-black">DTR Documentary</span>
                     </a>, {" "}
                     and read the{" "}
                     <Link href="/letters">
                         <a>
-                            <span className="link link-underline link-underline-black text-black">DTR Annual Letters</span>
+                            <span className="text-black font-bold link link-underline link-underline-black">DTR Annual Letters</span>
                         </a>
                     </Link>
                     .

@@ -4,14 +4,13 @@ import { useRouter } from "next/router";
 import { useState } from "react";
 
 const links: { href: string; label: string }[] = [
-  { href: "/method", label: "Method" },
-  { href: "/howwework", label: "How We Work" },
-  { href: "/testimonials", label: "What Students Get Out of DTR" },
-  { href: "/letters", label: "Annual Letters and Resources" },
+  { href: "/how-we-work", label: "How We Work" },
+  { href: "/what-we-learn", label: "What We Learn" },
   { href: "/people", label: "People" },
   { href: "/projects", label: "Projects" },
   { href: "/apply", label: "Apply" },
   { href: "/faq", label: "FAQ" },
+  { href: "/letters", label: "Annual Letters and Resources" },
 ];
 
 export default function Header(): JSX.Element {

@@ -7,6 +7,7 @@ const links: { href: string; label: string }[] = [
   { href: "/method", label: "Method" },
   { href: "/howwework", label: "How We Work" },
   { href: "/testimonials", label: "What Students Get Out of DTR" },
+  { href: "/letters", label: "Annual Letters and Resources" },
   { href: "/people", label: "People" },
   { href: "/projects", label: "Projects" },
   { href: "/apply", label: "Apply" },

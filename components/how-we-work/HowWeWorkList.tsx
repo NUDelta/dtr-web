@@ -240,7 +240,7 @@ const sections: Section[] = [
     ],
   },
     {
-        title: "Work Fast in a Quarter; Grow Across Quarters",
+        title: "Work fast in a quarter; grow across quarters.",
         subsections: [
             {
                 title: "DTR at a Glance        ",

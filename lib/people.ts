@@ -61,6 +61,7 @@ export function sortPeople(people: Person[]): Person[] {
   let activePeople: Person[] = people.filter((person) => {
     return person.status === "Active";
   });
+
   let alumniPeople: Person[] = people.filter((person) => {
     return person.status === "Alumni";
   });
@@ -77,12 +78,15 @@ export function sortPeople(people: Person[]): Person[] {
       let faculty = currPeople.filter((person) => {
         return person.role === "Faculty";
       });
+
       let phd = currPeople.filter((person) => {
         return ["Ph.D. Student", "Ph.D. Candidate"].includes(person.role);
       });
+
       let masters = currPeople.filter((person) => {
         return person.role === "Masters Student Researcher";
       });
+
       let ugrads = currPeople.filter((person) => {
         return person.role === "Undergraduate Student Researcher";
       });

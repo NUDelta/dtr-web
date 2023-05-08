@@ -2,7 +2,11 @@ import { Attachment } from "airtable";
 import { base, getImgUrlFromAttachmentObj } from "./airtable";
 import { Person, PartialPerson, fetchPeople, sortPeople } from "./people";
 import { Project, PartialProject, getProject } from "./project";
-
+/**
+ * @typedef SIG
+ * used to contain information for a given SIG, 
+ * including sig ID(in airtable db), name, description, and banner image 
+ */
 export type SIG = {
   id: string;
   name: string;
@@ -11,17 +15,22 @@ export type SIG = {
   members: PartialPerson[];
   projects: PartialProject[];
 };
+/**
+ * @function fetchSigs()
+ * fetches all SIGS from the Airtable DB
+ * @returns a promise that is resolved via an array of SIG[]
+ */
 
 export async function fetchSigs(): Promise<SIG[]> {
   return new Promise(async (resolve, reject) => {
     const people = await fetchPeople();
     const results: SIG[] = [];
-
+    // base airtable DB page is "SIGs"
     base("SIGs")
       .select({
         view: "Grid view",
       })
-      .eachPage(
+      // for each SIG, push the SIG information onto the SIG[] array
         async function page(records, fetchNextPage) {
           // parse out info for each record
           for (const record of records) {
@@ -41,7 +50,7 @@ export async function fetchSigs(): Promise<SIG[]> {
               preTrimmedDescription = preTrimmedDescription.substring(0,
                 Math.min(preTrimmedDescription.length, preTrimmedDescription.lastIndexOf(" ")));
               preTrimmedDescription += (project.description?.length ?? 0) > maxCharLen ? "..." : "";
-
+              // will be pushed onto SIG type array
               return {
                 id: project.id,
                 name: project.name,
@@ -65,7 +74,7 @@ export async function fetchSigs(): Promise<SIG[]> {
                 person.id
               );
             });
-
+            // from the array of all people, get an array of information for people specifically on this SIG 
             const members: Person[] = [
               ...Array.from(
                 new Set(
@@ -79,7 +88,7 @@ export async function fetchSigs(): Promise<SIG[]> {
                 )
               ),
             ];
-
+            // from the set of full information of SIG memebers, only keep name, role, status, and profile pic
             const partialMembers: PartialPerson[] = members.map((person) => {
               return {
                 id: person.id,
@@ -101,6 +110,7 @@ export async function fetchSigs(): Promise<SIG[]> {
               projects: partialProjects,
             });
           }
+          // callback to the next page of SIG information etc 
 
           fetchNextPage();
         },
@@ -109,6 +119,7 @@ export async function fetchSigs(): Promise<SIG[]> {
             reject(err);
             return;
           }
+          // resolve the promise with the array of SIG information
           resolve(results);
         }
       );

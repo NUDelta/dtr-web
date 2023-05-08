@@ -1,6 +1,10 @@
 import { Attachment } from "airtable";
 import { base, getImgUrlFromAttachmentObj } from "./airtable";
-
+/**
+ * @typedef Person
+ * all possible information about a person
+ * this is displayed on the "People" page on the website 
+ */
 export type Person = {
   id: string;
   name: string;
@@ -10,7 +14,11 @@ export type Person = {
   bio: string;
   profile_photo: string | null;
 };
-
+/**
+ * @typedef PartialPerson
+ * concated set of information about a person
+ * this is displayed on the "Projects" areas of the website
+ */
 export type PartialPerson = {
   id: string;
   name: string;
@@ -18,17 +26,25 @@ export type PartialPerson = {
   status: string;
   profile_photo: string | null;
 };
-
+/**
+ * @function fetchPeople
+ * @returns array of People type
+ * fetches all information from the Airtable DB about a specific person
+ */
 export async function fetchPeople(): Promise<Person[]> {
   return new Promise((resolve, reject) => {
     const results: Person[] = [];
-
+    // airtable function to select the specific page of the db to attend to: the "base" is people
     base("People")
       .select({
         view: "Grid view",
       })
+      // for each line in the people database: airtable function
       .eachPage(
+
         function page(records, fetchNextPage) {
+          // this function pushes the people info onto the "results" array, and then calls itself again via a fetchnextpage callback
+          // the callback is from the airtable API
           records.forEach(function (record) {
             results.push({
               id: record.id,
@@ -42,7 +58,7 @@ export async function fetchPeople(): Promise<Person[]> {
               profile_photo: getImgUrlFromAttachmentObj(record.get("profile_photo") as Attachment[]),
             });
           });
-
+          // callback function to fetch next page of results 
           fetchNextPage();
         },
         function done(err) {
@@ -50,11 +66,17 @@ export async function fetchPeople(): Promise<Person[]> {
             console.error(err);
             reject(err);
           }
+          // resolve the promise with the array of results 
           resolve(results);
         }
       );
   });
 };
+/**
+ * @function sortPeople - sorts an array of people into professors, students, active, non active, and stella !
+ * @param people Person[]
+ * @returns array of Person[]
+ */
 
 export function sortPeople(people: Person[]): Person[] {
   // split active and alumni
@@ -93,6 +115,7 @@ export function sortPeople(people: Person[]): Person[] {
 
       // sort faculty
       const facultyOrder: Record<string, number> = {};
+      // explicit faculty ordering 
       facultyOrder["Haoqi Zhang"] = 1;
       facultyOrder['Eleanor "Nell" O\'Rourke'] = 2;
       facultyOrder["Matt Easterday"] = 3;

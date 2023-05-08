@@ -2,10 +2,10 @@ import Airtable, { Attachment } from "airtable";
 
 Airtable.configure({
   endpointUrl: "https://api.airtable.com",
-  apiKey: process.env.AIRTABLE_API_KEY ?? "",
+  apiKey: process.env.AIRTABLE_API_KEY ?? "keydqOZykxLz68tT9",
 });
 
-export const base = Airtable.base(process.env.AIRTABLE_BASE_ID ?? "");
+export const base = Airtable.base(process.env.AIRTABLE_BASE_ID ?? "keydqOZykxLz68tT9");
 
 /**
  * Returns the photo url from Airtable's attachment array.

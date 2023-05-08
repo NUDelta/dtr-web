@@ -1,7 +1,21 @@
 import { Attachment } from "airtable";
 import { base, getImgUrlFromAttachmentObj } from "./airtable";
 import { Person, PartialPerson, fetchPeople, sortPeople } from "./people";
-
+/**
+ * type that describes projects- including relevant videos, images, members, and associated publications 
+ * @typedef {object} Project 
+ * @property {string} id: id of the project w/in Airtable projects database
+ * @property {string} name: working name of the project, stored w/in database
+ * @property {string} banner_image: Image URL of banner_image, stored as a string 
+ * @property {string} description: description of project
+ * @property {string} status: active/inactive project, string
+ * @property {string} demo_video: Video URL of demo_video, stored as a string
+ * @property {string} sprint_video: Video URL of sprint_video
+ * @property {PartialPerson[]} members: array of members on a project, each w/o all details (does not include full bio, for instance)
+ * @property {ProjectImages} images: type that includes an array of image urls and descriptions, fetched from airtable 
+ * @property {ProjectPublication[]} publications: type that includes the id of the publi ation in airtable, 
+ * the name of the publication, the conference, and the URL link to the paper (?)
+ *  */
 export type Project = {
   id: string;
   name: string;
@@ -14,6 +28,10 @@ export type Project = {
   images: ProjectImages;
   publications: ProjectPublication[];
 };
+/**
+ * @typedef {object} PartialProject
+ * intended to give a subset of information about a project, including id, name, banner image, description, and status
+ */
 
 export type PartialProject = {
   id: string;
@@ -22,6 +40,13 @@ export type PartialProject = {
   description: string;
   status: string;
 };
+/**
+ * 
+ * @param projectId 
+ * @param getAllData 
+ * @returns partial project info, images, and related publications from nested functions
+ * This is what is actually used to display project information
+ */
 
 export async function getProject(
   projectId: string,
@@ -29,8 +54,11 @@ export async function getProject(
 ): Promise<Project> {
   return new Promise(async (resolve, reject) => {
     const people = await fetchPeople();
+    // fetch people returns an array of people 
+    // this will then be used to add information about project members to each project 
 
     base("Projects").find(projectId, async function (err, record) {
+      // return record is the information related to the project w/ "projectid"
       if (err) {
         reject(err);
         return;
@@ -40,17 +68,22 @@ export async function getProject(
         return;
       }
 
-      // get people associated with the project
+      
       const fetchedMembers: string[] =
+        // getting the list of memebers from the project information recieved from above
         (record.get("members") as string[]) ?? [];
       const peopleOnProj: Person[] = sortPeople(
         people.filter((person) => {
+          // people array is filtered to include just the information about people on this project
           return fetchedMembers.includes(person.name);
         })
       );
       const partialPeopleOnProj: PartialPerson[] = peopleOnProj.map(
+        // returns an array w/ type partial person (may not be an explicit type)
+        // mapped from the set of "people" filtered from the peopleOnProj function
         (person) => {
           return {
+            // this is a subset of the information of every person in the filtered people array
             id: person.id,
             name: person.name,
             role: person.role,
@@ -61,6 +94,7 @@ export async function getProject(
       );
 
       const partialParsedProjInfo = {
+        // "record" is the return value from "base("Projects").find", searching through airtable db
         id: record.id as string,
         name: (record.get("name") as string) ?? "",
         banner_image: getImgUrlFromAttachmentObj(record.get("banner_image") as Attachment[]),
@@ -68,10 +102,10 @@ export async function getProject(
         status: (record.get("status") as string) ?? "Active",
         demo_video: (record.get("demo_video") as string) ?? null,
         sprint_video: (record.get("sprint_video") as string) ?? null,
-        members: partialPeopleOnProj,
+        members: partialPeopleOnProj, // from the above function
       };
 
-      if (!getAllData) {
+      if (!getAllData) { //getAllData is set to false at the beginning of this function
         resolve({
           ...partialParsedProjInfo,
           images: {
@@ -106,12 +140,19 @@ type ProjectImages = {
     description: string;
   }[];
 };
+/**
+ * 
+ * @param imageDocId 
+ * @returns an array of <ProjectImages> for a given project
+ * Called within the getProject function
+ */
 
 export async function fetchProjectImages(
   imageDocId: string
 ): Promise<ProjectImages> {
   return new Promise((resolve, reject) => {
     base("Project Images").find(imageDocId, function (err, record) {
+      // record is the set of project information from getProject, filterd for the specific projectid.
       if (err) {
         reject(err);
         return;
@@ -123,18 +164,23 @@ export async function fetchProjectImages(
 
       // get all additional images for the project
       const explainerImages: ProjectImages["explainerImages"] = [];
+      // in the database, project images are each on their own column, with numbers from 1-5
+      // this is why the part of the application has this mapping: each is image_1,_2, etc
       [1, 2, 3, 4, 5].map((i) => {
+        //attachment is an airtable object, then recieve the imageUrl.
         const imageUrl = getImgUrlFromAttachmentObj(record.get(`image_${i}`) as Attachment[]);
+        //
         const description = record.get(`image_${i}_description`) as string;
 
         if (imageUrl && description) {
+          // pushes each url and description onto the array of explainer Images, which then are "ProjectImages" in getProject.
           explainerImages.push({
             url: imageUrl,
             description,
           });
         }
       });
-
+      // resolve the promise with the array of images for a specific project
       resolve({
         explainerImages,
       });
@@ -149,10 +195,17 @@ type ProjectPublication = {
   url: string;
 };
 
+/**
+ * 
+ * @param publicationDocId 
+ * @returns array of <ProjectPublications>
+ * this function is called within getProject to get all relevant publications for a project 
+ */
 export async function fetchPublications(
   publicationDocId: string
 ): Promise<ProjectPublication[]> {
   return new Promise((resolve, reject) => {
+    // this is called w/in getProject, so record is the set of information about a project recieved from that call.
     base("Project Publications").find(publicationDocId, function (err, record) {
       if (err) {
         reject(err);
@@ -164,14 +217,15 @@ export async function fetchPublications(
       }
 
       const publications: ProjectPublication[] = [];
-
+      // in the database from "record", each publication is in the database via this publication_1_name and publication_1_url system. 
+      // Because all publicatiosn are named in this way, can loop through this part of the function w/ different values for i
       [1, 2, 3, 4, 5].map((i) => {
         const name: string = record.get(`publication_${i}_name`) as string;
         const conference: string = record.get(
           `publication_${i}_conference`
         ) as string;
         const url: string = record.get(`publication_${i}_url`) as string;
-
+        // this checks that the publication actually exists- if it does, push it onto the publications array
         if (name && conference && url) {
           publications.push({
             id: `${record.id}-publication-${i}`,
@@ -181,12 +235,13 @@ export async function fetchPublications(
           });
         }
       });
-
+      // this function resolves the promise w/ the array of publications
       resolve(publications);
     });
   });
 };
-
+// this returns the set of project ids
+//this is not currently used in any part of the app (right?)
 export async function getAllProjectIds(): Promise<string[]> {
   return new Promise((resolve, reject) => {
     const projectIds: string[] = [];
@@ -208,6 +263,7 @@ export async function getAllProjectIds(): Promise<string[]> {
             reject(err);
             return;
           }
+          // this returns the project Ids as a promise 
           resolve(projectIds);
         }
       );

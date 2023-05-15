@@ -44,7 +44,7 @@ const questionsAndAnswers: QA[] = [
         <a
           target="_blank"
           rel="noreferrer"
-          href="https://www.mccormick.northwestern.edu/computer-science/academics/courses/descriptions/315-497.html"
+          href="https://www.mccormick.northwestern.edu/computer-science/academics/courses/descriptions/315-415.html"
         >
           EECS 315/497 course
         </a>{" "}

@@ -30,7 +30,15 @@ export type Project = {
 };
 /**
  * @typedef {object} PartialProject
+ * We use this in the "Sig" page, which describes a SIG and its associated projects
+ * We also have this because fetching all information about a project is more costly, and people are directly associated w/ SIGs as part of airtable
+ * and because publications, videos, and multiple images are not displayed on the SIG page
+ * @property {string} id: id of the project w/in Airtable projects database
+ * @property {string} name: working name of the project, stored w/in database
+ * @property {string} banner_image: Image URL of banner_image, stored as a string 
+ * @property {string} status string stating if the project is active or a past project 
  * intended to give a subset of information about a project, including id, name, banner image, description, and status
+ * 
  */
 
 export type PartialProject = {
@@ -41,9 +49,13 @@ export type PartialProject = {
   status: string;
 };
 /**
- * 
+ * @function getProject 
+ * We have this to get projects to display on each of the SIG pages
+ * It has the default value of "getAllData"
  * @param projectId 
- * @param getAllData 
+ * @param getAllData - default value of "False" so that this function defaults to just providing PartialProject info
+ * If getAllData is true, then it also recieves the partial images and publications
+ * getAllData is true in [id].txt and false in sig.ts
  * @returns partial project info, images, and related publications from nested functions
  * This is what is actually used to display project information
  */
@@ -56,9 +68,10 @@ export async function getProject(
     const people = await fetchPeople();
     // fetch people returns an array of people 
     // this will then be used to add information about project members to each project 
-
+    // We fetch people because people are directly mapped to their SIGS in the Airtable
+    // return record is the information related to the project w/ "projectid"
     base("Projects").find(projectId, async function (err, record) {
-      // return record is the information related to the project w/ "projectid"
+      
       if (err) {
         reject(err);
         return;
@@ -78,12 +91,13 @@ export async function getProject(
           return fetchedMembers.includes(person.name);
         })
       );
+      // returns an array w/ type partial person (may not be an explicit type)
+      // mapped from the set of "people" filtered from the peopleOnProj function
       const partialPeopleOnProj: PartialPerson[] = peopleOnProj.map(
-        // returns an array w/ type partial person (may not be an explicit type)
-        // mapped from the set of "people" filtered from the peopleOnProj function
+      // this is a subset of the information of every person in the filtered people array
         (person) => {
           return {
-            // this is a subset of the information of every person in the filtered people array
+            
             id: person.id,
             name: person.name,
             role: person.role,
@@ -141,10 +155,17 @@ type ProjectImages = {
   }[];
 };
 /**
- * 
+ * @function fetchProjectImages
  * @param imageDocId 
  * @returns an array of <ProjectImages> for a given project
- * Called within the getProject function
+ * Called within the getProject function, specifically in the "project.ts" page 
+ * steps for this function
+ *   1. Select the base from airtable (in this case, "Project Images")
+ *   2. Just find images for a specific project- denoted by "imageDocID"
+ *          Our "Project Images" DB is organized by project, so each project has its own unique ID
+ *   3. Each image is organized via "Image_i_description" and "Image_i", so we map i in range(1,5) to get each image
+ *   4. Lastly, if there is both an image URL and an image description, we push that onto the "explainerImages" array
+ *   5. We resolve the promise w/ that array of Explainer images
  */
 
 export async function fetchProjectImages(
@@ -199,7 +220,15 @@ type ProjectPublication = {
  * 
  * @param publicationDocId 
  * @returns array of <ProjectPublications>
- * this function is called within getProject to get all relevant publications for a project 
+ * this function is called within getProject to get all relevant publications for a project
+ * specifically this is called when "getAllData" is true in fetch projects
+ *  steps for this function
+ *   1. Select the base from airtable (in this case, "Project Publications")
+ *   2. Just find publications for a specific project- denoted by "publicationDocId"
+ *          Our "Project Publications" DB is organized by project, so each project has its own unique ID
+ *   3. Each publication is organized via "Publication_i_name" and "Publication_i_url", so we map i in range(1,5) to get each publication + url
+ *   4. Lastly, if there is both a name and a URL, we push that onto the "ProjectPublication" array
+ *   5. We resolve the promise w/ that array of ProjectPublications
  */
 export async function fetchPublications(
   publicationDocId: string

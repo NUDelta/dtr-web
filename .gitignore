@@ -453,3 +453,6 @@ $RECYCLE.BIN/
 
 .env.local
 .vercel
+
+# for ella 
+airtable.ts

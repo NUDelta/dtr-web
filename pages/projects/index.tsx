@@ -5,7 +5,7 @@ import ReactMarkdown from "react-markdown";
 import TeamMembers from "../../components/people/TeamMembers";
 import { fetchSigs, SIG } from "../../lib/sig";
 import { revalidateTime } from "../../lib/consts";
-// promise from fetchSigs function 
+
 interface ProjectProps {
   sigs: SIG[];
 }

@@ -4,8 +4,17 @@ import { Person, PartialPerson, fetchPeople, sortPeople } from "./people";
 import { Project, PartialProject, getProject } from "./project";
 /**
  * @typedef SIG
+ * @property {string} id: Id of the SIG, held by airtable- 
+ *      to find this value, click on an airtable field/SIG (from the SIGs database), and look at the URL at the part with the value ./recxxxxxx
+ *      the value of the SIG id is that recxxxx value from the URL
  * used to contain information for a given SIG, 
- * including sig ID(in airtable db), name, description, and banner image 
+ * @property {string} name: name of a SIG
+ * @property {string} description: Description of a SIG
+ * @property {string} banner_image: either the URL to the banner image, or Null (no banner image)
+ * @property {PartialPerson[]} members: array of information about members of a sig, including name, role, and if they're active
+ * @property {PartialProject[]} projects: array of information about projects in a sig, not including explainer images and publications
+ *  * including sig ID(in airtable db), name, description, and banner image 
+ * 
  */
 export type SIG = {
   id: string;
@@ -17,7 +26,23 @@ export type SIG = {
 };
 /**
  * @function fetchSigs()
- * fetches all SIGS from the Airtable DB
+ *  at a high level, fetches all SIGS from the Airtable DB
+ * steps: 
+ *  1. Select the base from airtable (in this case, "SIGS")
+ *  2. For each page (SIG)...
+ *  3. We get project info
+ *        3a. we get the project IDs for that sig, and then use those to get information about the projects
+ *        3b. we then map the information for all projects from 2a until it is trimmed, and we also do not keep the images/publications
+ * 4. And information about people
+ *        4a. We then get the students on each person in the SIG, including faculty, sigHeads, and members by filtering the result from getPeople
+ *        4b. We then sort these people such that the website displays Faculty -> Sigheads -> Others 
+ *        4b. We get the "others" from the set of people whose names are in fetchedMembers
+ * 5. We then subtract information from the array of People, keeping only information included in the PartialPerson type
+ *        this gets rid of bios specifically
+ * 6. Lastly we push this onto the results array
+ * 7. Continue steps 2-6 until this process is completed and all SIGS are pushed onto the results array
+ *
+ * 
  * @returns a promise that is resolved via an array of SIG[]
  */
 

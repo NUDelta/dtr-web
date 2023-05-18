@@ -2,7 +2,6 @@ import Header from "../components/shared/Header";
 import Container from "../components/shared/Container";
 import Link from "next/link";
 
-
 export default function Faq(): JSX.Element {
   return (
     <div>
@@ -44,9 +43,9 @@ const questionsAndAnswers: QA[] = [
         <a
           target="_blank"
           rel="noreferrer"
-          href="https://www.mccormick.northwestern.edu/computer-science/academics/courses/descriptions/315-497.html"
+          href="https://www.mccormick.northwestern.edu/computer-science/academics/courses/descriptions/315-415.html"
         >
-          EECS 315/497 course
+          EECS 315/415 course
         </a>{" "}
         every quarter. Students can start in any quarter. Most students choose
         to continue in DTR until they graduate.
@@ -59,13 +58,14 @@ const questionsAndAnswers: QA[] = [
     answer: (
       <>
         We meet for a single 3 hour meeting each week, and a separate one hour
-        SIG meeting. The longer meeting is used for
-        (1) Mysore--a structured learning and practice time where students work on their projects while a mentor provides feedback;
-        (2) Pair Research; and
-        (3) a Status Update presentation/activity from one project team.
-        We require all students be able to make the longer meeting.
-        The time for that meeting is scheduled by polling students to find the best mutually agreeable meeting time.
-        Typically it&apos;s Thursday afternoon or Friday, but it really depends on everyone&apos;s schedule.
+        SIG meeting. The longer meeting is used for (1) Mysore--a structured
+        learning and practice time where students work on their projects while a
+        mentor provides feedback; (2) Pair Research; and (3) a Status Update
+        presentation/activity from one project team. We require all students be
+        able to make the longer meeting. The time for that meeting is scheduled
+        by polling students to find the best mutually agreeable meeting time.
+        Typically it&apos;s Thursday afternoon or Friday, but it really depends
+        on everyone&apos;s schedule.
       </>
     ),
   },
@@ -73,8 +73,9 @@ const questionsAndAnswers: QA[] = [
     question: "What is the right time to join DTR?",
     answer: (
       <>
-        Whenever you are ready to grow. Most undergradute students join in Spring of
-        their sophomore or junior year, and masters students in their first year.
+        Whenever you are ready to grow. Most undergradute students join in
+        Spring of their sophomore or junior year, and masters students in their
+        first year.
       </>
     ),
   },
@@ -117,10 +118,10 @@ const questionsAndAnswers: QA[] = [
       "I am a CS/CE major. Does DTR count toward my major requirements?",
     answer: (
       <>
-        For undergraduates, DTR satisfies the project requirement &amp; Interfaces
-        depth requirement. Depending on the focus of the project you work on, you
-        may be able to petition for DTR to count for other depth requirements
-        (e.g., CogSys or Systems).
+        For undergraduates, DTR satisfies the project requirement &amp;
+        Interfaces depth requirement. Depending on the focus of the project you
+        work on, you may be able to petition for DTR to count for other depth
+        requirements (e.g., CogSys or Systems).
       </>
     ),
   },
@@ -128,19 +129,24 @@ const questionsAndAnswers: QA[] = [
     question: "How do I know if I am well-prepared for DTR?",
     answer: (
       <>
-        Students entering DTR typically have taken a course in human-computer interaction or
-        user-centered design, and have experience implementing systems in code via courses or
-        personal projects (e.g., common data structure and algorithms; web or mobile development;
-        past software engineering internships; etc.). Most students entering DTR have
-        prior experience working on challenging personal or class projects. Students are not
-        expected to have had prior research experience.
+        Students entering DTR typically have taken a course in human-computer
+        interaction or user-centered design, and have experience implementing
+        systems in code via courses or personal projects (e.g., common data
+        structure and algorithms; web or mobile development; past software
+        engineering internships; etc.). Most students entering DTR have prior
+        experience working on challenging personal or class projects. Students
+        are not expected to have had prior research experience.
       </>
     ),
   },
   {
     question: (
       <>
-      I have no experience with <u>&nbsp;&nbsp;&nbsp;&nbsp;(fill in the blank)&nbsp;&nbsp;&nbsp;&nbsp;</u>. Can I still apply?
+        I have no experience with{" "}
+        <u>
+          &nbsp;&nbsp;&nbsp;&nbsp;(fill in the blank)&nbsp;&nbsp;&nbsp;&nbsp;
+        </u>
+        . Can I still apply?
       </>
     ),
     answer: (

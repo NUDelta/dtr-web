@@ -32,4 +32,4 @@ export function getImgUrlFromAttachmentObj(
 
   // default return if first attachment wasn't an img
   return "";
-};
+}

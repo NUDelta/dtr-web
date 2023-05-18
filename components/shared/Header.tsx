@@ -23,7 +23,6 @@ export default function Header(): JSX.Element {
           <a className="font-semibold text-4xl block">DTR</a>
         </Link>
 
-
         <button
           className="border rounded px-4 py-2 border-opacity-50 md:hidden"
           onClick={() => setIsMenuOpen(!isMenuOpen)}

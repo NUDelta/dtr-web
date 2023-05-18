@@ -1,10 +1,11 @@
 import { Attachment } from "airtable";
 import { base, getImgUrlFromAttachmentObj } from "./airtable";
+
 /**
  * @typedef Person
  * all possible information about a person, including their name, title (professor, undergrad,grad, stella, etc), and their bio/profile photo
  * this is displayed on the "People" page on the website
- * @property {string} id: id of the person, held by airtable- 
+ * @property {string} id: id of the person, held by airtable-
  * to find this value, click on an airtable field/person, and look at the URL at the part with the value ./recxxxxxx
  * the value of their id is that recxxxx value from the URL
  * @property {string} name: Person's displayed name on this section
@@ -14,10 +15,10 @@ import { base, getImgUrlFromAttachmentObj } from "./airtable";
  * @property {string} status: Drop down on airtable indicating if a person is active or inactive- this is used to also sort graduate and undergraduate students
  * @property {string} bio : Bio of a particular person, displayed on the "people" page of the website
  * @property {string} profile_photo: URL to someone's profile photo, from the airtable database
- * 
+ *
  */
 export type Person = {
-  id: string; 
+  id: string;
   name: string;
   title: string;
   role: string;
@@ -25,6 +26,7 @@ export type Person = {
   bio: string;
   profile_photo: string | null;
 };
+
 /**
  * @typedef PartialPerson
  * concated set of information about a person
@@ -45,6 +47,7 @@ export type PartialPerson = {
   status: string;
   profile_photo: string | null;
 };
+
 /**
  * @function fetchPeople
  * @returns array of People type
@@ -64,7 +67,6 @@ export async function fetchPeople(): Promise<Person[]> {
       })
       // for each line in the people database: airtable function
       .eachPage(
-
         function page(records, fetchNextPage) {
           // this function pushes the people info onto the "results" array, and then calls itself again via a fetchnextpage callback
           // the callback is from the airtable API
@@ -78,10 +80,12 @@ export async function fetchPeople(): Promise<Person[]> {
                 "Undergraduate Student Researcher",
               status: (record.get("status") as string) ?? "Active",
               bio: (record.get("bio") as string) ?? "",
-              profile_photo: getImgUrlFromAttachmentObj(record.get("profile_photo") as Attachment[]),
+              profile_photo: getImgUrlFromAttachmentObj(
+                record.get("profile_photo") as Attachment[]
+              ),
             });
           });
-          // callback function to fetch next page of results 
+          // callback function to fetch next page of results
           fetchNextPage();
         },
         function done(err) {
@@ -89,19 +93,19 @@ export async function fetchPeople(): Promise<Person[]> {
             console.error(err);
             reject(err);
           }
-          // resolve the promise with the array of results 
+          // resolve the promise with the array of results
           resolve(results);
         }
       );
   });
-};
+}
+
 /**
  * @function sortPeople - sorted array of people where people are in categories: professors, phds, students (grad and ugrad), active, non active, and stella !
  * We use this in the people, project, and sig pages of the website, where we sort students and professors
- * @param people Person[] 
- * @returns array of Person[]in the correct order 
+ * @param people Person[]
+ * @returns array of Person[]in the correct order
  */
-
 export function sortPeople(people: Person[]): Person[] {
   // split active and alumni via the "status" parameter of the Person type
   let activePeople: Person[] = people.filter((person) => {
@@ -139,7 +143,7 @@ export function sortPeople(people: Person[]): Person[] {
 
       // sort faculty
       const facultyOrder: Record<string, number> = {};
-      // explicit faculty ordering 
+      // explicit faculty ordering
       facultyOrder["Haoqi Zhang"] = 1;
       facultyOrder['Eleanor "Nell" O\'Rourke'] = 2;
       facultyOrder["Matt Easterday"] = 3;
@@ -174,4 +178,4 @@ export function sortPeople(people: Person[]): Person[] {
 
   // combine sorted sublists and return
   return [...sortedSublists[0], ...stella, ...sortedSublists[1]];
-};
+}

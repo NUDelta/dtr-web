@@ -25,11 +25,7 @@ export default function Projects({ sigs }: ProjectProps): JSX.Element {
 
               {/* SIG banner image */}
               {sig.banner_image && (
-                <img
-                  src={sig.banner_image}
-                  className="w-full"
-                  alt={sig.name}
-                />
+                <img src={sig.banner_image} className="w-full" alt={sig.name} />
               )}
 
               {/* SIG description */}

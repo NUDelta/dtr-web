@@ -33,18 +33,24 @@ export default function Method(): JSX.Element {
             research direction.
           </p>
           <ul>
-              <li>
-                <span className="font-bold">Weeks 0 to 2:</span> Learn relevant web, mobile, and wearable technologies.
-              </li>
-              <li>
-              <span className="font-bold">Weeks 1 to 6:</span> Iteratively design and build based on needfinding, frequent user feedback, and in-lab testing.
-              </li>
-              <li>
-              <span className="font-bold">Weeks 6 to 8:</span> Setting up and conducting user studies to test key hypotheses.
-              </li>
-              <li>
-              <span className="font-bold">Weeks 8 to 10:</span> Analyze collected data. Write academic papers for submission to top conferences. Report findings to a general audience on DTR website.
-              </li>
+            <li>
+              <span className="font-bold">Weeks 0 to 2:</span> Learn relevant
+              web, mobile, and wearable technologies.
+            </li>
+            <li>
+              <span className="font-bold">Weeks 1 to 6:</span> Iteratively
+              design and build based on needfinding, frequent user feedback, and
+              in-lab testing.
+            </li>
+            <li>
+              <span className="font-bold">Weeks 6 to 8:</span> Setting up and
+              conducting user studies to test key hypotheses.
+            </li>
+            <li>
+              <span className="font-bold">Weeks 8 to 10:</span> Analyze
+              collected data. Write academic papers for submission to top
+              conferences. Report findings to a general audience on DTR website.
+            </li>
           </ul>
 
           <h2>Getting started</h2>
@@ -79,4 +85,4 @@ export default function Method(): JSX.Element {
       </Container>
     </div>
   );
-};
+}

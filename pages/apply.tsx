@@ -2,7 +2,6 @@ import Header from "../components/shared/Header";
 import Container from "../components/shared/Container";
 import Link from "next/link";
 
-
 export default function Apply(): JSX.Element {
   return (
     <div>
@@ -44,7 +43,13 @@ export default function Apply(): JSX.Element {
               >
                 application form
               </a>{" "}
-              to tell us more about you, and when you can meet with us. You should apply in the quarter <i>prior</i> to the one you wish to join DTR (e.g., to join in Spring 2022, apply during Winter 2022). Applications should be submitted within a few days of the quarterly DTR Open House (usually in the middle of the quarter), or by week 5 or 6 of the current quarter. Applications received after this will be reviewed as part of next quarter&apos;s cycle.
+              to tell us more about you, and when you can meet with us. You
+              should apply in the quarter <i>prior</i> to the one you wish to
+              join DTR (e.g., to join in Spring 2022, apply during Winter 2022).
+              Applications should be submitted within a few days of the
+              quarterly DTR Open House (usually in the middle of the quarter),
+              or by week 5 or 6 of the current quarter. Applications received
+              after this will be reviewed as part of next quarter&apos;s cycle.
               <br />
             </li>
             <li>
@@ -95,4 +100,4 @@ export default function Apply(): JSX.Element {
       </Container>
     </div>
   );
-};
+}

@@ -59,6 +59,7 @@ export async function fetchSigs(): Promise<SIG[]> {
         async function page(records, fetchNextPage) {
           // parse out info for each record
           for (const record of records) {
+            // TODO: fetch and cache projects, and then filter by IDs for the SIG (rather than making requests for each SIG)
             // projects associated with SIG
             const projectIds: string[] =
               (record.get("projects") as string[]) ?? [];

@@ -11,6 +11,25 @@ interface ProjectProps {
 }
 
 export default function Projects({ sigs }: ProjectProps): JSX.Element {
+  const bannerImages = {
+    "Agile Research Studios":
+      "/sig-photos/agile-research-studios_banner-image.png",
+    "Context-Aware Metacognitive Practices": "sig-photos/camp_banner-image.png",
+    "Networked Orchestration Technologies":
+      "sig-photos/networked-orchestration-technologies_banner-image.png",
+    "Opportunistic Collective Experiences":
+      "sig-photos/opportunistic-collective-experiences.png",
+    "Readily Available Learning Experiences":
+      "sig-photos/readily-available-learning-experiences_banner-image.png",
+    "Breaking Boundaries": "sig-photos/breaking-boundaries_banner-image.png",
+    "On-the-Go Crowdsourcing":
+      "sig-photos/on-the-go-crowdsourcing_banner-image.png",
+    "Playful Learning": "sig-photos/playful-learning_banner-image.png",
+    "Situational Crowdsourcing":
+      "sig-photos/situational-crowdsourcing_banner-image.png",
+    "Human-AI Tools": "sig-photos/human-ai_banner-image.jpg",
+  };
+
   return (
     <div>
       <Header />
@@ -24,9 +43,23 @@ export default function Projects({ sigs }: ProjectProps): JSX.Element {
               <h2 className="font-semibold text-3xl mb-4">{sig.name}</h2>
 
               {/* SIG banner image */}
-              {sig.banner_image && (
+              {/* {sig.banner_image && (
                 <img src={sig.banner_image} className="w-full" alt={sig.name} />
-              )}
+              )} */}
+
+              <img
+                src={bannerImages[sig.name]}
+                className="w-full"
+                alt={sig.name}
+              />
+
+              {/* {bannerImages[sig.name] && (
+                <img
+                  src={bannerImages[sig.name]}
+                  className="w-full"
+                  alt={sig.name}
+                />
+              )} */}
 
               {/* SIG description */}
               <ReactMarkdown linkTarget="_blank" className="prose-lg my-4">

@@ -11,7 +11,11 @@ interface ProjectProps {
 }
 
 export default function Projects({ sigs }: ProjectProps): JSX.Element {
-  const bannerImages = {
+  type BannerImages = {
+    [key: string]: string;
+  };
+
+  const bannerImages: BannerImages = {
     "Agile Research Studios":
       "/sig-photos/agile-research-studios_banner-image.png",
     "Context-Aware Metacognitive Practices": "sig-photos/camp_banner-image.png",

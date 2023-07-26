@@ -26,6 +26,25 @@ export default function Letters(): JSX.Element {
                       >
                         {annualLetter.name}
                       </a>
+                      <div>
+                        {annualLetter.tableOfContents.map((section, j) => (
+                          <span key={j}>
+                            <a
+                              target="_blank"
+                              rel="noreferrer"
+                              href={annualLetter.link + "#page=" + section.page}
+                              className="!bg-transparent"
+                            >
+                              {section.section}{" "}
+                              <span className="text-slate-300">
+                                {j < annualLetter.tableOfContents.length - 1
+                                  ? "|"
+                                  : ""}
+                              </span>
+                            </a>
+                          </span>
+                        ))}
+                      </div>
                     </li>
                   </ul>
                 </p>
@@ -77,13 +96,49 @@ type AnnualLetter = {
   datePublished: Date;
   description: string;
   link: string;
+  tableOfContents: [{ section: string; page: string }];
 };
 
 const annualLetters: AnnualLetter[] = [
+  {
+    name: "Annual Letter 2023",
+    datePublished: new Date(2023, 8 - 1, 1),
+    description: "",
+    link: "/letters/2023-dtr-letter.pdf",
+    tableOfContents: [
+      { section: "welcome", page: "1" },
+      { section: "celebrating success", page: "1" },
+      { section: "a different approach", page: "2" },
+      { section: "an independent researcher", page: "4" },
+      { section: "let go, and let fall.", page: "6" },
+      { section: "bad. should. enough.", page: "10" },
+      { section: "the limits of my ability as a mentor and coach", page: "11" },
+      { section: "teaching models for thinking", page: "13" },
+      { section: "lessons from unpleasant encounters", page: "17" },
+      { section: "junior faculty support group", page: "19" },
+      { section: "an invitation: DTR's 10 year anniversary", page: "22" },
+      {
+        section: "appendix: how we coach and teach design research",
+        page: "23",
+      },
+    ],
+  },
   {
     name: "Annual Letter 2022",
     datePublished: new Date(2022, 8 - 1, 1),
     description: "",
     link: "/letters/2022-dtr-letter.pdf",
+    tableOfContents: [
+      { section: "welcome", page: "1" },
+      { section: "celebrating success", page: "2" },
+      { section: "thawing out of the pandemic", page: "3" },
+      { section: "responsibility; responsive", page: "6" },
+      { section: "groundhog day", page: "8" },
+      { section: "sharing: putting it out there", page: "11" },
+      { section: "what students get out of DTR", page: "13" },
+      { section: "how we coach and teach design research", page: "17" },
+      { section: "sustainability", page: "21" },
+      { section: "an invitation", page: "24" },
+    ],
   },
 ];

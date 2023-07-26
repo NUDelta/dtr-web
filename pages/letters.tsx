@@ -81,6 +81,12 @@ type AnnualLetter = {
 
 const annualLetters: AnnualLetter[] = [
   {
+    name: "Annual Letter 2023",
+    datePublished: new Date(2023, 8 - 1, 1),
+    description: "",
+    link: "/letters/2023-dtr-letter.pdf",
+  },
+  {
     name: "Annual Letter 2022",
     datePublished: new Date(2022, 8 - 1, 1),
     description: "",

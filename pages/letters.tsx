@@ -91,15 +91,15 @@ export default function Letters(): JSX.Element {
   );
 }
 
-type AnnualLetter = {
-  name: string;
-  datePublished: Date;
-  description: string;
-  link: string;
-  tableOfContents: [{ section: string; page: string }];
-};
+// type AnnualLetter = {
+//   name: string;
+//   datePublished: Date;
+//   description: string;
+//   link: string;
+//   tableOfContents: [{ section: string; page: string }];
+// };
 
-const annualLetters: AnnualLetter[] = [
+const annualLetters = [
   {
     name: "Annual Letter 2023",
     datePublished: new Date(2023, 8 - 1, 1),

@@ -15,7 +15,7 @@ export default function Letters(): JSX.Element {
           letter to learners & educators everywhere.
           <div className="space-y-6">
             {annualLetters.map((annualLetter, i) => (
-              <div key={i} className="mb-4">
+              <div key={`annual-letter-${i}`} className="mb-4">
                 <p>
                   <ul>
                     <li>
@@ -27,21 +27,23 @@ export default function Letters(): JSX.Element {
                         {annualLetter.name}
                       </a>
                       <div>
+                        {/* add links to each section of the annual letter */}
                         {annualLetter.tableOfContents.map((section, j) => (
-                          <span key={j}>
+                          <span key={`table-of-contents-${j}`}>
                             <a
                               target="_blank"
                               rel="noreferrer"
-                              href={annualLetter.link + "#page=" + section.page}
+                              href={`${annualLetter.link}#page=${section.page}`}
                               className="!bg-transparent"
                             >
-                              {section.section}{" "}
-                              <span className="text-slate-300">
-                                {j < annualLetter.tableOfContents.length - 1
-                                  ? "|"
-                                  : ""}
+                              <span className="link link-underline link-underline-black">
+                                {section.name}{" "}
                               </span>
                             </a>
+                            {/* add a vertical bar to separate sections */}
+                            {j < annualLetter.tableOfContents.length - 1 && (
+                              <span className="text-slate-300">| </span>
+                            )}
                           </span>
                         ))}
                       </div>
@@ -91,34 +93,39 @@ export default function Letters(): JSX.Element {
   );
 }
 
-// type AnnualLetter = {
-//   name: string;
-//   datePublished: Date;
-//   description: string;
-//   link: string;
-//   tableOfContents: [{ section: string; page: string }];
-// };
+type TableOfContents = {
+  name: string;
+  page: string;
+};
 
-const annualLetters = [
+type AnnualLetter = {
+  name: string;
+  datePublished: Date;
+  description: string;
+  link: string;
+  tableOfContents: TableOfContents[];
+};
+
+const annualLetters: AnnualLetter[] = [
   {
     name: "Annual Letter 2023",
     datePublished: new Date(2023, 8 - 1, 1),
     description: "",
     link: "/letters/2023-dtr-letter.pdf",
     tableOfContents: [
-      { section: "welcome", page: "1" },
-      { section: "celebrating success", page: "1" },
-      { section: "a different approach", page: "2" },
-      { section: "an independent researcher", page: "4" },
-      { section: "let go, and let fall.", page: "6" },
-      { section: "bad. should. enough.", page: "10" },
-      { section: "the limits of my ability as a mentor and coach", page: "11" },
-      { section: "teaching models for thinking", page: "13" },
-      { section: "lessons from unpleasant encounters", page: "17" },
-      { section: "junior faculty support group", page: "19" },
-      { section: "an invitation: DTR's 10 year anniversary", page: "22" },
+      { name: "welcome", page: "1" },
+      { name: "celebrating success", page: "1" },
+      { name: "a different approach", page: "2" },
+      { name: "an independent researcher", page: "4" },
+      { name: "let go, and let fall.", page: "6" },
+      { name: "bad. should. enough.", page: "10" },
+      { name: "the limits of my ability as a mentor and coach", page: "11" },
+      { name: "teaching models for thinking", page: "13" },
+      { name: "lessons from unpleasant encounters", page: "17" },
+      { name: "junior faculty support group", page: "19" },
+      { name: "an invitation: DTR's 10 year anniversary", page: "22" },
       {
-        section: "appendix: how we coach and teach design research",
+        name: "appendix: how we coach and teach design research",
         page: "23",
       },
     ],
@@ -129,16 +136,16 @@ const annualLetters = [
     description: "",
     link: "/letters/2022-dtr-letter.pdf",
     tableOfContents: [
-      { section: "welcome", page: "1" },
-      { section: "celebrating success", page: "2" },
-      { section: "thawing out of the pandemic", page: "3" },
-      { section: "responsibility; responsive", page: "6" },
-      { section: "groundhog day", page: "8" },
-      { section: "sharing: putting it out there", page: "11" },
-      { section: "what students get out of DTR", page: "13" },
-      { section: "how we coach and teach design research", page: "17" },
-      { section: "sustainability", page: "21" },
-      { section: "an invitation", page: "24" },
+      { name: "welcome", page: "1" },
+      { name: "celebrating success", page: "2" },
+      { name: "thawing out of the pandemic", page: "3" },
+      { name: "responsibility; responsive", page: "6" },
+      { name: "groundhog day", page: "8" },
+      { name: "sharing: putting it out there", page: "11" },
+      { name: "what students get out of DTR", page: "13" },
+      { name: "how we coach and teach design research", page: "17" },
+      { name: "sustainability", page: "21" },
+      { name: "an invitation", page: "24" },
     ],
   },
 ];

@@ -15,12 +15,18 @@ body {
 
 .prose a,
 .prose-lg a {
+  color: rgb(55, 65, 81);
   font-weight: 400;
   background-color: #fff9bc;
   text-decoration: none;
   transition: background-color 150ms ease-in-out;
   padding-left: 0.1em;
   padding-right: 0.1em;
+}
+
+.prose a:hover,
+.prose-lg a:hover {
+  background-color: #f5ed9c;
 }
 
 .prose ul,
@@ -31,11 +37,6 @@ body {
 .prose ol,
 .prose-lg ol {
   list-style-type: decimal;
-}
-
-.prose a:hover,
-.prose-lg a:hover {
-  background-color: #f5ed9c;
 }
 
 .prose h2,

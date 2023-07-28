@@ -15,7 +15,7 @@ export default function Letters(): JSX.Element {
           letter to learners & educators everywhere.
           <div className="space-y-6">
             {annualLetters.map((annualLetter, i) => (
-              <div key={i} className="mb-4">
+              <div key={`annual-letter-${i}`} className="mb-4">
                 <p>
                   <ul>
                     <li>
@@ -27,21 +27,23 @@ export default function Letters(): JSX.Element {
                         {annualLetter.name}
                       </a>
                       <div>
+                        {/* add links to each section of the annual letter */}
                         {annualLetter.tableOfContents.map((section, j) => (
-                          <span key={j}>
+                          <span key={`table-of-contents-${j}`}>
                             <a
                               target="_blank"
                               rel="noreferrer"
                               href={`${annualLetter.link}#page=${section.page}`}
                               className="!bg-transparent"
                             >
-                              {section.name}{" "}
-                              <span className="text-slate-300">
-                                {j < annualLetter.tableOfContents.length - 1
-                                  ? "|"
-                                  : ""}
+                              <span className="link link-underline link-underline-black">
+                                {section.name}{" "}
                               </span>
                             </a>
+                            {/* add a vertical bar to separate sections */}
+                            {j < annualLetter.tableOfContents.length - 1 && (
+                              <span className="text-slate-300">| </span>
+                            )}
                           </span>
                         ))}
                       </div>

@@ -26,7 +26,10 @@ export default function PeopleProfiles({
               width={200}
               height={200}
               alt={`Headshot of ${person.name}`}
-            />
+              style={{
+                maxWidth: "100%",
+                height: "auto"
+              }} />
           </div>
 
           <div>

@@ -18,23 +18,23 @@ export default function Slides(): JSX.Element {
         infiniteLoop={true}
       >
         <div>
-          <Image src={image1} alt="image1" layout="responsive" />
+          <Image src={image1} alt="image1" className="responsive" />
         </div>
 
         <div>
-          <Image src={image2} alt="image1" layout="responsive" />
+          <Image src={image2} alt="image1" className="responsive" />
         </div>
 
         <div>
-          <Image src={image3} alt="image1" layout="responsive" />
+          <Image src={image3} alt="image1" className="responsive" />
         </div>
 
         <div>
-          <Image src={image4} alt="image1" layout="responsive" />
+          <Image src={image4} alt="image1" className="responsive" />
         </div>
 
         <div>
-          <Image src={image5} alt="image1" layout="responsive" />
+          <Image src={image5} alt="image1" className="responsive" />
         </div>
       </Carousel>
 

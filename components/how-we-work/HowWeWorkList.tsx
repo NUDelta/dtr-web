@@ -45,7 +45,7 @@ export default function HowWeWorkList(): JSX.Element {
                       <Image
                         src={subsection.imagePath}
                         alt={subsection.title}
-                        layout="responsive"
+                        className="responsive"
                       />
                     </div>
 

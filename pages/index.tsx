@@ -24,11 +24,11 @@ export default function Home(): JSX.Element {
           <p className="text-center text-black">
             The{" "}
             <Link href="/letters">
-              <a>
-                <span className="text-black font-bold link link-underline link-underline-black">
-                  2023 DTR Annual Letter
-                </span>
-              </a>
+
+              <span className="text-black font-bold link link-underline link-underline-black">
+                2023 DTR Annual Letter
+              </span>
+
             </Link>{" "}
             is out! Also check out the DTR documentary,{" "}
             <a target="_blank" rel="noreferrer" href="https://forward.movie">

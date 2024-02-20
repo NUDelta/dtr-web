@@ -75,11 +75,11 @@ export default function Projects({ sigs }: ProjectProps): JSX.Element {
                 {sig.projects.map((project) => (
                   <div key={project.id} className="mb-4">
                     <Link href={`/projects/${project.id}`}>
-                      <a>
-                        <h2 className="font-semibold text-2xl bg-yellow hover:bg-dark-yellow transition-colors p-2 break-normal">
-                          {project.name}
-                        </h2>
-                      </a>
+
+                      <h2 className="font-semibold text-2xl bg-yellow hover:bg-dark-yellow transition-colors p-2 break-normal">
+                        {project.name}
+                      </h2>
+
                     </Link>
 
                     <ReactMarkdown linkTarget="_blank" className="prose mt-2">

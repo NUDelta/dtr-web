@@ -86,7 +86,7 @@ const questionsAndAnswers: QA[] = [
         While students in DTR have a lot of freedom to choose a project from a
         set that we curate in the{" "}
         <Link href="/projects">
-          <a>research areas</a>
+          research areas
         </Link>{" "}
         we work in, the structure of DTR does not accommodate students working
         on their personal projects.
@@ -164,7 +164,7 @@ const questionsAndAnswers: QA[] = [
       <>
         Only one way to find out:{" "}
         <Link href="/apply">
-          <a>APPLY!</a>
+          APPLY!
         </Link>
       </>
     ),
@@ -175,7 +175,7 @@ const questionsAndAnswers: QA[] = [
       <>
         Get in touch with <a href="mailto:hq@northwestern.edu\">Haoqi</a> or{" "}
         <Link href="/people">
-          <a>anyone else in DTR</a>
+          anyone else in DTR
         </Link>
         .
       </>

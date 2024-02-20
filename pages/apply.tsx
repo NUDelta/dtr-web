@@ -14,7 +14,7 @@ export default function Apply(): JSX.Element {
             <li>
               Learn more about DTR by{" "}
               <Link href="/">
-                <a>browsing this website</a>
+                browsing this website
               </Link>
               ,{" "}
               <a
@@ -82,7 +82,7 @@ export default function Apply(): JSX.Element {
             Should you have any questions, don&apos;t hesitate to reach out to{" "}
             <a href="mailto:hq@northwestern.edu">Haoqi</a> or{" "}
             <Link href="/people">
-              <a>anyone else in DTR</a>
+              anyone else in DTR
             </Link>
           </p>
 

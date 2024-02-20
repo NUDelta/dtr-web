@@ -32,7 +32,7 @@ export default function IndividualProjectPage({
           )}
 
           {/* Description */}
-          <ReactMarkdown linkTarget="_blank" className="prose-lg my-8">
+          <ReactMarkdown className="prose-lg my-8">
             {project.description}
           </ReactMarkdown>
 
@@ -46,7 +46,7 @@ export default function IndividualProjectPage({
                   alt={`${project.name} image ${i + 1}`}
                 />
                 {img.description.trim() !== "" ? (
-                  <ReactMarkdown linkTarget="_blank" className="text-sm">
+                  <ReactMarkdown className="text-sm">
                     {`Figure ${i + 1}: ${img.description}`}
                   </ReactMarkdown>
                 ) : (

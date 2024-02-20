@@ -19,8 +19,8 @@ export default function Header(): JSX.Element {
   return (
     <header className="bg-black text-white">
       <Container className="flex justify-between md:justify-start py-2 gap-6 items-center max-w-6xl">
-        <Link href="/">
-          <a className="font-semibold text-4xl block">DTR</a>
+        <Link href="/" className="font-semibold text-4xl block">
+          DTR
         </Link>
 
         <button
@@ -50,15 +50,16 @@ function Nav(): JSX.Element {
   return (
     <nav className={`flex flex-col md:flex-row md:space-x-4 md:items-center`}>
       {links.map(({ href, label }) => (
-        <Link href={href} key={label}>
-          <a
-            className={`py-3 px-3 hover:bg-yellow hover:text-black transition-colors ${
-              router.pathname === href ? "bg-yellow text-black" : ""
-            }`}
-          >
-            {label}
-          </a>
-        </Link>
+        (<Link
+          href={href}
+          key={label}
+          className={`py-3 px-3 hover:bg-yellow hover:text-black transition-colors ${
+            router.pathname === href ? "bg-yellow text-black" : ""
+          }`}>
+
+          {label}
+
+        </Link>)
       ))}
     </nav>
   );

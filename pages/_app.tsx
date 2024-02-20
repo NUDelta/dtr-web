@@ -1,5 +1,6 @@
 import type { AppProps } from "next/app";
 import Head from "next/head";
+import NextNProgress from "nextjs-progressbar";
 
 import "../styles/globals.css";
 import "react-responsive-carousel/lib/styles/carousel.min.css";
@@ -20,6 +21,12 @@ function MyApp({ Component, pageProps }: AppProps) {
         />
         <link rel="icon" href="/favicon.ico?v=2" />
       </Head>
+
+      <NextNProgress
+        color="#F5ED9C"
+        height={6}
+        options={{ showSpinner: false }}
+      />
 
       <main className="bg-white pb-8">
         <Component {...pageProps} />

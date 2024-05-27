@@ -2,10 +2,22 @@
 module.exports = {
   reactStrictMode: true,
   images: {
-    domains: [
-      "delta-lab.nyc3.cdn.digitaloceanspaces.com",
-      "dl.airtable.com",
-      "v5.airtableusercontent.com"
+    remotePatterns: [
+      {
+        protocol: "https",
+        hostname: "delta-lab.nyc3.cdn.digitaloceanspaces.com",
+        pathname: "**",
+      },
+      {
+        protocol: "https",
+        hostname: "dl.airtable.com",
+        pathname: "**",
+      },
+      {
+        protocol: "https",
+        hostname: "v5.airtableusercontent.com",
+        pathname: "**",
+      },
     ],
   },
 };

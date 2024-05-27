@@ -19,7 +19,7 @@ export default function Header(): JSX.Element {
   return (
     <header className="bg-black text-white">
       <Container className="flex justify-between md:justify-start py-2 gap-6 items-center max-w-6xl">
-        <Link href="/" className="font-semibold text-4xl block">
+        <Link href="/" className="font-semibold md:text-3xl lg:text-4xl block">
           DTR
         </Link>
 
@@ -48,18 +48,19 @@ function Nav(): JSX.Element {
   const router = useRouter();
 
   return (
-    <nav className={`flex flex-col md:flex-row md:space-x-4 md:items-center`}>
+    <nav
+      className={`flex flex-col md:flex-row md:space-x-4 md:items-center md:text-sm lg:text-base`}
+    >
       {links.map(({ href, label }) => (
-        (<Link
+        <Link
           href={href}
           key={label}
           className={`py-3 px-3 hover:bg-yellow hover:text-black transition-colors ${
             router.pathname === href ? "bg-yellow text-black" : ""
-          }`}>
-
+          }`}
+        >
           {label}
-
-        </Link>)
+        </Link>
       ))}
     </nav>
   );

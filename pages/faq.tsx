@@ -8,7 +8,7 @@ export default function Faq(): JSX.Element {
       <Header />
 
       <Container className="mt-8">
-        <div className="prose max-w-4xl mx-auto">
+        <div className="prose mx-auto max-w-4xl">
           <h2>Frequently Asked Questions</h2>
 
           {/* Populate questions and answers */}
@@ -84,10 +84,7 @@ const questionsAndAnswers: QA[] = [
     answer: (
       <>
         While students in DTR have a lot of freedom to choose a project from a
-        set that we curate in the{" "}
-        <Link href="/projects">
-          research areas
-        </Link>{" "}
+        set that we curate in the <Link href="/projects">research areas</Link>{" "}
         we work in, the structure of DTR does not accommodate students working
         on their personal projects.
       </>
@@ -162,10 +159,7 @@ const questionsAndAnswers: QA[] = [
     question: "What are my chances of getting in?",
     answer: (
       <>
-        Only one way to find out:{" "}
-        <Link href="/apply">
-          APPLY!
-        </Link>
+        Only one way to find out: <Link href="/apply">APPLY!</Link>
       </>
     ),
   },
@@ -174,10 +168,7 @@ const questionsAndAnswers: QA[] = [
     answer: (
       <>
         Get in touch with <a href="mailto:hq@northwestern.edu\">Haoqi</a> or{" "}
-        <Link href="/people">
-          anyone else in DTR
-        </Link>
-        .
+        <Link href="/people">anyone else in DTR</Link>.
       </>
     ),
   },

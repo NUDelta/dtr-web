@@ -7,8 +7,8 @@ export default function WhatWeLearn(): JSX.Element {
       <Header />
 
       <Container className="mt-8">
-        <div className="prose max-w-4xl mx-auto">
-          <h1 className="font-semibold text-3xl">
+        <div className="prose mx-auto max-w-4xl">
+          <h1 className="text-3xl font-semibold">
             What Students Get Out of DTR
           </h1>
           <p className="mb-6">
@@ -23,13 +23,13 @@ export default function WhatWeLearn(): JSX.Element {
           <div className="space-y-6">
             {quoteChunks.map((chunk, i) => (
               <div key={i} className="mb-6">
-                <h2 className="text-2xl border-b border-black font-semibold mb-4">
+                <h2 className="mb-4 border-b border-black text-2xl font-semibold">
                   {chunk.descriptor}
                 </h2>
                 {/*<div className="text-lg font-bold">{ chunk.descriptor }</div>*/}
                 <div className="mt-4">
                   {chunk.quotes.map((quote, i) => (
-                    <div key={i} className="pl-10 pr-10 mb-4">
+                    <div key={i} className="mb-4 pl-10 pr-10">
                       {quote.text}
                     </div>
                   ))}
@@ -38,7 +38,7 @@ export default function WhatWeLearn(): JSX.Element {
             ))}
           </div>
 
-          <div className="mt-6 mb-6">
+          <div className="mb-6 mt-6">
             In these ways, DTR provides a spectacular learning space for
             students. We will work hard to keep it that way. As long as DTR
             continues to do right by students, we will do just fine.

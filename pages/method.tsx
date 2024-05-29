@@ -7,7 +7,7 @@ export default function Method(): JSX.Element {
       <Header />
 
       <Container className="mt-8">
-        <div className="prose max-w-4xl mx-auto">
+        <div className="prose mx-auto max-w-4xl">
           <h2>DTR at a glance</h2>
           <p>
             Students participate in DTR through fast-paced, quarter-long

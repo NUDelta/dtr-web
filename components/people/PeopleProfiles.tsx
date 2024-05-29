@@ -17,9 +17,9 @@ export default function PeopleProfiles({
   });
 
   return (
-    <div className="space-y-8 max-w-4xl mx-auto mb-8">
+    <div className="mx-auto mb-8 max-w-4xl space-y-8">
       {relevantPeople.map((person) => (
-        <div key={person.id} className="flex flex-col md:flex-row gap-4">
+        <div key={person.id} className="flex flex-col gap-4 md:flex-row">
           <div className="w-52 flex-shrink-0">
             <Image
               src={person.profile_photo ?? PlaceHolderImg}
@@ -35,7 +35,7 @@ export default function PeopleProfiles({
 
           <div>
             <h2 className="text-2xl font-medium">{person.name}</h2>
-            <h3 className="uppercase text-gray-500 mb-4">{person.title}</h3>
+            <h3 className="mb-4 uppercase text-gray-500">{person.title}</h3>
 
             <ReactMarkdown className="prose max-w-none">
               {person.bio}

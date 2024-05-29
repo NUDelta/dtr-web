@@ -9,7 +9,7 @@ export default function Home(): JSX.Element {
     <div>
       <Header />
 
-      <Container className="flex flex-col md:flex-row gap-6 mt-8">
+      <Container className="mt-8 flex flex-col gap-6 md:flex-row">
         <div className="w-full md:w-2/3">
           <Slides />
         </div>
@@ -20,19 +20,17 @@ export default function Home(): JSX.Element {
       </Container>
 
       <Container className="mt-4">
-        <div className="w-full bg-yellow pt-2 pb-2 rounded-lg mb-4">
+        <div className="mb-4 w-full rounded-lg bg-yellow pb-2 pt-2">
           <p className="text-center text-black">
             The{" "}
             <Link href="/letters">
-
-              <span className="text-black font-bold link link-underline link-underline-black">
+              <span className="link link-underline link-underline-black font-bold text-black">
                 2023 DTR Annual Letter
               </span>
-
             </Link>{" "}
             is out! Also check out the DTR documentary,{" "}
             <a target="_blank" rel="noreferrer" href="https://forward.movie">
-              <span className="text-black font-bold link link-underline link-underline-black">
+              <span className="link link-underline link-underline-black font-bold text-black">
                 Forward
               </span>
             </a>

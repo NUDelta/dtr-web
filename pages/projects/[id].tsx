@@ -18,9 +18,9 @@ export default function IndividualProjectPage({
       <Header />
 
       <Container className="mt-20">
-        <div className="bg-gray-50 p-4 max-w-4xl mx-auto">
+        <div className="mx-auto max-w-4xl bg-gray-50 p-4">
           {/* Title */}
-          <h2 className="font-semibold text-3xl mb-4">{project.name}</h2>
+          <h2 className="mb-4 text-3xl font-semibold">{project.name}</h2>
 
           {/* Banner Image */}
           {project.banner_image && (
@@ -37,12 +37,12 @@ export default function IndividualProjectPage({
           </ReactMarkdown>
 
           {/* Extra images */}
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-8 mb-8">
+          <div className="mb-8 grid grid-cols-1 gap-8 md:grid-cols-2">
             {project.images.explainerImages.map((img, i) => (
               <div key={`img-${i}`}>
                 <img
                   src={img.url}
-                  className="w-full mb-4"
+                  className="mb-4 w-full"
                   alt={`${project.name} image ${i + 1}`}
                 />
                 {img.description.trim() !== "" ? (
@@ -58,12 +58,12 @@ export default function IndividualProjectPage({
 
           {/* Publications or Additional Content (e.g., Slides) */}
           {project.publications.length > 0 && (
-            <div className="w-full mb-8">
-              <h2 className="font-bold text-2xl mb-2 pb-2 border-b border-black">
+            <div className="mb-8 w-full">
+              <h2 className="mb-2 border-b border-black pb-2 text-2xl font-bold">
                 Publications
               </h2>
 
-              <ul className="font-medium prose max-w-none list-none">
+              <ul className="prose max-w-none list-none font-medium">
                 {project.publications.map((publication) => (
                   <li key={publication.id}>
                     <a href={publication.url} target="_blank" rel="noreferrer">
@@ -78,8 +78,8 @@ export default function IndividualProjectPage({
 
           {/* Demo Video */}
           {project.demo_video !== null && (
-            <div className="w-full mb-8">
-              <h2 className="font-bold text-2xl mb-2 pb-2 border-b border-black">
+            <div className="mb-8 w-full">
+              <h2 className="mb-2 border-b border-black pb-2 text-2xl font-bold">
                 Demo video
               </h2>
 
@@ -97,8 +97,8 @@ export default function IndividualProjectPage({
 
           {/* Sprint Video */}
           {project.sprint_video !== null && (
-            <div className="w-full mb-8">
-              <h2 className="font-bold text-2xl mb-2 pb-2 border-b border-black">
+            <div className="mb-8 w-full">
+              <h2 className="mb-2 border-b border-black pb-2 text-2xl font-bold">
                 Sprint Video
               </h2>
 
@@ -116,7 +116,7 @@ export default function IndividualProjectPage({
 
           {/* Team Members */}
           <div className="w-full">
-            <h2 className="font-bold text-2xl mb-2 pb-2 border-b border-black">
+            <h2 className="mb-2 border-b border-black pb-2 text-2xl font-bold">
               Team
             </h2>
 

@@ -39,12 +39,12 @@ export default function Projects({ sigs }: ProjectProps): JSX.Element {
       <Header />
 
       <Container className="mt-8">
-        <div className="space-y-8 max-w-4xl mx-auto">
+        <div className="mx-auto max-w-4xl space-y-8">
           {/* SIG component */}
           {sigs.map((sig) => (
             <div key={sig.id} className="bg-gray-50 p-8">
               {/* SIG name */}
-              <h2 className="font-semibold text-3xl mb-4">{sig.name}</h2>
+              <h2 className="mb-4 text-3xl font-semibold">{sig.name}</h2>
 
               {/* SIG banner image */}
               {/* {sig.banner_image && (
@@ -71,11 +71,11 @@ export default function Projects({ sigs }: ProjectProps): JSX.Element {
               </ReactMarkdown>
 
               {/* Projects in SIG */}
-              <div className="grid grid-cols-1 md:grid-cols-2 gap-4 my-10">
+              <div className="my-10 grid grid-cols-1 gap-4 md:grid-cols-2">
                 {sig.projects.map((project) => (
                   <div key={project.id} className="mb-4">
                     <Link href={`/projects/${project.id}`}>
-                      <h2 className="font-semibold text-2xl bg-yellow hover:bg-dark-yellow transition-colors p-2 break-normal">
+                      <h2 className="break-normal bg-yellow p-2 text-2xl font-semibold transition-colors hover:bg-dark-yellow">
                         {project.name}
                       </h2>
                     </Link>
@@ -89,7 +89,7 @@ export default function Projects({ sigs }: ProjectProps): JSX.Element {
 
               {/* Members of SIG */}
               <div className="w-full">
-                <h2 className="font-bold text-2xl mb-2 pb-2 border-b border-black">
+                <h2 className="mb-2 border-b border-black pb-2 text-2xl font-bold">
                   Team
                 </h2>
 

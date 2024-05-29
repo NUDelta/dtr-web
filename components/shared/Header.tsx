@@ -18,13 +18,13 @@ export default function Header(): JSX.Element {
 
   return (
     <header className="bg-black text-white">
-      <Container className="flex justify-between md:justify-start py-2 gap-6 items-center max-w-6xl">
-        <Link href="/" className="font-semibold md:text-3xl lg:text-4xl block">
+      <Container className="flex max-w-6xl items-center justify-between gap-6 py-2 md:justify-start">
+        <Link href="/" className="block font-semibold md:text-3xl lg:text-4xl">
           DTR
         </Link>
 
         <button
-          className="border rounded px-4 py-2 border-opacity-50 md:hidden"
+          className="rounded border border-opacity-50 px-4 py-2 md:hidden"
           onClick={() => setIsMenuOpen(!isMenuOpen)}
         >
           Menu
@@ -49,13 +49,13 @@ function Nav(): JSX.Element {
 
   return (
     <nav
-      className={`flex flex-col md:flex-row md:space-x-4 md:items-center md:text-sm lg:text-base`}
+      className={`flex flex-col md:flex-row md:items-center md:space-x-4 md:text-sm lg:text-base`}
     >
       {links.map(({ href, label }) => (
         <Link
           href={href}
           key={label}
-          className={`py-3 px-3 hover:bg-yellow hover:text-black transition-colors ${
+          className={`px-3 py-3 transition-colors hover:bg-yellow hover:text-black ${
             router.pathname === href ? "bg-yellow text-black" : ""
           }`}
         >

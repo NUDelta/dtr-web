@@ -7,7 +7,7 @@ export default function Letters(): JSX.Element {
       <Header />
 
       <Container className="mt-8">
-        <div className="prose max-w-4xl mx-auto">
+        <div className="prose mx-auto max-w-4xl">
           {/* Annual Letters Placeholder */}
           <h2>Annual Letters</h2>
           The DTR annual letter shares Haoqi’s reflections on mentoring and

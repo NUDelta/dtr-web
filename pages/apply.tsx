@@ -8,15 +8,12 @@ export default function Apply(): JSX.Element {
       <Header />
 
       <Container className="mt-8">
-        <div className="prose max-w-4xl mx-auto">
+        <div className="prose mx-auto max-w-4xl">
           <h2>Interested in joining us? Follow the steps below:</h2>
           <ol>
             <li>
               Learn more about DTR by{" "}
-              <Link href="/">
-                browsing this website
-              </Link>
-              ,{" "}
+              <Link href="/">browsing this website</Link>,{" "}
               <a
                 target="_blank"
                 rel="noreferrer"
@@ -81,9 +78,7 @@ export default function Apply(): JSX.Element {
           <p>
             Should you have any questions, don&apos;t hesitate to reach out to{" "}
             <a href="mailto:hq@northwestern.edu">Haoqi</a> or{" "}
-            <Link href="/people">
-              anyone else in DTR
-            </Link>
+            <Link href="/people">anyone else in DTR</Link>
           </p>
 
           <div>
@@ -91,7 +86,7 @@ export default function Apply(): JSX.Element {
               target="_blank"
               rel="noreferrer"
               href="https://docs.google.com/forms/d/12PJFFoPrk6CzopB0mAm2Go3eLFBzNMMmwjDtCNAdKEc/viewform"
-              className="px-4 py-2 border-2 border-black"
+              className="border-2 border-black px-4 py-2"
             >
               Apply Now
             </a>

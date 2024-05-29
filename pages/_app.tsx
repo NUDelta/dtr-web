@@ -31,7 +31,7 @@ function MyApp({ Component, pageProps }: AppProps) {
         options={{ showSpinner: false }}
       />
 
-      <main className="bg-white pb-8 ${lato.className}">
+      <main className="${lato.className} bg-white pb-8">
         <Component {...pageProps} />
       </main>
     </>

@@ -27,13 +27,13 @@ export default function TeamMembers({
   return (
     <div>
       {/* separate people into faculty, phd students, and ms/ugrad students */}
-      <div className="grid grid-cols-1 md:grid-cols-2 md:grid-rows-2 md:grid-flow-col md:auto-cols-max gap-4">
+      <div className="grid grid-cols-1 gap-4 md:auto-cols-max md:grid-flow-col md:grid-cols-2 md:grid-rows-2">
         {roles.map((role) => (
           <div
             key={`${groupId}-${role}`}
             className={`${role === roles[2] ? "row-span-2" : ""}`}
           >
-            <h3 className="font-bold text-xl mb-2">{role}</h3>
+            <h3 className="mb-2 text-xl font-bold">{role}</h3>
 
             <MembersForRole
               members={members.filter((member) => {
@@ -55,7 +55,7 @@ function MembersForRole({ members }: MembersForRoleProps): JSX.Element {
   const memberCount = members.length;
 
   return (
-    <ul className="font-medium list-none">
+    <ul className="list-none font-medium">
       {memberCount > 0 ? (
         members.map((member) => (
           <li key={member.name}>

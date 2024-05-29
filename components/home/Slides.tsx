@@ -38,7 +38,7 @@ export default function Slides(): JSX.Element {
         </div>
       </Carousel>
 
-      <p className="text-xs text-gray-500 mt-2">photo credit: matthew zhang</p>
+      <p className="mt-2 text-xs text-gray-500">photo credit: matthew zhang</p>
     </div>
   );
 }

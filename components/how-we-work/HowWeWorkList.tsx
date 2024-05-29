@@ -18,7 +18,7 @@ import WorkingGrowth from "./assets/working-growth.png";
 
 export default function HowWeWorkList(): JSX.Element {
   return (
-    <div className="space-y-8 max-w-4xl mx-auto">
+    <div className="mx-auto max-w-4xl space-y-8">
       <style jsx>{`
         .section-header {
           margin: 0;
@@ -27,7 +27,7 @@ export default function HowWeWorkList(): JSX.Element {
 
       {sections.map((section, i) => (
         <div key={i}>
-          <h2 className="text-2xl border-b border-black font-semibold mb-4">
+          <h2 className="mb-4 border-b border-black text-2xl font-semibold">
             {section.title}
           </h2>
 
@@ -49,7 +49,7 @@ export default function HowWeWorkList(): JSX.Element {
                       />
                     </div>
 
-                    <div className="w-full md:w-2/3 prose">
+                    <div className="prose w-full md:w-2/3">
                       <h3 className="section-header">{subsection.title}</h3>
                       {subsection.description}
                     </div>
@@ -58,7 +58,7 @@ export default function HowWeWorkList(): JSX.Element {
 
                 {subsection.imagePath === null && (
                   <>
-                    <div className="w-full md:w-2/3 prose">
+                    <div className="prose w-full md:w-2/3">
                       <h3 className="section-header">{subsection.title}</h3>
                       {subsection.description}
                     </div>

@@ -8,11 +8,11 @@ export default function ValuesApproach(): JSX.Element {
       <Header />
 
       <Container className="mt-8">
-        <div className="max-w-4xl mx-auto">
-          <h1 className="font-semibold text-3xl">
+        <div className="mx-auto max-w-4xl">
+          <h1 className="text-3xl font-semibold">
             Design, Technology, and Research (DTR)
           </h1>
-          <div className="prose prose-lg max-w-none mt-4 mb-8">
+          <div className="prose prose-lg mb-8 mt-4 max-w-none">
             <p>
               The Design, Technology, and Research program is a supportive,
               collaborative community of designers, builders, and researchers

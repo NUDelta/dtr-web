@@ -17,7 +17,7 @@ export default function People({ people }: PeopleProps): JSX.Element {
         <PeopleProfiles peopleList={people} statusFilter="Active" />
 
         {/* Alums of DTR */}
-        <div className="prose-lg mb-5 max-w-4xl mx-auto">
+        <div className="prose-lg mx-auto mb-5 max-w-4xl">
           <h2>Alumni</h2>
         </div>
 

@@ -25,7 +25,7 @@ export default function Home(): JSX.Element {
             The{" "}
             <Link href="/letters">
               <span className="link link-underline link-underline-black font-bold text-black">
-                2023 DTR Annual Letter
+                2024 DTR Annual Letter
               </span>
             </Link>{" "}
             is out! Also check out the DTR documentary,{" "}

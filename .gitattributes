@@ -1,0 +1,34 @@
+* text=auto
+*.sh eol=lf
+*.bat eol=crlf
+*.md diff=text
+
+pnp.* linguist-generated
+yarn.lock linguist-generated
+package-lock.json linguist-generated
+node_modules/ linguist-generated
+pnpm-lock.yaml linguist-generated
+
+# Pic and video
+*.png binary
+*.jpg binary
+*.jpeg binary
+*.gif binary
+*.mp4 binary
+*.mov binary
+*.mkv binary
+*.mp3 binary
+
+# Archive
+*.zip binary
+*.rar binary
+*.gz binary
+*.7z binary
+
+# Executable
+*.exe binary
+*.msi binary
+*.dmg binary
+*.iso binary
+
+*.pdf binary

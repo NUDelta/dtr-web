@@ -335,14 +335,14 @@ tags
 # When using Gradle or Maven with auto-import, you should exclude module files,
 # since they will be recreated, and may cause churn.  Uncomment if using
 # auto-import.
-# .idea/artifacts
-# .idea/compiler.xml
-# .idea/jarRepositories.xml
-# .idea/modules.xml
-# .idea/*.iml
-# .idea/modules
-# *.iml
-# *.ipr
+.idea/artifacts
+.idea/compiler.xml
+.idea/jarRepositories.xml
+.idea/modules.xml
+.idea/*.iml
+.idea/modules
+*.iml
+*.ipr
 
 # CMake
 cmake-build-*/
@@ -437,14 +437,14 @@ $RECYCLE.BIN/
 # https://yarnpkg.com/advanced/qa#which-files-should-be-gitignored
 
 .yarn/*
-!.yarn/releases
-!.yarn/plugins
-!.yarn/sdks
-!.yarn/versions
+# !.yarn/releases
+# !.yarn/plugins
+# !.yarn/sdks
+# !.yarn/versions
 
 # if you are NOT using Zero-installs, then:
 # comment the following lines
-!.yarn/cache
+# !.yarn/cache
 
 # and uncomment the following lines
 # .pnp.*

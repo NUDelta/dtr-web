@@ -1,6 +1,9 @@
 import type { Metadata } from 'next';
 import PeopleProfiles from '@/components/people/PeopleProfiles';
-import { fetchPeople, sortPeople } from '@/lib/people';
+import { fetchPeople } from '@/lib/people';
+import { sortPeople } from '@/utils';
+
+export const revalidate = 600;
 
 export const metadata: Metadata = {
   title: 'People | DTR',

@@ -1,6 +1,9 @@
+'use server';
+
 import type { Attachment } from 'airtable';
-import { getCachedRecords, getImgUrlFromAttachmentObj } from './airtable';
-import { fetchPeople, sortPeople } from './people';
+import { getImgUrlFromAttachmentObj, sortPeople } from '@/utils';
+import { getCachedRecords } from './airtable';
+import { fetchPeople } from './people';
 import { getProject } from './project';
 
 /**

@@ -4,12 +4,22 @@ import TeamMembers from '@/components/people/TeamMembers';
 import ProjectVideo from '@/components/projects/ProjectVideo';
 import { getCachedRecords } from '@/lib/airtable';
 import { getProject } from '@/lib/project';
+import { notFound } from 'next/navigation';
 import ReactMarkdown from 'react-markdown';
+
+// Next.js will invalidate the cache when a
+// request comes in, at most once every 60 seconds.
+export const revalidate = 60;
+
+// We'll prerender only the params from `generateStaticParams` at build time.
+// If a request comes in for a path that hasn't been generated,
+// Next.js will server-render the page on-demand.
+export const dynamicParams = true; // or false, to 404 on unknown paths
 
 export async function generateStaticParams() {
   const projects = await getCachedRecords('Projects');
   return projects.map(project => ({
-    params: { id: project.id },
+    id: project.id,
   }));
 }
 
@@ -46,7 +56,7 @@ export default async function IndividualProjectPage({
 
   if (!project) {
     console.warn(`Project ${id} not found`);
-    return <div>Project not found</div>;
+    notFound();
   }
 
   return (

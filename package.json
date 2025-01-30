@@ -9,10 +9,11 @@
   "homepage": "https://github.com/NUDelta/dtr-web",
   "scripts": {
     "dev": "next dev --turbo",
-    "build": "NODE_NO_WARNINGS=1 next build",
+    "build": "pnpm lint:fix && NODE_NO_WARNINGS=1 next build",
     "start": "NODE_NO_WARNINGS=1 next start -H 0.0.0.0 -p ${PORT:-8080}",
     "lint": "next lint",
-    "lint:fix": "next lint --fix"
+    "lint:fix": "next lint --fix",
+    "prepare": "husky"
   },
   "dependencies": {
     "airtable": "^0.12.2",

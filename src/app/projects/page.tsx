@@ -4,6 +4,8 @@ import { fetchSigs } from '@/lib/sig';
 import Link from 'next/link';
 import ReactMarkdown from 'react-markdown';
 
+export const revalidate = 60;
+
 export const metadata: Metadata = {
   title: 'Projects | DTR',
   alternates: { canonical: 'https://dtr.northwestern.edu/projects' },

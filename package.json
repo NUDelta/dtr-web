@@ -1,42 +1,59 @@
 {
   "name": "web",
+  "version": "1.0.0",
   "private": true,
   "engines": {
-    "node": "^20.x"
+    "node": "22.x"
   },
+  "packageManager": "pnpm@9.15.4",
+  "homepage": "https://github.com/NUDelta/dtr-web",
   "scripts": {
     "dev": "next dev --turbo",
-    "build": "next build",
-    "start": "next start -H 0.0.0.0 -p ${PORT:-8080}",
-    "lint": "next lint"
+    "build": "pnpm lint:fix && NODE_NO_WARNINGS=1 next build",
+    "start": "NODE_NO_WARNINGS=1 next start -H 0.0.0.0 -p ${PORT:-8080}",
+    "lint": "next lint",
+    "lint:fix": "next lint --fix",
+    "prepare": "husky"
   },
   "dependencies": {
-    "@brainhubeu/react-carousel": "^2.0.4",
-    "@tailwindcss/typography": "^0.5.13",
-    "add": "^2.0.6",
     "airtable": "^0.12.2",
-    "next": "^14.2.3",
-    "nextjs-progressbar": "^0.0.16",
-    "react": "^18.3.1",
-    "react-dom": "^18.3.1",
+    "next": "^15.1.6",
+    "next-nprogress-bar": "^2.4.3",
+    "react": "^19.0.0",
+    "react-dom": "^19.0.0",
     "react-markdown": "^9.0.1",
-    "react-player": "^2.16.0",
-    "react-responsive-carousel": "^3.2.23",
-    "sharp": "^0.33.4",
-    "yarn": "^1.22.22"
+    "react-player": "^2.16.0"
   },
   "devDependencies": {
-    "@types/brainhubeu__react-carousel": "^2.0.10",
-    "@types/node": "20.12.12",
-    "@types/react": "18.3.3",
-    "autoprefixer": "^10.4.19",
-    "eslint": "9",
-    "eslint-config-next": "^14.2.3",
-    "eslint-config-prettier": "^9.1.0",
+    "@antfu/eslint-config": "^4.1.0",
+    "@eslint-react/eslint-plugin": "^1.24.1",
+    "@tailwindcss/postcss": "^4.0.1",
+    "@tailwindcss/typography": "^0.5.16",
+    "@types/node": "^22.12.0",
+    "@types/react": "^19.0.8",
+    "eslint": "^9",
+    "eslint-config-next": "^15.1.6",
+    "eslint-plugin-format": "^1.0.1",
+    "eslint-plugin-react-hooks": "^5.1.0",
+    "eslint-plugin-react-refresh": "^0.4.18",
+    "eslint-plugin-tailwindcss": "^3.18.0",
+    "husky": "^9.1.7",
+    "lint-staged": "^15.4.3",
     "postcss": "^8.4.38",
-    "prettier": "^3.2.5",
-    "prettier-plugin-tailwindcss": "^0.5.14",
-    "tailwindcss": "^3.4.3",
-    "typescript": "5.4.5"
+    "prettier": "^3.4.2",
+    "tailwindcss": "^4.0.1",
+    "typescript": "^5.7.3"
+  },
+  "lint-staged": {
+    "src/**/*.{js,jsx,ts,tsx}": [
+      "eslint --fix"
+    ]
+  },
+  "browserslist": {
+    "development": [
+      "last 1 chrome version",
+      "last 1 firefox version",
+      "last 1 safari version"
+    ]
   }
 }

@@ -1,0 +1,104 @@
+name: PR Lint and Build
+
+on:
+  pull_request:
+    branches:
+      - main
+
+jobs:
+  deploy-preview:
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read
+      pull-requests: write
+      issues: write
+    env:
+      AIRTABLE_API_KEY: ${{ secrets.AIRTABLE_API_KEY }}
+      AIRTABLE_BASE_ID: ${{ secrets.AIRTABLE_BASE_ID }}
+      REVALIDATE_TIME: ${{ vars.REVALIDATE_TIME }}
+
+    steps:
+      - name: 📥 Checkout code
+        uses: actions/checkout@v4
+
+      - name: 📦 Setup pnpm
+        uses: pnpm/action-setup@v4
+        with:
+          run_install: false
+      
+      - name: 📦 Restore pnpm cache
+        uses: actions/setup-node@v4
+        with:
+          node-version: "lts/*"
+          cache: 'pnpm'
+
+      - name: 📂 Install dependencies
+        run: pnpm install
+
+      # 🚨 Run Lint check
+      - name: 🚨 Run Lint
+        run: pnpm run lint:fix | tee lint-results.txt
+      
+      # 🔨 Build the app
+      - name: 🔨 Build the app
+        run: |
+          pnpm run build || echo "BUILD_FAILED" > build-status.txt
+
+      # 🚮 Clean up all results for comment
+      - name: 🚮 Clean up results
+        run: |
+          sed -i 's/\x1b\[[0-9;]*m//g' lint-results.txt
+
+      # 📄 Format all results for better readability
+      - name: 📄 Format all results
+        run: |
+          {
+            echo "### 🎨 Lint Check"
+            echo ""
+            if grep -qE "^[^0]* problems" lint-results.txt; then
+              echo "⚠️ **Lint Issues Found** - PLEASE FIX THEM!"
+              echo '```'
+              cat lint-results.txt
+              echo '```'
+            else
+              echo "✅ **Lint**: No linting issues found!"
+            fi
+          } > formatted-results.txt
+
+      # 📄 Capture build errors if build failed
+      - name: 📄 Capture build errors
+        if: failure()
+        run: |
+          echo "### ❌ Build Failed!" > build-results.txt
+          echo "" >> build-results.txt
+          echo '```' >> build-results.txt
+          cat build-status.txt >> build-results.txt
+          echo '```' >> build-results.txt
+
+      # 💬 Post test results and build status to PR
+      - name: 💬 Post results to PR
+        uses: actions/github-script@v7
+        with:
+          script: |
+            const fs = require('fs');
+            const lintResults = fs.readFileSync('formatted-results.txt', 'utf8');
+            const buildFailed = fs.existsSync('build-status.txt');
+
+            let commentBody = buildFailed
+              ? "❌ **Build Failed!**\n\n"
+              : "🚀 **Build Successful!**\n\n";
+
+            commentBody += lintResults;
+
+            // Check build-results.txt exists and append to comment
+            if (buildFailed && fs.existsSync('build-results.txt')) {
+              const buildErrors = fs.readFileSync('build-results.txt', 'utf8');
+              commentBody += "\n\n" + buildErrors;
+            }
+
+            github.rest.issues.createComment({
+              issue_number: context.issue.number,
+              owner: context.repo.owner,
+              repo: context.repo.repo,
+              body: commentBody
+            });

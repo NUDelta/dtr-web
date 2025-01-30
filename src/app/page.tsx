@@ -7,13 +7,8 @@ export default function Home() {
   return (
     <>
       <Container className="flex flex-col gap-6 md:flex-row">
-        <div className="w-full md:w-2/3">
-          <Slides />
-        </div>
-
-        <div className="w-full md:w-1/3">
-          <HomeIntro />
-        </div>
+        <Slides />
+        <HomeIntro />
       </Container>
 
       <Container className="mt-4">

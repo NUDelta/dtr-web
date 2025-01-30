@@ -37,7 +37,7 @@ const grants = [
 
 export default function HomeIntro() {
   return (
-    <div className="prose">
+    <div className="prose w-full md:w-1/3">
       <h2>Design, Technology, and Research (DTR)</h2>
 
       <p>

@@ -18,7 +18,9 @@ export default antfu({
   lessOpinionated: true,
 }, 
 {
+  files: ['src/app/**/loading.tsx'],
   rules: {
+    "react/no-array-index-key": "off",
   },
 },
 {

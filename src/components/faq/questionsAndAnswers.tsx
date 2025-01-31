@@ -15,13 +15,13 @@ const questionsAndAnswers: QA[] = [
       <>
         DTR is offered as a
         {' '}
-        <a
+        <Link
           target="_blank"
           rel="noreferrer noopener"
           href="https://www.mccormick.northwestern.edu/computer-science/academics/courses/descriptions/315-415.html"
         >
-          EECS 315/415 course
-        </a>
+          COMP_SCI 315/415 course
+        </Link>
         {' '}
         every quarter. Students can start in any quarter. Most students choose
         to continue in DTR until they graduate.
@@ -151,7 +151,7 @@ const questionsAndAnswers: QA[] = [
       <>
         Get in touch with
         {' '}
-        <a href="mailto:hq@northwestern.edu\">Haoqi</a>
+        <Link href="mailto:hq@northwestern.edu" prefetch={false}>Haoqi</Link>
         {' '}
         or
         {' '}

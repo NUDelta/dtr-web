@@ -1,7 +1,7 @@
 import type { Metadata } from 'next';
-import ProjectPublications from '@/components/people/ProjectPublications';
-import TeamMembers from '@/components/people/TeamMembers';
+import ProjectPublications from '@/components/projects/ProjectPublications';
 import ProjectVideo from '@/components/projects/ProjectVideo';
+import TeamMembers from '@/components/projects/TeamMembers';
 import { getCachedRecords } from '@/lib/airtable';
 import { getProject } from '@/lib/project';
 import { notFound } from 'next/navigation';

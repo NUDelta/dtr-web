@@ -40,14 +40,19 @@ export default function Header() {
 
       {isMenuOpen && (
         <div className="px-4 py-8">
-          <Nav />
+          <Nav isMenuOpen={isMenuOpen} setIsMenuOpen={setIsMenuOpen} />
         </div>
       )}
     </header>
   );
 }
 
-function Nav() {
+interface NavProps {
+  isMenuOpen?: boolean;
+  setIsMenuOpen?: (isOpen: boolean) => void;
+}
+
+function Nav({ isMenuOpen, setIsMenuOpen }: NavProps) {
   const pathname = usePathname();
 
   return (
@@ -58,6 +63,11 @@ function Nav() {
         <Link
           href={href}
           key={label}
+          onClick={() => {
+            if (isMenuOpen && setIsMenuOpen && isMenuOpen === true) {
+              setIsMenuOpen(false);
+            }
+          }}
           className={`px-3 py-3 transition-colors hover:bg-yellow hover:text-black ${
             pathname === href ? 'bg-yellow text-black' : ''
           }`}

@@ -24,11 +24,11 @@ export default function Home() {
             {' '}
             is out! Also check out the DTR documentary,
             {' '}
-            <a target="_blank" rel="noreferrer noopener" href="https://forward.movie">
+            <Link target="_blank" rel="noreferrer noopener" href="https://forward.movie">
               <span className="link link-underline link-underline-black font-bold text-black">
                 Forward
               </span>
-            </a>
+            </Link>
             .
           </p>
         </div>

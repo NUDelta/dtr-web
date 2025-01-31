@@ -22,27 +22,29 @@ export default function Letters() {
           <div key={annualLetter.name} className="mb-4">
             <ul>
               <li>
-                <a
+                <Link
                   target="_blank"
                   rel="noreferrer noopener"
                   href={annualLetter.link}
+                  prefetch={false}
                 >
                   {annualLetter.name}
-                </a>
+                </Link>
                 {/* add links to each section of the annual letter */}
                 {annualLetter.tableOfContents.map((section, index) => (
                   <span key={section.name}>
-                    <a
+                    <Link
                       target="_blank"
                       rel="noreferrer noopener"
                       href={`${annualLetter.link}#page=${section.page}`}
                       className="bg-transparent!"
+                      prefetch={false}
                     >
                       <span className="link link-underline link-underline-black">
                         {section.name}
                         {' '}
                       </span>
-                    </a>
+                    </Link>
                     {/* add a vertical bar to separate sections */}
                     {index < annualLetter.tableOfContents.length - 1 && (
                       <span className="text-slate-300">| </span>

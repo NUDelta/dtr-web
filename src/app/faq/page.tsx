@@ -14,9 +14,11 @@ export default function Faq() {
       {/* Populate questions and answers */}
       <div className="space-y-6">
         {questionsAndAnswers.map(qa => (
-          <div key={String(qa.question)} className="">
+          <div key={String(qa.question)}>
             <h5 className="text-lg font-semibold">{qa.question}</h5>
-            {qa.answer}
+            <p>
+              {qa.answer}
+            </p>
           </div>
         ))}
       </div>

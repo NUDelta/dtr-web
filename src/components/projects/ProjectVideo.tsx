@@ -14,7 +14,7 @@ export default function ProjectVideo({ title, url }: ProjectVideoProps) {
 
   return (
     <div className="mb-8 w-full">
-      <h2 className="mb-2 border-b border-black pb-2 text-2xl font-bold">{title}</h2>
+      <h3 className="mb-2 border-b border-black pb-2 text-2xl font-bold">{title}</h3>
       <div className="player-wrapper">
         <ReactPlayer url={url} className="react-player" width="100%" height="100%" controls />
       </div>

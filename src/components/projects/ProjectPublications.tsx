@@ -11,7 +11,7 @@ export default function ProjectPublications({ publications }: ProjectPublication
 
   return (
     <div className="mb-8 w-full">
-      <h2 className="mb-2 border-b border-black pb-2 text-2xl font-bold">Publications</h2>
+      <h3 className="mb-2 border-b border-black pb-2 text-2xl font-bold">Publications</h3>
       <ul className="prose max-w-none list-none font-medium">
         {publications.map(publication => (
           <li key={publication.id}>

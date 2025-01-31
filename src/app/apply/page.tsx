@@ -17,34 +17,35 @@ export default function Apply() {
           <Link href="/">browsing this website</Link>
           ,
           {' '}
-          <a
+          <Link
             target="_blank"
             rel="noreferrer noopener"
             href="http://users.eecs.northwestern.edu/~hq/papers/ars-cscw2017.pdf"
+            prefetch={false}
           >
             reading the agile research paper
-          </a>
+          </Link>
           , or
           {' '}
-          <a
+          <Link
             target="_blank"
             rel="noreferrer noopener"
             href="https://www.forward.movie/"
           >
             watching the documentary
-          </a>
+          </Link>
           .
         </li>
         <li>
           Complete the
           {' '}
-          <a
+          <Link
             target="_blank"
             rel="noreferrer noopener"
             href="https://docs.google.com/forms/d/12PJFFoPrk6CzopB0mAm2Go3eLFBzNMMmwjDtCNAdKEc/viewform"
           >
             application form
-          </a>
+          </Link>
           {' '}
           to tell us more about you, and when you can meet with us. You
           should apply in the quarter
@@ -88,7 +89,7 @@ export default function Apply() {
       <p>
         Should you have any questions, don&apos;t hesitate to reach out to
         {' '}
-        <a href="mailto:hq@northwestern.edu">Haoqi</a>
+        <Link href="mailto:hq@northwestern.edu" prefetch={false}>Haoqi</Link>
         {' '}
         or
         {' '}

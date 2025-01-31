@@ -25,12 +25,12 @@ jobs:
         uses: pnpm/action-setup@v4
         with:
           run_install: false
-      
+
       - name: 📦 Restore pnpm cache
         uses: actions/setup-node@v4
         with:
-          node-version: "lts/*"
-          cache: 'pnpm'
+          node-version: 'lts/*'
+          cache: pnpm
 
       - name: 📂 Install dependencies
         run: pnpm install
@@ -38,7 +38,7 @@ jobs:
       # 🚨 Run Lint check
       - name: 🚨 Run Lint
         run: pnpm run lint:fix | tee lint-results.txt
-      
+
       # 🔨 Build the app
       - name: 🔨 Build the app
         run: |

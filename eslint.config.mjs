@@ -1,5 +1,5 @@
-import antfu from '@antfu/eslint-config'
-import nextPlugin from '@next/eslint-plugin-next'
+import antfu from '@antfu/eslint-config';
+import nextPlugin from '@next/eslint-plugin-next';
 // import tailwind from "eslint-plugin-tailwindcss";
 
 export default antfu({
@@ -10,20 +10,18 @@ export default antfu({
   },
   stylistic: {
     semi: true,
-    quotes: "single",
+    quotes: 'single',
   },
   plugins: {
     '@next/next': nextPlugin,
   },
   lessOpinionated: true,
-}, 
-{
+}, {
   files: ['src/app/**/loading.tsx'],
   rules: {
-    "react/no-array-index-key": "off",
+    'react/no-array-index-key': 'off',
   },
-},
-{
+}, {
   // TODO: Need wait for their support for tailwindcss v4
   // ! Not support tailwindcss v4 yet
   // files: ['**/*.{ts,tsx}'],

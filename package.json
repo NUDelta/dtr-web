@@ -2,18 +2,18 @@
   "name": "web",
   "version": "1.0.0",
   "private": true,
+  "packageManager": "yarn@1.22.22",
+  "homepage": "https://github.com/NUDelta/dtr-web",
   "engines": {
     "node": "22.x"
   },
-  "packageManager": "pnpm@9.15.4",
-  "homepage": "https://github.com/NUDelta/dtr-web",
   "scripts": {
     "dev": "next dev --turbo",
-    "build": "pnpm lint:fix && NODE_NO_WARNINGS=1 next build",
+    "build": "yarn lint:fix && NODE_NO_WARNINGS=1 next build",
     "start": "NODE_NO_WARNINGS=1 next start -H 0.0.0.0 -p ${PORT:-8080}",
     "lint": "next lint",
     "lint:fix": "next lint --fix",
-    "prepare": "husky"
+    "postinstall": "husky"
   },
   "dependencies": {
     "airtable": "^0.12.2",
@@ -21,17 +21,17 @@
     "next-nprogress-bar": "^2.4.3",
     "react": "^19.0.0",
     "react-dom": "^19.0.0",
-    "react-markdown": "^9.0.1",
+    "react-markdown": "^9.0.3",
     "react-player": "^2.16.0"
   },
   "devDependencies": {
     "@antfu/eslint-config": "^4.1.0",
-    "@eslint-react/eslint-plugin": "^1.24.1",
+    "@eslint-react/eslint-plugin": "^1.26.0",
     "@tailwindcss/postcss": "^4.0.1",
     "@tailwindcss/typography": "^0.5.16",
     "@types/node": "^22.12.0",
     "@types/react": "^19.0.8",
-    "eslint": "^9",
+    "eslint": "^9.19.0",
     "eslint-config-next": "^15.1.6",
     "eslint-plugin-format": "^1.0.1",
     "eslint-plugin-react-hooks": "^5.1.0",
@@ -39,7 +39,7 @@
     "eslint-plugin-tailwindcss": "^3.18.0",
     "husky": "^9.1.7",
     "lint-staged": "^15.4.3",
-    "postcss": "^8.4.38",
+    "postcss": "^8.5.1",
     "prettier": "^3.4.2",
     "tailwindcss": "^4.0.1",
     "typescript": "^5.7.3"

@@ -1,8 +1,6 @@
 name: Auto-label PR based on file paths
 
-on:
-  pull_request_target:
-    types: [opened, synchronize]
+on: pull_request_target
 
 jobs:
   label:
@@ -10,7 +8,6 @@ jobs:
     permissions:
       contents: read
       pull-requests: write
-      issues: write
     steps:
       - name: Checkout code
         uses: actions/checkout@v4
@@ -22,7 +19,7 @@ jobs:
             const prFiles = await github.rest.pulls.listFiles({
               owner: context.repo.owner,
               repo: context.repo.repo,
-              pull_number: context.issue.number
+              pull_number: context.payload.pull_request.number
             });
 
             const labelsToColor = {
@@ -41,7 +38,7 @@ jobs:
               if (file.filename.startsWith('src/app/')) {
                 labels.add('main');
               }
-              if (file.filename.startsWith('src/lib/') || (file.filename.startsWith('src/utils/')) {
+              if (file.filename.startsWith('src/lib/') || file.filename.startsWith('src/utils/')) {
                 labels.add('lib');
               }
               if (file.filename.startsWith('src/components/')) {
@@ -85,7 +82,7 @@ jobs:
               await github.rest.issues.addLabels({
                 owner: context.repo.owner,
                 repo: context.repo.repo,
-                issue_number: context.issue.number,
+                issue_number: context.payload.pull_request.number,
                 labels: Array.from(labels)
               });
             }

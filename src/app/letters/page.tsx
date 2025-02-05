@@ -30,6 +30,7 @@ export default function Letters() {
                 >
                   {annualLetter.name}
                 </Link>
+                <br />
                 {/* add links to each section of the annual letter */}
                 {annualLetter.tableOfContents.map((section, index) => (
                   <span key={section.name}>

@@ -44,7 +44,7 @@ export default function RootLayout({
       <body className={`${lato.variable} bg-white pb-8`}>
         <RouterTransition />
         <Header />
-        <main>
+        <main className="pt-[4rem]">
           <Container className="mt-8">
             {children}
           </Container>

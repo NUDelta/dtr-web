@@ -1,5 +1,5 @@
 import type { Metadata } from 'next';
-import TeamMembers from '@/components/people/TeamMembers';
+import TeamMembers from '@/components/projects/TeamMembers';
 import { fetchSigs } from '@/lib/sig';
 import Link from 'next/link';
 import ReactMarkdown from 'react-markdown';
@@ -62,9 +62,9 @@ export default async function Projects() {
             {sig.projects.map(project => (
               <div key={project.id} className="mb-4">
                 <Link href={`/projects/${project.id}`}>
-                  <h2 className="break-normal bg-yellow p-2 text-2xl font-semibold transition-colors hover:bg-dark-yellow">
+                  <h3 className="break-normal bg-yellow p-2 text-2xl font-semibold transition-colors hover:bg-dark-yellow">
                     {project.name}
-                  </h2>
+                  </h3>
                 </Link>
 
                 <ReactMarkdown className="prose mt-2">
@@ -75,13 +75,7 @@ export default async function Projects() {
           </div>
 
           {/* Members of SIG */}
-          <div className="w-full">
-            <h2 className="mb-2 border-b border-black pb-2 text-2xl font-bold">
-              Team
-            </h2>
-
-            <TeamMembers groupId={sig.id} members={sig.members} />
-          </div>
+          <TeamMembers groupId={sig.id} members={sig.members} />
         </div>
       ))}
     </div>

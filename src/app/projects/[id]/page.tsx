@@ -55,7 +55,6 @@ export default async function IndividualProjectPage({
   const project = await getProject(id, true);
 
   if (!project) {
-    console.warn(`Project ${id} not found`);
     notFound();
   }
 

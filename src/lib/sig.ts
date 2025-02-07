@@ -6,6 +6,27 @@ import { getCachedRecords } from './airtable';
 import { fetchPeople } from './people';
 import { getProject } from './project';
 
+const truncateToNearestWord = (input: string, maxLength: number): string => {
+  if (typeof input !== 'string' || typeof maxLength !== 'number' || maxLength <= 0) {
+    return '';
+  }
+
+  // No truncation needed
+  if (input.length <= maxLength) {
+    return input;
+  }
+
+  let truncated = input.substring(0, maxLength);
+
+  // Find the last space within the truncated string to avoid cutting words
+  const lastSpaceIndex = truncated.lastIndexOf(' ');
+  if (lastSpaceIndex > 0) {
+    truncated = truncated.substring(0, lastSpaceIndex);
+  }
+
+  return `${truncated}...`;
+};
+
 /**
  * Fetches all SIGs (Special Interest Groups) from the Airtable database.
  *
@@ -79,18 +100,12 @@ export async function fetchSigs(): Promise<SIG[]> {
       // Trim project descriptions (max 150 chars, avoiding cut-off words)
       const partialProjects: PartialProject[] = projects.map((project) => {
         const maxCharLen = 150;
-        let trimmedDescription = project.description?.substring(0, maxCharLen) ?? '';
-        trimmedDescription = trimmedDescription.substring(
-          0,
-          Math.min(trimmedDescription.length, trimmedDescription.lastIndexOf(' ')),
-        );
-        trimmedDescription += (project.description?.length ?? 0) > maxCharLen ? '...' : '';
 
         return {
           id: project.id,
           name: project.name,
           banner_image: project.banner_image,
-          description: trimmedDescription,
+          description: truncateToNearestWord(project.description, maxCharLen),
           status: project.status,
         };
       });

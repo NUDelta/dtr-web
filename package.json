@@ -16,7 +16,7 @@
     "postinstall": "husky"
   },
   "dependencies": {
-    "@zl-asica/react": "^0.3.10",
+    "@zl-asica/react": "^0.3.13",
     "airtable": "^0.12.2",
     "next": "^15.1.6",
     "next-nprogress-bar": "^2.4.4",
@@ -32,7 +32,7 @@
     "@tailwindcss/typography": "^0.5.16",
     "@types/node": "^22.13.1",
     "@types/react": "^19.0.8",
-    "eslint": "^9.19.0",
+    "eslint": "^9.20.0",
     "eslint-config-next": "^15.1.6",
     "eslint-plugin-format": "^1.0.1",
     "eslint-plugin-react-hooks": "^5.1.0",

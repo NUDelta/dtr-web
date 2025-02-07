@@ -30,7 +30,6 @@ export async function getProject(projectId: string, getAllData = false): Promise
     const projectRecord = projects.find(p => p.id === projectId);
 
     if (!projectRecord) {
-      console.error(`Project not found: ${projectId}`);
       return null;
     }
 

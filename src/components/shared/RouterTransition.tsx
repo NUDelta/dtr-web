@@ -8,6 +8,7 @@ const RouterTransition = () => {
       color="#f5ed9c"
       height="4px"
       options={{ showSpinner: false }}
+      aria-hidden="true"
     />
   );
 };

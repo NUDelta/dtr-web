@@ -1,6 +1,6 @@
 'use client';
 
-import { useClickOutside, useEventListener } from '@zl-asica/react';
+import { useClickOutside, useHideOnScrollDown } from '@zl-asica/react';
 import Link from 'next/link';
 import { usePathname } from 'next/navigation';
 import { useRef, useState } from 'react';
@@ -18,9 +18,8 @@ const links: { href: string; label: string }[] = [
 
 export default function Header() {
   const [isMenuOpen, setIsMenuOpen] = useState(false);
-  const [isHeaderVisible, setIsHeaderVisible] = useState(true);
   const headerRef = useRef<HTMLDivElement>(null);
-  const lastScrollY = useRef(0);
+  const isHeaderVisible = useHideOnScrollDown(headerRef);
 
   // Listen for outside click to close the mobile menu
   useClickOutside(headerRef, () => {
@@ -28,23 +27,6 @@ export default function Header() {
       setIsMenuOpen(false);
     }
   });
-
-  // Handle scroll behavior to hide on scroll down and show on scroll up
-  const handleScroll = () => {
-    const currentScrollY = window.scrollY;
-
-    if (currentScrollY > lastScrollY.current) {
-      // Scrolling down → hide the header
-      setIsHeaderVisible(false);
-    }
-    else {
-      // Scrolling up → show the header
-      setIsHeaderVisible(true);
-    }
-    lastScrollY.current = currentScrollY;
-  };
-
-  useEventListener('scroll', handleScroll);
 
   return (
     <header
@@ -54,7 +36,15 @@ export default function Header() {
       }`}
     >
       <Container className="flex max-w-6xl items-center justify-between gap-6 py-2 md:justify-start">
-        <Link href="/" className="block font-semibold md:text-3xl lg:text-4xl">
+        <Link
+          href="/"
+          className="block font-semibold md:text-3xl lg:text-4xl"
+          onClick={() => {
+            if (isMenuOpen) {
+              setIsMenuOpen(false);
+            }
+          }}
+        >
           DTR
         </Link>
 
@@ -79,6 +69,7 @@ export default function Header() {
         className={`absolute left-0 top-full z-40 w-full bg-black text-white shadow-lg transition-all duration-300 ease-out md:hidden ${
           isMenuOpen ? 'opacity-100 visible' : 'opacity-0 invisible'
         }`}
+        aria-hidden={!isMenuOpen}
       >
         <Nav isMenuOpen={isMenuOpen} setIsMenuOpen={setIsMenuOpen} />
       </div>

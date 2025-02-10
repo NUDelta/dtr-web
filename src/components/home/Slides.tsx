@@ -54,9 +54,9 @@ export default function Slides() {
           className="flex transition-transform duration-500 ease-in-out"
           style={{ transform: `translateX(-${currentIndex * 100}%)` }}
         >
-          {images.map(img => (
+          {images.map((img, index) => (
             <div key={img.src} className="w-full shrink-0">
-              <Image src={img} alt="slide" className="w-full h-auto" />
+              <Image src={img} alt={`Slide - ${index}`} className="w-full h-auto" />
             </div>
           ))}
         </div>

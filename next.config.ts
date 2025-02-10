@@ -6,6 +6,12 @@ const nextConfig: NextConfig = {
     dirs: ['src'],
   },
   images: {
+    localPatterns: [
+      {
+        pathname: '/images/**',
+        search: '',
+      },
+    ],
     remotePatterns: [
       {
         protocol: 'https',

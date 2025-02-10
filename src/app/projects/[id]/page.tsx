@@ -2,8 +2,7 @@ import type { Metadata } from 'next';
 import ProjectPublications from '@/components/projects/ProjectPublications';
 import ProjectVideo from '@/components/projects/ProjectVideo';
 import TeamMembers from '@/components/projects/TeamMembers';
-import { getCachedRecords } from '@/lib/airtable';
-import { getProject } from '@/lib/project';
+import { getAllProjectIds, getProjects } from '@/lib/project';
 import { notFound } from 'next/navigation';
 import ReactMarkdown from 'react-markdown';
 
@@ -17,21 +16,21 @@ export const revalidate = 60;
 export const dynamicParams = true; // or false, to 404 on unknown paths
 
 export async function generateStaticParams() {
-  const projects = await getCachedRecords('Projects');
-  return projects.map(project => ({
-    id: project.id,
-  }));
+  const projectIds = await getAllProjectIds();
+  return projectIds.map(id => ({ id }));
 }
 
 export async function generateMetadata({ params }: { params: Promise<{ id: string }> }): Promise<Metadata> {
   const id = (await params).id;
-  const project = await getProject(id, true);
+  const projects = await getProjects([id], true);
 
-  if (!project) {
+  if (Array.isArray(projects) && projects.length === 0) {
     return {
       title: `Project ${id} not found | DTR`,
     };
   }
+
+  const [project] = projects;
 
   return {
     title: `${project.name} | DTR`,
@@ -52,12 +51,13 @@ export default async function IndividualProjectPage({
   params: Promise<{ id: string }>;
 }) {
   const id = (await params).id;
-  const project = await getProject(id, true);
+  const projects = await getProjects([id], true);
 
-  if (!project) {
-    console.warn(`Project ${id} not found`);
+  if (Array.isArray(projects) && projects.length === 0) {
     notFound();
   }
+
+  const [project] = projects;
 
   return (
     <div className="mx-auto max-w-4xl bg-gray-50 p-4">

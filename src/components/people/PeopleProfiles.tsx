@@ -17,7 +17,7 @@ export default function PeopleProfiles({
 
   return (
     <div className="mx-auto mb-8 max-w-4xl space-y-8">
-      {relevantPeople.map(person => (
+      {relevantPeople.map((person, index) => (
         <div key={person.id} className="flex flex-col gap-4 md:flex-row">
           <div className="w-52 shrink-0">
             <Image
@@ -29,6 +29,7 @@ export default function PeopleProfiles({
                 maxWidth: '100%',
                 height: 'auto',
               }}
+              priority={index < 5}
             />
           </div>
 

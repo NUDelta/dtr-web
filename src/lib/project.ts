@@ -51,10 +51,12 @@ export async function getProject(projectId: string, getAllData = false): Promise
       }));
 
     // Construct basic project details
+    const bannerImage = await getImgUrlFromAttachmentObj(projectRecord.fields.banner_image as Attachment[]);
+
     const project: Project = {
       id: projectRecord.id,
       name: (projectRecord.fields.name as string) ?? '',
-      banner_image: getImgUrlFromAttachmentObj(projectRecord.fields.banner_image as Attachment[]),
+      banner_image: bannerImage,
       description: (projectRecord.fields.description as string) ?? '',
       status: (projectRecord.fields.status as string) ?? 'Active',
       demo_video: (projectRecord.fields.demo_video as string) ?? null,
@@ -118,7 +120,7 @@ export async function fetchProjectImages(imageDocId: string): Promise<ProjectIma
 
     const explainerImages: ProjectImages['explainerImages'] = [];
     for (let i = 1; i <= 5; i++) {
-      const imageUrl = getImgUrlFromAttachmentObj(record.fields[`image_${i}`] as Attachment[]);
+      const imageUrl = await getImgUrlFromAttachmentObj(record.fields[`image_${i}`] as Attachment[]);
       const description = record.fields[`image_${i}_description`] as string;
 
       if (imageUrl !== null && description) {

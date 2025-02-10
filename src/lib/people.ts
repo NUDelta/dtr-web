@@ -27,13 +27,13 @@ export async function fetchPeople(): Promise<Person[] | null> {
     return null;
   }
 
-  return peopleRecords.map(({ id, fields }) => ({
+  return Promise.all(peopleRecords.map(async ({ id, fields }) => ({
     id,
     name: (fields.name as string) ?? '',
     title: (fields.title as string) ?? '',
     role: (fields.role as string) ?? 'Undergraduate Student Researcher',
     status: (fields.status as string) ?? 'Active',
     bio: (fields.bio as string) ?? '',
-    profile_photo: getImgUrlFromAttachmentObj(fields.profile_photo as Attachment[]),
-  }));
+    profile_photo: await getImgUrlFromAttachmentObj(fields.profile_photo as Attachment[]),
+  })));
 }

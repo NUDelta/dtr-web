@@ -90,7 +90,7 @@ export async function fetchSigs(): Promise<SIG[]> {
     }));
 
     // Process each SIG record
-    const results: SIG[] = sigRecords.map((record) => {
+    const results: SIG[] = await Promise.all(sigRecords.map(async (record) => {
       // Fetch projects linked to the SIG
       const projectIds: string[] = (record.fields.projects as string[]) ?? [];
       const projects: Project[] = projectIds
@@ -141,15 +141,16 @@ export async function fetchSigs(): Promise<SIG[]> {
       }));
 
       // Construct SIG object
+      const bannerImage = await getImgUrlFromAttachmentObj(record.fields.banner_image as Attachment[]);
       return {
         id: record.id,
         name: (record.fields.name as string) ?? '',
         description: (record.fields.description as string) ?? '',
-        banner_image: getImgUrlFromAttachmentObj(record.fields.banner_image as Attachment[]),
+        banner_image: bannerImage,
         members: partialMembers,
         projects: partialProjects,
       };
-    });
+    }));
 
     return results;
   }

@@ -1,6 +1,7 @@
 import type { Metadata } from 'next';
 import Container from '@/components/shared/Container';
 import Header from '@/components/shared/Header';
+import PopupAnnouncement from '@/components/shared/PopupAnnouncement';
 import RouterTransition from '@/components/shared/RouterTransition';
 import { Lato } from 'next/font/google';
 
@@ -43,6 +44,7 @@ export default function RootLayout({
     <html lang="en">
       <body className={`${lato.variable} bg-white pb-8`}>
         <RouterTransition />
+        <PopupAnnouncement />
         <Header />
         <main className="pt-[4rem]">
           <Container className="mt-8">

@@ -61,7 +61,7 @@ export default async function Projects() {
           <div className="my-10 grid grid-cols-1 gap-4 md:grid-cols-2">
             {sig.projects.map(project => (
               <div key={project.id} className="mb-4">
-                <Link href={`/projects/${project.id}`}>
+                <Link href={`/projects/${project.id}`} prefetch={false}>
                   <h3 className="break-normal bg-yellow p-2 text-2xl font-semibold transition-colors hover:bg-dark-yellow">
                     {project.name}
                   </h3>

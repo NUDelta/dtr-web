@@ -99,6 +99,7 @@ function Nav({ isMenuOpen, setIsMenuOpen }: NavProps) {
           className={`px-3 py-3 transition-colors rounded-sm hover:bg-yellow hover:text-black ${
             pathname === href ? 'rounded-sm bg-yellow text-black' : ''
           }`}
+          prefetch={false}
         >
           {label}
         </Link>

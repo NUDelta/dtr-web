@@ -6,186 +6,182 @@ import { getCachedRecords } from './airtable';
 import { fetchPeople } from './people';
 
 /**
- * Retrieves detailed project information from Airtable.
+ * Retrieves detailed project information from Airtable for multiple projects.
  *
  * This function fetches project data, including basic details, associated team members,
  * and optionally related images and publications. If `getAllData` is false, only partial
  * project information is returned.
  *
  * @async
- * @function getProject
- * @param {string} projectId - The unique ID of the project in Airtable.
+ * @function getProjects
+ * @param {string[]} projectIds - An array of unique project IDs in Airtable.
  * @param {boolean} [getAllData] - Whether to fetch additional images and publications.
- * @returns {Promise<Project | null>} A promise that resolves to the project details, or `null` if not found.
+ * @returns {Promise<Project[]>} A promise that resolves to an array of project details.
  *
  * @example
  * ```typescript
- * const project = await getProject("rec123456", true);
- * console.log(project);
+ * const projects = await getProjects(["rec123456", "rec789101"], true);
+ * console.log(projects);
  * ```
  */
-export async function getProject(projectId: string, getAllData = false): Promise<Project | null> {
+export async function getProjects(projectIds: string[], getAllData = false): Promise<Project[]> {
   try {
     const projects = await getCachedRecords('Projects');
-    const projectRecord = projects.find(p => p.id === projectId);
-
-    if (!projectRecord) {
-      return null;
-    }
-
-    // Fetch and filter team members
     const people = await fetchPeople();
+
     if (!people) {
       console.error('Failed to fetch people records.');
-      return null;
+      return [];
     }
 
-    const fetchedMembers = (projectRecord.fields.members as string[]) ?? [];
-    const members = sortPeople(people.filter(person => fetchedMembers.includes(person.name)))
-      .map(({ id, name, role, status, profile_photo }) => ({
-        id,
-        name,
-        role,
-        status,
-        profile_photo,
-      }));
+    // Filter projects based on provided IDs
+    const filteredProjects = projects.filter(p => projectIds.includes(p.id));
 
-    // Construct basic project details
-    const bannerImage = await getImgUrlFromAttachmentObj(projectRecord.fields.banner_image as Attachment[]);
+    // Extract all project IDs across SIGs
+    const result = await Promise.all(
+      filteredProjects.map(async (projectRecord) => {
+        // Fetch people associated with the project
+        const fetchedMembers = (projectRecord.fields.members as string[]) ?? [];
+        const members = sortPeople(people.filter(person => fetchedMembers.includes(person.name)))
+          .map(({ id, name, role, status, profile_photo }) => ({
+            id,
+            name,
+            role,
+            status,
+            profile_photo,
+          }));
 
-    const project: Project = {
-      id: projectRecord.id,
-      name: (projectRecord.fields.name as string) ?? '',
-      banner_image: bannerImage,
-      description: (projectRecord.fields.description as string) ?? '',
-      status: (projectRecord.fields.status as string) ?? 'Active',
-      demo_video: (projectRecord.fields.demo_video as string) ?? null,
-      sprint_video: (projectRecord.fields.sprint_video as string) ?? null,
-      members,
-      images: { explainerImages: [] },
-      publications: [],
-    };
+        // Fetch project banner image
+        const bannerImage = await getImgUrlFromAttachmentObj(projectRecord.fields.banner_image as Attachment[]);
 
-    // Return only partial details if `getAllData` is false
-    if (!getAllData) {
-      return project;
-    }
+        // Construct project object
+        const project: Project = {
+          id: projectRecord.id,
+          name: (projectRecord.fields.name as string) ?? '',
+          banner_image: bannerImage,
+          description: (projectRecord.fields.description as string) ?? '',
+          status: (projectRecord.fields.status as string) ?? 'Active',
+          demo_video: (projectRecord.fields.demo_video as string) ?? null,
+          sprint_video: (projectRecord.fields.sprint_video as string) ?? null,
+          members,
+          images: { explainerImages: [] },
+          publications: [],
+        };
 
-    // Fetch additional images and publications concurrently, but ensure failure doesn't break the entire request
-    const [imagesResult, publicationsResult] = await Promise.allSettled([
-      fetchProjectImages(Array.isArray(projectRecord.fields.images) ? (projectRecord.fields.images[0] as string) : ''),
-      fetchPublications(Array.isArray(projectRecord.fields.publications) ? (projectRecord.fields.publications[0] as string) : ''),
-    ]);
+        // Return partial project data if `getAllData` is false
+        if (!getAllData) {
+          return project;
+        }
 
-    return {
-      ...project,
-      images: imagesResult.status === 'fulfilled' ? imagesResult.value : { explainerImages: [] },
-      publications: publicationsResult.status === 'fulfilled' ? publicationsResult.value : [],
-    };
+        // Fetch additional project
+        const [imagesResult, publicationsResult] = await Promise.allSettled([
+          fetchProjectImages(projectRecord.fields.images as string[] ?? []),
+          fetchPublications(projectRecord.fields.publications as string[] ?? []),
+        ]);
+
+        // Return full project data
+        return {
+          ...project,
+          images: imagesResult.status === 'fulfilled' ? imagesResult.value : { explainerImages: [] },
+          publications: publicationsResult.status === 'fulfilled' ? publicationsResult.value : [],
+        };
+      }),
+    );
+
+    return result;
   }
   catch (error) {
-    console.error(`Error fetching project ${projectId}:`, error);
-    return null;
+    console.error(`Error fetching projects:`, error);
+    return [];
   }
 }
 
 /**
- * Fetches images associated with a project from Airtable.
+ * Fetches images associated with multiple projects from Airtable.
  *
  * @async
  * @function fetchProjectImages
- * @param {string} imageDocId - The unique Airtable record ID for project images.
+ * @param {string[]} imageDocIds - An array of Airtable record IDs for project images.
  * @returns {Promise<ProjectImages>} A promise resolving to an object containing image URLs and descriptions.
  * Returns an empty array if no images are found.
  *
  * @example
  * ```typescript
- * const images = await fetchProjectImages("rec123456");
+ * const images = await fetchProjectImages(["rec123456", "rec789101"]);
  * console.log(images);
  * ```
  */
-export async function fetchProjectImages(imageDocId: string): Promise<ProjectImages> {
-  if (!imageDocId) {
-    return { explainerImages: [] };
-  }
-
+export async function fetchProjectImages(imageDocIds: string[]): Promise<ProjectImages> {
   try {
     const records = await getCachedRecords('Project Images');
-    const record = records.find(r => r.id === imageDocId);
-
-    if (!record) {
-      console.warn(`Project Images not found: ${imageDocId}`);
-      return { explainerImages: [] };
-    }
+    const relevantRecords = records.filter(r => imageDocIds.includes(r.id));
 
     const explainerImages: ProjectImages['explainerImages'] = [];
-    for (let i = 1; i <= 5; i++) {
-      const imageUrl = await getImgUrlFromAttachmentObj(record.fields[`image_${i}`] as Attachment[]);
-      const description = record.fields[`image_${i}_description`] as string;
 
-      if (imageUrl !== null && description) {
-        explainerImages.push({ url: imageUrl, description });
+    // Fetch images and descriptions for each project
+    for (const record of relevantRecords) {
+      // Fetch up to 5 images and descriptions
+      for (let i = 1; i <= 5; i++) {
+        const imageUrl = await getImgUrlFromAttachmentObj(record.fields[`image_${i}`] as Attachment[]);
+        const description = record.fields[`image_${i}_description`] as string;
+        if (imageUrl !== null && description) {
+          explainerImages.push({ url: imageUrl, description });
+        }
       }
     }
 
     return { explainerImages };
   }
   catch (error) {
-    console.error(`Error fetching project images for ${imageDocId}:`, error);
+    console.error(`Error fetching project images:`, error);
     return { explainerImages: [] };
   }
 }
 
 /**
- * Fetches publications related to a project from Airtable.
+ * Fetches publications related to multiple projects from Airtable.
  *
  * @async
  * @function fetchPublications
- * @param {string} publicationDocId - The unique Airtable record ID for project publications.
+ * @param {string[]} publicationDocIds - An array of Airtable record IDs for project publications.
  * @returns {Promise<ProjectPublication[]>} A promise resolving to an array of publications.
  * Returns an empty array if no publications are found.
  *
  * @example
  * ```typescript
- * const publications = await fetchPublications("rec123456");
+ * const publications = await fetchPublications(["rec123456", "rec789101"]);
  * console.log(publications);
  * ```
  */
-export async function fetchPublications(publicationDocId: string): Promise<ProjectPublication[]> {
-  if (!publicationDocId) {
-    return [];
-  }
-
+export async function fetchPublications(publicationDocIds: string[]): Promise<ProjectPublication[]> {
   try {
     const records = await getCachedRecords('Project Publications');
-    const record = records.find(r => r.id === publicationDocId);
-
-    if (!record) {
-      console.warn(`Project Publications not found: ${publicationDocId}`);
-      return [];
-    }
+    const relevantRecords = records.filter(r => publicationDocIds.includes(r.id));
 
     const publications: ProjectPublication[] = [];
-    for (let i = 1; i <= 5; i++) {
-      const name = record.fields[`publication_${i}_name`] as string;
-      const conference = record.fields[`publication_${i}_conference`] as string;
-      const url = record.fields[`publication_${i}_url`] as string;
 
-      if (name && conference && url) {
-        publications.push({ id: `${record.id}-publication-${i}`, name, conference, url });
+    for (const record of relevantRecords) {
+      for (let i = 1; i <= 5; i++) {
+        const name = record.fields[`publication_${i}_name`] as string;
+        const conference = record.fields[`publication_${i}_conference`] as string;
+        const url = record.fields[`publication_${i}_url`] as string;
+        if (name && conference && url) {
+          publications.push({ id: `${record.id}-publication-${i}`, name, conference, url });
+        }
       }
     }
 
     return publications;
   }
   catch (error) {
-    console.error(`Error fetching project publications for ${publicationDocId}:`, error);
+    console.error(`Error fetching project publications:`, error);
     return [];
   }
 }
 
 /**
  * Fetches all project IDs from the Airtable "Projects" table.
+ * For ISR generation.
  *
  * @returns {Promise<string[]>} A list of project IDs.
  *

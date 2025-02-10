@@ -20,7 +20,7 @@ const announcements: Announcement[] = [
     title: 'DTR Open House',
     image: '/images/DTR-W25-Poster.webp',
     link: {
-      url: 'https://docs.google.com/forms/d/1PA-wRTvB3OecHlX2PUuNOYRTd6GRP_fBEz6s3qhMZSE',
+      url: 'https://forms.gle/jrstNPoYABQ6YdYb9',
       text: 'RSVP',
     },
     expiryDate: '2025-02-14',
@@ -62,10 +62,7 @@ const PopupAnnouncement = () => {
   return (
     <div
       className="fixed inset-0 flex items-center justify-center z-50 backdrop-blur-md bg-black/50 px-4 pt-[4rem] pb-4 pointer-events-auto"
-      onClick={(event_) => {
-        event_.stopPropagation();
-        event_.preventDefault();
-      }}
+      onClick={event_ => event_.stopPropagation()}
       aria-hidden={!isVisible}
     >
       <div

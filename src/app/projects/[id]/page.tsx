@@ -20,7 +20,11 @@ export async function generateStaticParams() {
   return projectIds.map(id => ({ id }));
 }
 
-export async function generateMetadata({ params }: { params: Promise<{ id: string }> }): Promise<Metadata> {
+export async function generateMetadata({
+  params,
+}: {
+  params: Promise<{ id: string }>;
+}): Promise<Metadata> {
   const id = (await params).id;
   const projects = await getProjects([id], true);
 
@@ -74,9 +78,11 @@ export default async function IndividualProjectPage({
       )}
 
       {/* Description */}
-      <ReactMarkdown className="prose-lg my-8">
-        {project.description ?? ''}
-      </ReactMarkdown>
+      <div className="prose-lg my-8">
+        <ReactMarkdown>
+          {project.description ?? ''}
+        </ReactMarkdown>
+      </div>
 
       {/* Extra images */}
       <div className="mb-8 grid grid-cols-1 gap-8 md:grid-cols-2">
@@ -88,11 +94,13 @@ export default async function IndividualProjectPage({
               alt={`${project.name} image ${i + 1}`}
             />
             {img.description.trim() !== ''
-            && (
-              <ReactMarkdown className="text-sm">
-                {`Figure ${i + 1}: ${img.description}`}
-              </ReactMarkdown>
-            )}
+              && (
+                <div className="text-sm">
+                  <ReactMarkdown>
+                    {`Figure ${i + 1}: ${img.description}`}
+                  </ReactMarkdown>
+                </div>
+              )}
           </div>
         ))}
       </div>

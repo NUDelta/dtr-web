@@ -1,7 +1,6 @@
 'use client';
 
 import { useClickOutside, useHideOnScrollDown } from '@zl-asica/react';
-import Link from 'next/link';
 import { usePathname } from 'next/navigation';
 import { useRef, useState } from 'react';
 import Container from './Container';
@@ -36,7 +35,7 @@ export default function Header() {
       }`}
     >
       <Container className="flex max-w-6xl items-center justify-between gap-6 py-2 md:justify-start">
-        <Link
+        <a
           href="/"
           className="block font-semibold md:text-3xl lg:text-4xl"
           onClick={() => {
@@ -46,7 +45,7 @@ export default function Header() {
           }}
         >
           DTR
-        </Link>
+        </a>
 
         {/* Mobile Menu Button */}
         <button
@@ -88,7 +87,7 @@ function Nav({ isMenuOpen, setIsMenuOpen }: NavProps) {
   return (
     <nav className="flex flex-col md:flex-row md:items-center md:space-x-4 md:text-sm lg:text-base p-6 md:p-0">
       {links.map(({ href, label }) => (
-        <Link
+        <a
           href={href}
           key={label}
           onClick={() => {
@@ -99,10 +98,9 @@ function Nav({ isMenuOpen, setIsMenuOpen }: NavProps) {
           className={`px-3 py-3 transition-colors rounded-sm hover:bg-yellow hover:text-black ${
             pathname === href ? 'rounded-sm bg-yellow text-black' : ''
           }`}
-          prefetch={false}
         >
           {label}
-        </Link>
+        </a>
       ))}
     </nav>
   );

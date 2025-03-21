@@ -21,7 +21,6 @@ export default function Apply() {
             target="_blank"
             rel="noreferrer noopener"
             href="http://users.eecs.northwestern.edu/~hq/papers/ars-cscw2017.pdf"
-            prefetch={false}
           >
             reading the agile research paper
           </Link>
@@ -93,7 +92,7 @@ export default function Apply() {
         {' '}
         or
         {' '}
-        <Link href="/people">anyone else in DTR</Link>
+        <a href="/people">anyone else in DTR</a>
       </p>
 
       <div>

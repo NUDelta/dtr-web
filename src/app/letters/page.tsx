@@ -22,14 +22,13 @@ export default function Letters() {
           <div key={annualLetter.name} className="mb-4">
             <ul>
               <li>
-                <Link
+                <a
                   target="_blank"
                   rel="noreferrer noopener"
                   href={annualLetter.link}
-                  prefetch={false}
                 >
                   {annualLetter.name}
-                </Link>
+                </a>
                 <br />
                 {/* add links to each section of the annual letter */}
                 {annualLetter.tableOfContents.map((section, index) => (

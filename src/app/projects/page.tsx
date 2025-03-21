@@ -1,7 +1,6 @@
 import type { Metadata } from 'next';
 import TeamMembers from '@/components/projects/TeamMembers';
 import { fetchSigs } from '@/lib/sig';
-import Link from 'next/link';
 import ReactMarkdown from 'react-markdown';
 
 export const revalidate = 60;
@@ -53,23 +52,27 @@ export default async function Projects() {
           />
 
           {/* SIG description */}
-          <ReactMarkdown className="prose-lg my-4">
-            {sig.description}
-          </ReactMarkdown>
+          <div className="prose-lg my-4">
+            <ReactMarkdown>
+              {sig.description}
+            </ReactMarkdown>
+          </div>
 
           {/* Projects in SIG */}
           <div className="my-10 grid grid-cols-1 gap-4 md:grid-cols-2">
             {sig.projects.map(project => (
               <div key={project.id} className="mb-4">
-                <Link href={`/projects/${project.id}`} prefetch={false}>
+                <a href={`/projects/${project.id}`}>
                   <h3 className="break-normal bg-yellow p-2 text-2xl font-semibold transition-colors hover:bg-dark-yellow">
                     {project.name}
                   </h3>
-                </Link>
+                </a>
 
-                <ReactMarkdown className="prose mt-2">
-                  {project.description}
-                </ReactMarkdown>
+                <div className="prose mt-2">
+                  <ReactMarkdown>
+                    {project.description}
+                  </ReactMarkdown>
+                </div>
               </div>
             ))}
           </div>

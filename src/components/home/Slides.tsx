@@ -1,8 +1,9 @@
 'use client';
 
+import { ChevronLeft, ChevronRight } from 'lucide-react';
 import Image from 'next/image';
-import { useEffect, useState } from 'react';
 
+import { useEffect, useState } from 'react';
 import image1 from './assets/1.jpg';
 import image2 from './assets/2.jpg';
 import image3 from './assets/3.jpg';
@@ -11,7 +12,11 @@ import image5 from './assets/5.jpg';
 
 const images = [image1, image2, image3, image4, image5];
 
-export default function Slides() {
+interface SlidesProps {
+  className?: string;
+}
+
+const Slides = ({ className }: SlidesProps) => {
   const [currentIndex, setCurrentIndex] = useState(0);
   const [timer, setTimer] = useState<NodeJS.Timeout | null>(null);
 
@@ -47,7 +52,7 @@ export default function Slides() {
   }, []);
 
   return (
-    <div className="w-full md:w-2/3 relative">
+    <div className={`relative ${className}`}>
       {/* Carousel container */}
       <div className="overflow-hidden rounded-lg relative">
         <div
@@ -67,7 +72,7 @@ export default function Slides() {
           type="button"
           className="absolute left-2 top-1/2 -translate-y-1/2 bg-black/30 text-white p-2 rounded-full hover:bg-black/50 transition focus:outline-none"
         >
-          ◀
+          <ChevronLeft size={20} />
         </button>
 
         {/* Right button */}
@@ -76,7 +81,7 @@ export default function Slides() {
           type="button"
           className="absolute right-2 top-1/2 -translate-y-1/2 bg-black/30 text-white p-2 rounded-full hover:bg-black/50 transition focus:outline-none"
         >
-          ▶
+          <ChevronRight size={20} />
         </button>
 
         {/* Clickable progress indicators */}
@@ -103,4 +108,6 @@ export default function Slides() {
       <p className="mt-2 text-xs text-gray-500 text-center">photo credit: matthew zhang</p>
     </div>
   );
-}
+};
+
+export default Slides;

@@ -62,7 +62,7 @@ const questionsAndAnswers: QA[] = [
         While students in DTR have a lot of freedom to choose a project from a
         set that we curate in the
         {' '}
-        <Link href="/projects">research areas</Link>
+        <a href="/projects">research areas</a>
         {' '}
         we work in, the structure of DTR does not accommodate students working
         on their personal projects.
@@ -155,7 +155,7 @@ const questionsAndAnswers: QA[] = [
         {' '}
         or
         {' '}
-        <Link href="/people">anyone else in DTR</Link>
+        <a href="/people">anyone else in DTR</a>
         .
       </>
     ),

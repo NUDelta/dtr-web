@@ -13,10 +13,6 @@ export const metadata: Metadata = {
 export default async function PeoplePage() {
   const people = sortPeople(await fetchPeople() ?? []);
 
-  if (people === null) {
-    return <div>Loading...</div>;
-  }
-
   return (
     <>
       {/* Active faculty and students in DTR */}

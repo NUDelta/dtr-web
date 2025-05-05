@@ -31,6 +31,7 @@ const Slides = ({ className }: SlidesProps) => {
     const interval = setInterval(() => {
       setCurrentIndex(prevIndex => (prevIndex + 1) % images.length);
     }, 3000);
+    // eslint-disable-next-line react-hooks-extra/no-direct-set-state-in-use-effect
     setTimer(interval);
   };
 

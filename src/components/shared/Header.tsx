@@ -18,7 +18,7 @@ const links: { href: string; label: string }[] = [
 export default function Header() {
   const [isMenuOpen, setIsMenuOpen] = useState(false);
   const headerRef = useRef<HTMLDivElement>(null);
-  const isHeaderVisible = useHideOnScrollDown(headerRef);
+  const isHeaderVisible = useHideOnScrollDown(headerRef, 50);
 
   // Listen for outside click to close the mobile menu
   useClickOutside(headerRef, () => {

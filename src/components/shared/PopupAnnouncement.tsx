@@ -49,6 +49,7 @@ const PopupAnnouncement = () => {
       new Date(a.expiryDate) >= new Date(today));
 
     if (validAnnouncements.length > 0) {
+      // eslint-disable-next-line react-hooks-extra/no-direct-set-state-in-use-effect
       setActiveAnnouncement(validAnnouncements[0]);
       toggleIsVisible();
       setLastViewedDate(today); // Save current date

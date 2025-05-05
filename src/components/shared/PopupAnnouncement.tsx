@@ -16,14 +16,14 @@ interface Announcement {
 
 const announcements: Announcement[] = [
   {
-    id: 'dtr-w25-open-house',
+    id: 'dtr-s25-open-house',
     title: 'DTR Open House',
-    image: '/images/DTR-W25-Poster.webp',
+    image: '/images/DTR-S25-OpenHouse.webp',
     link: {
-      url: 'https://forms.gle/jrstNPoYABQ6YdYb9',
+      url: 'https://docs.google.com/forms/d/e/1FAIpQLScY1e_ho8krNwimg3wWTiFNHMzF8e-fSTFhI8xEEzEdk4-yQA/viewform',
       text: 'RSVP',
     },
-    expiryDate: '2025-02-14',
+    expiryDate: '2025-05-09',
   },
 ];
 

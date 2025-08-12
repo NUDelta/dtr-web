@@ -1,7 +1,7 @@
 import HomeIntro from '@/components/home/HomeIntro';
+import MediaBanner from '@/components/home/MediaBanner';
 import Slides from '@/components/home/Slides';
 import Container from '@/components/shared/Container';
-import Link from 'next/link';
 
 export default function HomePage() {
   return (
@@ -12,22 +12,7 @@ export default function HomePage() {
       </Container>
 
       <Container className="mt-4">
-        <div className="mb-4 w-full rounded-lg bg-yellow pb-2 pt-2">
-          <p className="text-center text-black">
-            The
-            {' '}
-            <Link href="/letters" className="link link-underline link-underline-black font-bold text-black">
-              2024 DTR Annual Letter
-            </Link>
-            {' '}
-            is out! Also check out the DTR documentary,
-            {' '}
-            <Link target="_blank" rel="noreferrer noopener" href="https://forward.movie" className="link link-underline link-underline-black font-bold text-black">
-              Forward
-            </Link>
-            .
-          </p>
-        </div>
+        <MediaBanner />
       </Container>
     </>
   );

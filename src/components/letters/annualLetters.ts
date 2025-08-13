@@ -13,6 +13,27 @@ interface AnnualLetter {
 
 const annualLetters: AnnualLetter[] = [
   {
+    name: 'Annual Letter 2025',
+    datePublished: new Date(2025, 8 - 1, 13), // year, month index (0-indexed), day
+    description: '',
+    link: '/letters/2025-dtr-letter.pdf',
+    tableOfContents: [
+      { name: 'welcome', page: '1' },
+      { name: 'celebrating success', page: '1' },
+      { name: 'a college education', page: '4' },
+      { name: 'movement', page: '8' },
+      { name: 'wild geese', page: '9' },
+      { name: 'take a break', page: '12' },
+      { name: 'interruption, discord, and drama', page: '13' },
+      { name: 'exit meetings', page: '15' },
+      { name: 'beyond production', page: '16' },
+      { name: 'single representation', page: '19' },
+      { name: 'hci studio', page: '22' },
+      { name: 'why dtr exists', page: '25' },
+      { name: 'an invitation', page: '26' },
+    ],
+  },
+  {
     name: 'Annual Letter 2024',
     datePublished: new Date(2024, 8 - 1, 1), // year, month index (0-indexed), day
     description: '',

@@ -1,9 +1,11 @@
 import type { Metadata } from 'next';
 import PeopleProfiles from '@/components/people/PeopleProfiles';
 import { fetchPeople } from '@/lib/people';
+import { maybeRunR2CleanupFromISR } from '@/lib/r2-gc';
 import { sortPeople } from '@/utils';
 
-export const revalidate = 600;
+// Revalidate every 4 hours, maximum 186 times per month
+export const revalidate = 14400;
 
 export const metadata: Metadata = {
   title: 'People | DTR',
@@ -11,7 +13,15 @@ export const metadata: Metadata = {
 };
 
 export default async function PeoplePage() {
-  const people = sortPeople(await fetchPeople() ?? []);
+  // Throttled GC: at most once every 24h; delete objects not accessed in 60 days
+  await maybeRunR2CleanupFromISR({
+    prefix: 'images/',
+    maxAgeDays: 60,
+    minIntervalHours: 24,
+    maxDeletePerRun: 250,
+  });
+
+  const people = sortPeople((await fetchPeople()) ?? []);
 
   return (
     <>

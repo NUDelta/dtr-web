@@ -10,7 +10,14 @@ Website for the Design, Technology, and Research (DTR) program at Northwestern U
    ```env
    AIRTABLE_API_KEY=<api-key-for-airtable>
    AIRTABLE_BASE_ID=<base-id-for-airtable>
-   REVALIDATE_TIME="30"
+   REVALIDATE_TIME="3600"  # Cache revalidation time in seconds (default: 3600)
+   AIRTABLE_LOG=1  # Enable Airtable logging in production (1 to enable, 0 to disable)
+
+   R2_ENDPOINT="https://<account-id>.r2.cloudflarestorage.com"
+   R2_ACCESS_KEY_ID="<access-key-id-for-r2>"
+   R2_SECRET_ACCESS_KEY="<secret-access-key-for-r2>"
+   R2_BUCKET="<bucket-name-for-r2>"
+   R2_CLEANUP_MAX_AGE_DAYS="45"  # Max age in days for R2 cleanup (default: 45)
    ```
 
 3. Run `yarn install` to install packages.
@@ -42,3 +49,10 @@ We use [DigitalOcean's App Platform](https://www.digitalocean.com/products/app-p
 - [TailwindCSS](https://tailwindcss.com/)
 - [Typescript](https://www.typescriptlang.org/)
 - [Airtable](https://airtable.com/) and [Airtable API](https://airtable.com/api)
+
+## Caching Architecture
+
+The website implements a two-tier caching system to minimize Airtable API usage:
+
+1. **Data Caching**: Airtable table data is cached using Next.js `unstable_cache` with automatic revalidation based on `REVALIDATE_TIME`
+2. **Image Caching**: Images are downloaded once from Airtable and cached in Cloudflare R2 Bucket with hash-based invalidation and long-term caching headers.

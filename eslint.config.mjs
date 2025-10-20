@@ -16,6 +16,9 @@ export default antfu({
     '@next/next': nextPlugin,
   },
   lessOpinionated: true,
+  ignores: [
+    '**.md',
+  ],
 }, {
   files: ['src/app/**/loading.tsx'],
   rules: {

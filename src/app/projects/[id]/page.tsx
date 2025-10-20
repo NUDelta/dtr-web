@@ -1,10 +1,10 @@
 import type { Metadata } from 'next';
+import { notFound } from 'next/navigation';
+import ReactMarkdown from 'react-markdown';
 import ProjectPublications from '@/components/projects/ProjectPublications';
 import ProjectVideo from '@/components/projects/ProjectVideo';
 import TeamMembers from '@/components/projects/TeamMembers';
 import { getAllProjectIds, getProjects } from '@/lib/project';
-import { notFound } from 'next/navigation';
-import ReactMarkdown from 'react-markdown';
 
 // Next.js will invalidate the cache when a
 // request comes in, at most once every 60 seconds.

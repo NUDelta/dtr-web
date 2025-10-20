@@ -1,9 +1,9 @@
 import type { Metadata } from 'next';
+import { Lato } from 'next/font/google';
 import Container from '@/components/shared/Container';
 import Header from '@/components/shared/Header';
 import PopupAnnouncement from '@/components/shared/PopupAnnouncement';
 import RouterTransition from '@/components/shared/RouterTransition';
-import { Lato } from 'next/font/google';
 
 import './globals.css';
 
@@ -46,7 +46,7 @@ export default function RootLayout({
         <RouterTransition />
         <PopupAnnouncement />
         <Header />
-        <main className="pt-[4rem]">
+        <main className="pt-16">
           <Container className="mt-8">
             {children}
           </Container>

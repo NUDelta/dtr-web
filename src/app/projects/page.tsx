@@ -1,7 +1,7 @@
 import type { Metadata } from 'next';
+import ReactMarkdown from 'react-markdown';
 import TeamMembers from '@/components/projects/TeamMembers';
 import { fetchSigs } from '@/lib/sig';
-import ReactMarkdown from 'react-markdown';
 
 export const revalidate = 60;
 

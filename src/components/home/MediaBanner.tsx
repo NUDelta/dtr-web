@@ -1,5 +1,5 @@
-import annualLetters from '@/components/letters/annualLetters';
 import Link from 'next/link';
+import annualLetters from '@/components/letters/annualLetters';
 
 interface MediaBannerProps {
   className?: string;

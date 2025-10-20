@@ -11,8 +11,8 @@
     "dev": "next dev --turbo",
     "build": "yarn lint:fix && NODE_NO_WARNINGS=1 next build",
     "start": "NODE_NO_WARNINGS=1 next start -H 0.0.0.0 -p ${PORT:-8080}",
-    "lint": "next lint",
-    "lint:fix": "next lint --fix",
+    "lint": "eslint .",
+    "lint:fix": "eslint . --fix",
     "postinstall": "husky"
   },
   "dependencies": {

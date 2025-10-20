@@ -1,6 +1,6 @@
 import type { Metadata } from 'next';
-import annualLetters from '@/components/letters/annualLetters';
 import Link from 'next/link';
+import annualLetters from '@/components/letters/annualLetters';
 
 export const metadata: Metadata = {
   title: 'Annual Letters and Resources | DTR',

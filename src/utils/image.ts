@@ -8,7 +8,7 @@ import type { Attachment } from 'airtable';
  * Instead of returning a temporary Airtable URL, this function generates
  * a local API endpoint URL backed by R2 persistent cache. The cache key
  * is the stable Airtable `attachment.id`, so it won't churn when the
- * signed Airtable URL rotates/expirs. The `src` query param is only used
+ * signed Airtable URL rotates/expires. The `src` query param is only used
  * on the very first cache miss to fetch and populate R2, and ignored afterwards.
  *
  * @param {Attachment[] | undefined} attachmentArr - Airtable attachments array.

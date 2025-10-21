@@ -1,4 +1,5 @@
 import type { Metadata } from 'next';
+import { GoogleAnalytics } from '@next/third-parties/google';
 import { Lato } from 'next/font/google';
 import Container from '@/components/shared/Container';
 import Header from '@/components/shared/Header';
@@ -52,6 +53,7 @@ export default function RootLayout({
           </Container>
         </main>
       </body>
+      <GoogleAnalytics gaId="G-0LME5PW7PW" />
     </html>
   );
 }

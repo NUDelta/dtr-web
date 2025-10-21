@@ -9,6 +9,7 @@ export const revalidate = 43200;
 
 export const metadata: Metadata = {
   title: 'People | DTR',
+  description: 'Meet the diverse and talented individuals who make up the DTR community, including faculty, students, and alumni.',
   alternates: { canonical: 'https://dtr.northwestern.edu/people' },
 };
 

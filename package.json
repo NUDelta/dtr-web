@@ -27,6 +27,7 @@
     "react-dom": "^19.1.0",
     "react-markdown": "^10.1.0",
     "react-player": "^2.16.0",
+    "rss": "^1.2.2",
     "sharp": "^0.34.4"
   },
   "devDependencies": {
@@ -36,6 +37,7 @@
     "@tailwindcss/typography": "^0.5.16",
     "@types/node": "^22.15.9",
     "@types/react": "^19.1.2",
+    "@types/rss": "^0.0.32",
     "eslint": "^9.26.0",
     "eslint-config-next": "^15.3.1",
     "eslint-plugin-format": "^1.0.1",

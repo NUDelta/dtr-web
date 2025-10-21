@@ -14,7 +14,7 @@ import { R2_ACCESS_KEY_ID, R2_BUCKET, R2_ENDPOINT, R2_SECRET_ACCESS_KEY } from '
 if (!R2_ENDPOINT || !R2_ACCESS_KEY_ID || !R2_SECRET_ACCESS_KEY || !R2_BUCKET) {
   // We intentionally don't throw here to keep dev ergonomics;
   // the route will return a 500 with a clear error message when needed.
-  console.warn('R2 configuration environment variables are missing.');
+  console.error('[ERROR] R2 configuration environment variables are missing.');
 }
 
 export const r2Client = new S3Client({

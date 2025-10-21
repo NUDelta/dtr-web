@@ -1,4 +1,4 @@
-name: PR Lint and Build
+name: PR Lint Check
 
 on:
   pull_request:
@@ -12,10 +12,6 @@ jobs:
       contents: read
       pull-requests: write
       issues: write
-    env:
-      AIRTABLE_API_KEY: ${{ secrets.AIRTABLE_API_KEY }}
-      AIRTABLE_BASE_ID: ${{ secrets.AIRTABLE_BASE_ID }}
-      REVALIDATE_TIME: ${{ vars.REVALIDATE_TIME }}
 
     steps:
       - name: 📥 Checkout code
@@ -33,11 +29,6 @@ jobs:
       # 🚨 Run Lint check
       - name: 🚨 Run Lint
         run: yarn run lint:fix | tee lint-results.txt
-
-      # 🔨 Build the app
-      - name: 🔨 Build the app
-        run: |
-          yarn run build || echo "BUILD_FAILED" > build-status.txt
 
       # 🚮 Clean up all results for comment
       - name: 🚮 Clean up results
@@ -60,16 +51,6 @@ jobs:
             fi
           } > formatted-results.txt
 
-      # 📄 Capture build errors if build failed
-      - name: 📄 Capture build errors
-        if: failure()
-        run: |
-          echo "### ❌ Build Failed!" > build-results.txt
-          echo "" >> build-results.txt
-          echo '```' >> build-results.txt
-          cat build-status.txt >> build-results.txt
-          echo '```' >> build-results.txt
-
       # 💬 Post test results and build status to PR
       - name: 💬 Post results to PR
         uses: actions/github-script@v7
@@ -77,19 +58,8 @@ jobs:
           script: |
             const fs = require('fs');
             const lintResults = fs.readFileSync('formatted-results.txt', 'utf8');
-            const buildFailed = fs.existsSync('build-status.txt');
 
-            let commentBody = buildFailed
-              ? "❌ **Build Failed!**\n\n"
-              : "🚀 **Build Successful!**\n\n";
-
-            commentBody += lintResults;
-
-            // Check build-results.txt exists and append to comment
-            if (buildFailed && fs.existsSync('build-results.txt')) {
-              const buildErrors = fs.readFileSync('build-results.txt', 'utf8');
-              commentBody += "\n\n" + buildErrors;
-            }
+            let commentBody = lintResults;
 
             github.rest.issues.createComment({
               issue_number: context.payload.pull_request.number,

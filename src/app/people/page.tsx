@@ -1,7 +1,7 @@
 import type { Metadata } from 'next';
 import PeopleProfiles from '@/components/people/PeopleProfiles';
-import { fetchPeople } from '@/lib/people';
-import { maybeRunR2CleanupFromISR } from '@/lib/r2-gc';
+import { fetchPeople } from '@/lib/airtable/people';
+import { maybeRunR2CleanupFromISR } from '@/lib/r2/r2-gc';
 import { sortPeople } from '@/utils';
 
 // Revalidate every 12 hours, maximum 73 times per month

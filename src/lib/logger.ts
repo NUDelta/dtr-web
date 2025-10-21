@@ -4,7 +4,7 @@
  * - Records are newline-delimited JSON for easy aggregation.
  */
 import process from 'node:process';
-import { appendMonthlyNdjsonLine } from '@/lib/r2-logs';
+import { appendMonthlyNdjsonLine } from '@/lib/r2/r2-logs';
 
 const isProd = process.env.NODE_ENV === 'production';
 const enabled = isProd && process.env.AIRTABLE_LOG === '1';

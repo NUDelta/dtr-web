@@ -1,5 +1,5 @@
 import type { MetadataRoute } from 'next';
-import { getCachedRecords } from '@/lib/airtable';
+import { getCachedRecords } from '@/lib/airtable/airtable';
 
 const BASE_URL = 'https://dtr.northwestern.edu';
 

@@ -4,7 +4,7 @@ import ReactMarkdown from 'react-markdown';
 import ProjectPublications from '@/components/projects/ProjectPublications';
 import ProjectVideo from '@/components/projects/ProjectVideo';
 import TeamMembers from '@/components/projects/TeamMembers';
-import { getAllProjectIds, getProjects } from '@/lib/project';
+import { getAllProjectIds, getProjects } from '@/lib/airtable/project';
 import generateRssFeed from '@/utils/generate-rss-feed';
 
 // Next.js will invalidate the cache when a request comes in

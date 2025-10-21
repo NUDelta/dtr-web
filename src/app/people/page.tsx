@@ -4,8 +4,8 @@ import { fetchPeople } from '@/lib/people';
 import { maybeRunR2CleanupFromISR } from '@/lib/r2-gc';
 import { sortPeople } from '@/utils';
 
-// Revalidate every 4 hours, maximum 186 times per month
-export const revalidate = 14400;
+// Revalidate every 12 hours, maximum 73 times per month
+export const revalidate = 43200;
 
 export const metadata: Metadata = {
   title: 'People | DTR',

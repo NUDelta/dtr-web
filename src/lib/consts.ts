@@ -1,7 +1,8 @@
 import process from 'node:process';
 
+// Revalidation Time Configuration (in seconds)
 export const revalidateTime = Number.isNaN(Number(process.env.REVALIDATE_TIME))
-  ? 3600 // Default to 1 hour
+  ? 21600 // Default to 6 hours
   : Number(process.env.REVALIDATE_TIME);
 
 // R2 Configuration

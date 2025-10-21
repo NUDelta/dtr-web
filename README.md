@@ -10,7 +10,7 @@ Website for the Design, Technology, and Research (DTR) program at Northwestern U
    ```env
    AIRTABLE_API_KEY=<api-key-for-airtable>
    AIRTABLE_BASE_ID=<base-id-for-airtable>
-   REVALIDATE_TIME="3600"  # Cache revalidation time in seconds (default: 3600)
+   REVALIDATE_TIME="21600"  # Cache revalidation time in seconds (default: 21600 = 6 hours)
    AIRTABLE_LOG=1  # Enable Airtable logging in production (1 to enable, 0 to disable)
 
    R2_ENDPOINT="https://<account-id>.r2.cloudflarestorage.com"

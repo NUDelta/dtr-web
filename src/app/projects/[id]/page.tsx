@@ -4,7 +4,8 @@ import ReactMarkdown from 'react-markdown';
 import ProjectPublications from '@/components/projects/ProjectPublications';
 import ProjectVideo from '@/components/projects/ProjectVideo';
 import TeamMembers from '@/components/projects/TeamMembers';
-import { getAllProjectIds, getProjects } from '@/lib/project';
+import { getAllProjectIds, getProjects } from '@/lib/airtable/project';
+import generateRssFeed from '@/utils/generate-rss-feed';
 
 // Next.js will invalidate the cache when a request comes in
 // Revalidate every 6 hours, maximum 124 times per month
@@ -16,6 +17,7 @@ export const revalidate = 21600;
 export const dynamicParams = true; // or false, to 404 on unknown paths
 
 export async function generateStaticParams() {
+  await generateRssFeed(); // regenerate RSS feed at build time
   const projectIds = await getAllProjectIds();
   return projectIds.map(id => ({ id }));
 }

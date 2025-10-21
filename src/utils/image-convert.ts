@@ -1,20 +1,9 @@
 import type { Buffer } from 'node:buffer';
 import sharp from 'sharp';
 
-export type WebpOptions = Partial<{
-  /** 0..100; typical sweet spot 78–85 */
-  quality: number;
-  /** true = lossless WebP; ignores `quality` */
-  lossless: boolean;
-  /** 0..6 (higher = slower but smaller). 4–5 is a good default. */
-  effort: number;
-  /** Downscale to this width (px) while preserving aspect ratio. Won’t upscale. */
-  targetWidth: number;
-}>;
-
-/** Global tuning for small servers (e.g., 1 vCPU/1GB droplets). Adjust as needed. */
+/** Global tuning for small servers (e.g., 1 vCPU/512MB droplets). Adjust as needed. */
 sharp.cache({ files: 128, items: 256, memory: 64 }); // memory is MB-ish
-sharp.concurrency(3);
+sharp.concurrency(2);
 
 /**
  * Transcode an encoded image Buffer to WebP using sharp only.
@@ -27,7 +16,7 @@ sharp.concurrency(3);
  */
 export async function transcodeBufferToWebp(
   input: Buffer,
-  options: WebpOptions = {},
+  options: Partial<WebpOptions> = {},
 ): Promise<{ buffer: Buffer; contentType: 'image/webp'; converted: boolean }> {
   const quality = options.quality ?? 82;
   const lossless = options.lossless ?? false;

@@ -3,8 +3,8 @@
 import process from 'node:process';
 import Airtable from 'airtable';
 import { unstable_cache } from 'next/cache';
+import { revalidateTime } from '@/lib/consts';
 import { logProd, nowMs } from '@/lib/logger';
-import { revalidateTime } from './consts';
 
 Airtable.configure({
   endpointUrl: 'https://api.airtable.com',

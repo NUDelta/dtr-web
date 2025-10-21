@@ -1,16 +1,3 @@
-interface TableOfContents {
-  name: string;
-  page: string;
-}
-
-interface AnnualLetter {
-  name: string;
-  datePublished: Date;
-  description: string;
-  link: string;
-  tableOfContents: TableOfContents[];
-}
-
 const annualLetters: AnnualLetter[] = [
   {
     name: 'Annual Letter 2025',

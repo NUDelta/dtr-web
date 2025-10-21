@@ -1,9 +1,10 @@
 import type { Metadata } from 'next';
 import Link from 'next/link';
-import annualLetters from '@/components/letters/annualLetters';
+import annualLetters from '@/lib/annual-letters';
 
 export const metadata: Metadata = {
   title: 'Annual Letters and Resources | DTR',
+  description: 'Read the DTR annual letters and explore resources on mentoring and learning.',
   alternates: { canonical: 'https://dtr.northwestern.edu/letters' },
 };
 
@@ -22,13 +23,14 @@ export default function Letters() {
           <div key={annualLetter.name} className="mb-4">
             <ul>
               <li>
-                <a
+                <Link
                   target="_blank"
                   rel="noreferrer noopener"
                   href={annualLetter.link}
+                  prefetch={false}
                 >
                   {annualLetter.name}
-                </a>
+                </Link>
                 <br />
                 {/* add links to each section of the annual letter */}
                 {annualLetter.tableOfContents.map((section, index) => (
@@ -67,6 +69,7 @@ export default function Letters() {
             target="_blank"
             rel="noreferrer noopener"
             href="http://forward.movie/"
+            prefetch={false}
           >
             Forward: The DTR Documentary
           </Link>
@@ -85,6 +88,7 @@ export default function Letters() {
             target="_blank"
             rel="noreferrer noopener"
             href="http://agileresearch.io/"
+            prefetch={false}
           >
             Agile Research University
           </Link>

@@ -1,9 +1,10 @@
 import type { Metadata } from 'next';
+import ReactMarkdown from 'react-markdown';
 import TeamMembers from '@/components/projects/TeamMembers';
 import { fetchSigs } from '@/lib/sig';
-import ReactMarkdown from 'react-markdown';
 
-export const revalidate = 60;
+// Revalidate every 4 hours, maximum 186 times per month
+export const revalidate = 14400;
 
 export const metadata: Metadata = {
   title: 'Projects | DTR',

@@ -11,11 +11,12 @@
     "dev": "next dev --turbo",
     "build": "yarn lint:fix && NODE_NO_WARNINGS=1 next build",
     "start": "NODE_NO_WARNINGS=1 next start -H 0.0.0.0 -p ${PORT:-8080}",
-    "lint": "next lint",
-    "lint:fix": "next lint --fix",
+    "lint": "eslint .",
+    "lint:fix": "eslint . --fix",
     "postinstall": "husky"
   },
   "dependencies": {
+    "@aws-sdk/client-s3": "^3.913.0",
     "@zl-asica/react": "^0.5.0",
     "airtable": "^0.12.2",
     "lucide-react": "^0.507.0",
@@ -24,7 +25,8 @@
     "react": "^19.1.0",
     "react-dom": "^19.1.0",
     "react-markdown": "^10.1.0",
-    "react-player": "^2.16.0"
+    "react-player": "^2.16.0",
+    "sharp": "^0.34.4"
   },
   "devDependencies": {
     "@antfu/eslint-config": "^4.12.0",

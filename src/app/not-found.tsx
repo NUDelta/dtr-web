@@ -30,17 +30,17 @@ function Custom404() {
         404 - Page Not Found
       </h1>
       <p className="mb-6 text-base leading-7">
-        Sorry, the page you are looking for does not exist.
+        Sorry, the page you are looking for does not exist or has been moved.
         <br />
         You will be redirected to the home page in
         {' '}
-        <span className="text-[var(--skyblue)] font-bold">{countdown}</span>
+        <span className="font-bold">{countdown}</span>
         {' '}
         seconds.
       </p>
       <Link
         href="/"
-        className="rounded bg-[var(--color-dark-yellow)] px-4 py-2 text-black no-underline transition-all duration-500 hover:scale-110 hover:bg-[var(--color-dark-yellow)] hover:text-black"
+        className="rounded bg-dark-yellow px-4 py-2 text-black no-underline transition-all duration-500 hover:scale-110 hover:bg-dark-yellow hover:text-black"
       >
         Back to Home
       </Link>

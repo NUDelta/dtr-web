@@ -453,4 +453,3 @@ $RECYCLE.BIN/
 .env.local
 .vercel
 *.heapprofile
-public/cached-images/

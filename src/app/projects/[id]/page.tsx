@@ -1,4 +1,5 @@
 import type { Metadata } from 'next';
+import Image from 'next/image';
 import { notFound } from 'next/navigation';
 import ReactMarkdown from 'react-markdown';
 import ProjectPublications from '@/components/projects/ProjectPublications';
@@ -72,10 +73,12 @@ export default async function IndividualProjectPage({
 
       {/* Banner Image */}
       {project.banner_image !== null && (
-        <img
+        <Image
           src={project.banner_image}
           className="w-full"
           alt={project.name}
+          width={864}
+          height={540}
         />
       )}
 
@@ -90,10 +93,12 @@ export default async function IndividualProjectPage({
       <div className="mb-8 grid grid-cols-1 gap-8 md:grid-cols-2">
         {project.images.explainerImages.map((img, i) => (
           <div key={img.url}>
-            <img
+            <Image
               src={img.url}
               className="mb-4 w-full"
               alt={`${project.name} image ${i + 1}`}
+              width={416}
+              height={210}
             />
             {img.description.trim() !== ''
               && (

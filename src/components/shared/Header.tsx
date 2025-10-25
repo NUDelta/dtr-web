@@ -1,6 +1,7 @@
 'use client';
 
 import { useClickOutside, useHideOnScrollDown } from '@zl-asica/react';
+import Link from 'next/link';
 import { usePathname } from 'next/navigation';
 import { useRef, useState } from 'react';
 import Container from './Container';
@@ -35,7 +36,7 @@ export default function Header() {
       }`}
     >
       <Container className="flex max-w-6xl items-center justify-between gap-6 py-2 md:justify-start">
-        <a
+        <Link
           href="/"
           className="block font-semibold md:text-3xl lg:text-4xl"
           onClick={() => {
@@ -45,7 +46,7 @@ export default function Header() {
           }}
         >
           DTR
-        </a>
+        </Link>
 
         {/* Mobile Menu Button */}
         <button

@@ -62,13 +62,19 @@ const Slides = ({ className }: SlidesProps) => {
         >
           {images.map((img, index) => (
             <div key={img.src} className="w-full shrink-0">
-              <Image src={img} alt={`Slide - ${index}`} className="w-full h-auto" />
+              <Image
+                src={img}
+                alt={`Slide - ${index}`}
+                loading="eager"
+                className="w-full h-auto"
+              />
             </div>
           ))}
         </div>
 
         {/* Left button */}
         <button
+          title="Previous Image"
           onClick={handlePrev}
           type="button"
           className="absolute left-2 top-1/2 -translate-y-1/2 bg-black/30 text-white p-2 rounded-full hover:bg-black/50 transition focus:outline-none"
@@ -78,6 +84,7 @@ const Slides = ({ className }: SlidesProps) => {
 
         {/* Right button */}
         <button
+          title="Next Image"
           onClick={handleNext}
           type="button"
           className="absolute right-2 top-1/2 -translate-y-1/2 bg-black/30 text-white p-2 rounded-full hover:bg-black/50 transition focus:outline-none"

@@ -24,55 +24,55 @@ export function sortPeople(people: Person[]): Person[] {
     ['Eleanor "Nell" O\'Rourke', 2],
     ['Matt Easterday', 3],
     ['Liz Gerber', 4],
-  ]);
+  ])
 
   // Predefined Ph.D. role order
   const phdOrder = new Map([
     ['Ph.D. Candidate', 1],
     ['Ph.D. Student', 2],
-  ]);
+  ])
 
   // Categorize people
   const categories = {
     active: [] as Person[],
     alumni: [] as Person[],
     stella: [] as Person[],
-  };
+  }
 
   people.forEach((person) => {
     if (person.name === 'Stella') {
-      categories.stella.push(person);
+      categories.stella.push(person)
     }
     else if (person.status === 'Active') {
-      categories.active.push(person);
+      categories.active.push(person)
     }
     else if (person.status === 'Alumni') {
-      categories.alumni.push(person);
+      categories.alumni.push(person)
     }
-  });
+  })
 
   // Sorting function by role
   const sortByRole = (people: Person[]): Person[] => {
     // Sort faculty
     const faculty = people.filter(p => p.role === 'Faculty').sort(
       (a, b) => (facultyOrder.get(a.name) ?? Infinity) - (facultyOrder.get(b.name) ?? Infinity),
-    );
+    )
 
     // Sort Ph.D. candidates and students
     const phd = people.filter(p => phdOrder.has(p.role)).sort(
       (a, b) => (phdOrder.get(a.role) ?? Infinity) - (phdOrder.get(b.role) ?? Infinity)
         || a.name.localeCompare(b.name),
-    );
+    )
 
     // Sort Master's and Undergraduate students
     const masters = people.filter(p => p.role === 'Masters Student Researcher')
-      .sort((a, b) => a.name.localeCompare(b.name));
+      .sort((a, b) => a.name.localeCompare(b.name))
 
     const ugrads = people.filter(p => p.role === 'Undergraduate Student Researcher')
-      .sort((a, b) => a.name.localeCompare(b.name));
+      .sort((a, b) => a.name.localeCompare(b.name))
 
-    return [...faculty, ...phd, ...masters, ...ugrads];
-  };
+    return [...faculty, ...phd, ...masters, ...ugrads]
+  }
 
-  return [...sortByRole(categories.active), ...categories.stella, ...sortByRole(categories.alumni)];
+  return [...sortByRole(categories.active), ...categories.stella, ...sortByRole(categories.alumni)]
 }

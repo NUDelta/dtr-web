@@ -1,12 +1,12 @@
-import Link from 'next/link';
+import Link from 'next/link'
 
 interface ProjectPublicationsProps {
-  publications: ProjectPublication[];
+  publications: ProjectPublication[]
 }
 
 export default function ProjectPublications({ publications }: ProjectPublicationsProps) {
   if (!publications.length) {
-    return null;
+    return null
   }
 
   return (
@@ -25,5 +25,5 @@ export default function ProjectPublications({ publications }: ProjectPublication
         ))}
       </ul>
     </div>
-  );
+  )
 }

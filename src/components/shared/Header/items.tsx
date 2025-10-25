@@ -1,4 +1,4 @@
-import type { LucideProps } from 'lucide-react';
+import type { LucideProps } from 'lucide-react'
 import {
   BookOpen,
   FileText,
@@ -8,19 +8,19 @@ import {
   Library,
   UserPlus,
   Users,
-} from 'lucide-react';
+} from 'lucide-react'
 
 // Direct root tabs
-export const ROOT_LINKS: { href: string; label: string }[] = [
+export const ROOT_LINKS: { href: string, label: string }[] = [
   { href: '/people', label: 'People' },
   { href: '/projects', label: 'Projects' },
-];
+]
 
 // Dropdown groups (triggers are buttons)
 export const GROUPS: {
-  id: string;
-  label: string;
-  items: { href: string; label: string }[];
+  id: string
+  label: string
+  items: { href: string, label: string }[]
 }[] = [
   { id: 'learn', label: 'Learn', items: [
     { href: '/method', label: 'Method' },
@@ -32,7 +32,7 @@ export const GROUPS: {
     { href: '/apply', label: 'Apply' },
     { href: '/faq', label: 'FAQ' },
   ] },
-];
+]
 
 // Icon mapping by route
 export const ICONS: Record<string, React.ComponentType<LucideProps>> = {
@@ -44,4 +44,4 @@ export const ICONS: Record<string, React.ComponentType<LucideProps>> = {
   '/letters': Library,
   '/apply': UserPlus,
   '/faq': HelpCircle,
-};
+}

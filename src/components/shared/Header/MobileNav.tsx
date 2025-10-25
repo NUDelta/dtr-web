@@ -1,12 +1,12 @@
-import { GROUPS, ROOT_LINKS } from './items';
-import renderIcon from './renderIcon';
+import { GROUPS, ROOT_LINKS } from './items'
+import renderIcon from './renderIcon'
 
 interface MobileNavProps {
-  isOpen: boolean;
-  close: () => void;
-  isActive: (href: string) => boolean;
-  id: string;
-  className?: string;
+  isOpen: boolean
+  close: () => void
+  isActive: (href: string) => boolean
+  id: string
+  className?: string
 }
 
 const MobileNav = ({
@@ -18,7 +18,7 @@ const MobileNav = ({
 }: MobileNavProps) => {
   // Grouped, non-collapsible mobile nav
   // People & Projects are simple top-level links (no section header)
-  const SECTIONS = GROUPS.map(g => ({ id: g.id, label: g.label, items: g.items }));
+  const SECTIONS = GROUPS.map(g => ({ id: g.id, label: g.label, items: g.items }))
 
   return (
     <div
@@ -78,7 +78,7 @@ const MobileNav = ({
         ))}
       </nav>
     </div>
-  );
-};
+  )
+}
 
-export default MobileNav;
+export default MobileNav

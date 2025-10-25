@@ -1,30 +1,30 @@
-import type { StaticImageData } from 'next/image';
+import type { StaticImageData } from 'next/image'
 
-import CommunityBbq from './assets/community-bbq.png';
-import CommunityCircle from './assets/community-circle.png';
-import CommunityUist from './assets/community-uist.png';
+import CommunityBbq from './assets/community-bbq.png'
+import CommunityCircle from './assets/community-circle.png'
+import CommunityUist from './assets/community-uist.png'
 
-import ProblemsHow from './assets/problems-how.png';
-import ProblemsProcess from './assets/problems-process.jpg';
-import ProblemsPyrus from './assets/problems-pyrus.png';
+import ProblemsHow from './assets/problems-how.png'
+import ProblemsProcess from './assets/problems-process.jpg'
+import ProblemsPyrus from './assets/problems-pyrus.png'
 
-import ResearchOpenhouse from './assets/research-openhouse.png';
-import ResearchSccs from './assets/research-sccs.png';
-import ResearchSig from './assets/research-sig.png';
+import ResearchOpenhouse from './assets/research-openhouse.png'
+import ResearchSccs from './assets/research-sccs.png'
+import ResearchSig from './assets/research-sig.png'
 
-import WorkingAgile from './assets/working-agile.png';
-import WorkingGlance from './assets/working-glance.png';
-import WorkingGrowth from './assets/working-growth.png';
+import WorkingAgile from './assets/working-agile.png'
+import WorkingGlance from './assets/working-glance.png'
+import WorkingGrowth from './assets/working-growth.png'
 
 interface SubSection {
-  title: string;
-  description: React.ReactNode;
-  imagePath: StaticImageData | null;
+  title: string
+  description: React.ReactNode
+  imagePath: StaticImageData | null
 }
 
 interface Section {
-  title: string;
-  subsections: SubSection[];
+  title: string
+  subsections: SubSection[]
 }
 
 const sections: Section[] = [
@@ -251,6 +251,6 @@ const sections: Section[] = [
       },
     ],
   },
-];
+]
 
-export default sections;
+export default sections

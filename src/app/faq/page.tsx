@@ -1,10 +1,10 @@
-import type { Metadata } from 'next';
-import questionsAndAnswers from '@/components/faq/questionsAndAnswers';
+import type { Metadata } from 'next'
+import questionsAndAnswers from '@/components/faq/questionsAndAnswers'
 
 export const metadata: Metadata = {
   title: 'Frequently Asked Questions | DTR',
   alternates: { canonical: 'https://dtr.northwestern.edu/faq' },
-};
+}
 
 export default function Faq() {
   return (
@@ -23,5 +23,5 @@ export default function Faq() {
         ))}
       </div>
     </div>
-  );
+  )
 }

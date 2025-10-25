@@ -1,10 +1,10 @@
-import { AnimatePresence, motion } from 'framer-motion';
-import { useState } from 'react';
-import Avatar from './Avatar';
-import BioClamp from './BioClamp';
+import { AnimatePresence, motion } from 'framer-motion'
+import { useState } from 'react'
+import Avatar from './Avatar'
+import BioClamp from './BioClamp'
 
 const PeopleCard = ({ person }: { person: Person }) => {
-  const [expanded, setExpanded] = useState(false);
+  const [expanded, setExpanded] = useState(false)
   return (
     <motion.article
       layout
@@ -53,7 +53,7 @@ const PeopleCard = ({ person }: { person: Person }) => {
         </div>
       </div>
     </motion.article>
-  );
-};
+  )
+}
 
-export default PeopleCard;
+export default PeopleCard

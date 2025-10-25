@@ -1,63 +1,63 @@
-'use client';
+'use client'
 
-import { useClickOutside, useHideOnScrollDown } from '@zl-asica/react';
-import Link from 'next/link';
-import { usePathname } from 'next/navigation';
-import { useEffect, useRef, useState } from 'react';
-import Container from '@/components/shared/Container';
-import DesktopNav from './DesktopNav';
-import MobileNav from './MobileNav';
+import { useClickOutside, useHideOnScrollDown } from '@zl-asica/react'
+import Link from 'next/link'
+import { usePathname } from 'next/navigation'
+import { useEffect, useRef, useState } from 'react'
+import Container from '@/components/shared/Container'
+import DesktopNav from './DesktopNav'
+import MobileNav from './MobileNav'
 
 export default function Header() {
-  const [isMenuOpen, setIsMenuOpen] = useState(false); // mobile drawer
-  const [openGroup, setOpenGroup] = useState<string | null>(null); // desktop dropdown id
-  const headerRef = useRef<HTMLDivElement>(null);
-  const isHeaderVisible = useHideOnScrollDown(headerRef, 50);
-  const hoverTimer = useRef<number | null>(null);
-  const pathname = usePathname();
+  const [isMenuOpen, setIsMenuOpen] = useState(false) // mobile drawer
+  const [openGroup, setOpenGroup] = useState<string | null>(null) // desktop dropdown id
+  const headerRef = useRef<HTMLDivElement>(null)
+  const isHeaderVisible = useHideOnScrollDown(headerRef, 50)
+  const hoverTimer = useRef<number | null>(null)
+  const pathname = usePathname()
 
-  const isActive = (href: string) => pathname === href || pathname?.startsWith(href);
+  const isActive = (href: string) => pathname === href || pathname?.startsWith(href)
 
   // Close on outside click
   useClickOutside(headerRef, () => {
     if (isMenuOpen) {
-      setIsMenuOpen(false);
+      setIsMenuOpen(false)
     }
     if (openGroup !== null) {
-      setOpenGroup(null);
+      setOpenGroup(null)
     }
-  });
+  })
 
   // ESC closes
   useEffect(() => {
     const onKey = (e: KeyboardEvent) => {
       if (e.key === 'Escape') {
-        setOpenGroup(null);
-        setIsMenuOpen(false);
+        setOpenGroup(null)
+        setIsMenuOpen(false)
       }
-    };
-    window.addEventListener('keydown', onKey);
-    return () => window.removeEventListener('keydown', onKey);
-  }, []);
+    }
+    window.addEventListener('keydown', onKey)
+    return () => window.removeEventListener('keydown', onKey)
+  }, [])
 
   const clearHoverTimer = () => {
     if (hoverTimer.current !== null) {
-      window.clearTimeout(hoverTimer.current);
-      hoverTimer.current = null;
+      window.clearTimeout(hoverTimer.current)
+      hoverTimer.current = null
     }
-  };
+  }
 
   const openWithIntent = (id: string) => {
-    clearHoverTimer();
-    hoverTimer.current = window.setTimeout(() => setOpenGroup(id), 80);
-  };
+    clearHoverTimer()
+    hoverTimer.current = window.setTimeout(() => setOpenGroup(id), 80)
+  }
 
   const closeWithIntent = (id: string) => {
-    clearHoverTimer();
+    clearHoverTimer()
     hoverTimer.current = window.setTimeout(() => {
-      setOpenGroup(g => (g === id ? null : g));
-    }, 180);
-  };
+      setOpenGroup(g => (g === id ? null : g))
+    }, 180)
+  }
 
   return (
     <>
@@ -80,8 +80,8 @@ export default function Header() {
             href="/"
             className="block font-semibold md:text-3xl lg:text-4xl focus:outline-none focus-visible:ring focus-visible:ring-yellow rounded-md"
             onClick={() => {
-              setIsMenuOpen(false);
-              setOpenGroup(null);
+              setIsMenuOpen(false)
+              setOpenGroup(null)
             }}
           >
             DTR
@@ -120,5 +120,5 @@ export default function Header() {
         />
       </header>
     </>
-  );
+  )
 }

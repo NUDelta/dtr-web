@@ -1,4 +1,4 @@
-import Link from 'next/link';
+import Link from 'next/link'
 
 const grants = [
   {
@@ -33,10 +33,10 @@ const grants = [
     href: 'http://segal.northwestern.edu/',
     label: 'Segal Design Institute',
   },
-];
+]
 
 interface HomeIntroProps {
-  className?: string;
+  className?: string
 }
 
 const HomeIntro = ({ className }: HomeIntroProps) => {
@@ -68,7 +68,7 @@ const HomeIntro = ({ className }: HomeIntroProps) => {
         ))}
       </p>
     </div>
-  );
-};
+  )
+}
 
-export default HomeIntro;
+export default HomeIntro

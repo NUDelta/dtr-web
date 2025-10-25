@@ -1,12 +1,12 @@
-import type { Metadata } from 'next';
-import Link from 'next/link';
-import annualLetters from '@/lib/annual-letters';
+import type { Metadata } from 'next'
+import Link from 'next/link'
+import annualLetters from '@/lib/annual-letters'
 
 export const metadata: Metadata = {
   title: 'Annual Letters and Resources | DTR',
   description: 'Read the DTR annual letters and explore resources on mentoring and learning.',
   alternates: { canonical: 'https://dtr.northwestern.edu/letters' },
-};
+}
 
 export default function Letters() {
   return (
@@ -94,5 +94,5 @@ export default function Letters() {
         </li>
       </ul>
     </div>
-  );
+  )
 }

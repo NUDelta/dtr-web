@@ -1,4 +1,4 @@
-import antfu from '@antfu/eslint-config';
+import antfu from '@antfu/eslint-config'
 
 export default antfu({
   formatters: true,
@@ -8,7 +8,7 @@ export default antfu({
     tsconfigPath: 'tsconfig.json',
   },
   stylistic: {
-    semi: true,
+    semi: false,
     quotes: 'single',
   },
   lessOpinionated: true,
@@ -20,4 +20,4 @@ export default antfu({
   rules: {
     'react/no-array-index-key': 'off',
   },
-});
+})

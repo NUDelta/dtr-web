@@ -1,56 +1,56 @@
-'use client';
+'use client'
 
-import { ChevronLeft, ChevronRight } from 'lucide-react';
-import Image from 'next/image';
+import { ChevronLeft, ChevronRight } from 'lucide-react'
+import Image from 'next/image'
 
-import { useEffect, useState } from 'react';
-import image1 from './assets/1.jpg';
-import image2 from './assets/2.jpg';
-import image3 from './assets/3.jpg';
-import image4 from './assets/4.jpg';
-import image5 from './assets/5.jpg';
+import { useEffect, useState } from 'react'
+import image1 from './assets/1.jpg'
+import image2 from './assets/2.jpg'
+import image3 from './assets/3.jpg'
+import image4 from './assets/4.jpg'
+import image5 from './assets/5.jpg'
 
-const images = [image1, image2, image3, image4, image5];
+const images = [image1, image2, image3, image4, image5]
 
 interface SlidesProps {
-  className?: string;
+  className?: string
 }
 
 const Slides = ({ className }: SlidesProps) => {
-  const [currentIndex, setCurrentIndex] = useState(0);
-  const [timer, setTimer] = useState<NodeJS.Timeout | null>(null);
+  const [currentIndex, setCurrentIndex] = useState(0)
+  const [timer, setTimer] = useState<NodeJS.Timeout | null>(null)
 
   const stopAutoSlide = () => {
     if (timer) {
-      clearInterval(timer);
+      clearInterval(timer)
     }
-  };
+  }
 
   const startAutoSlide = () => {
-    stopAutoSlide();
+    stopAutoSlide()
     const interval = setInterval(() => {
-      setCurrentIndex(prevIndex => (prevIndex + 1) % images.length);
-    }, 3000);
+      setCurrentIndex(prevIndex => (prevIndex + 1) % images.length)
+    }, 3000)
     // eslint-disable-next-line react-hooks-extra/no-direct-set-state-in-use-effect
-    setTimer(interval);
-  };
+    setTimer(interval)
+  }
 
   const handleNext = () => {
-    setCurrentIndex(prevIndex => (prevIndex + 1) % images.length);
-    startAutoSlide();
-  };
+    setCurrentIndex(prevIndex => (prevIndex + 1) % images.length)
+    startAutoSlide()
+  }
 
   const handlePrev = () => {
-    setCurrentIndex(prevIndex => (prevIndex - 1 + images.length) % images.length);
-    startAutoSlide();
-  };
+    setCurrentIndex(prevIndex => (prevIndex - 1 + images.length) % images.length)
+    startAutoSlide()
+  }
 
   // Auto switch images every 3 seconds
   useEffect(() => {
-    startAutoSlide();
-    return () => stopAutoSlide();
+    startAutoSlide()
+    return () => stopAutoSlide()
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, []);
+  }, [])
 
   return (
     <div className={`relative ${className}`}>
@@ -104,8 +104,8 @@ const Slides = ({ className }: SlidesProps) => {
                 group-hover:scale-90 group-hover:bg-gray-500
                 hover:scale-150 hover:bg-white`}
               onClick={() => {
-                setCurrentIndex(index);
-                startAutoSlide();
+                setCurrentIndex(index)
+                startAutoSlide()
               }}
             />
           ))}
@@ -115,7 +115,7 @@ const Slides = ({ className }: SlidesProps) => {
       {/* Image credit */}
       <p className="mt-2 text-xs text-gray-500 text-center">photo credit: matthew zhang</p>
     </div>
-  );
-};
+  )
+}
 
-export default Slides;
+export default Slides

@@ -1,8 +1,8 @@
-import Link from 'next/link';
+import Link from 'next/link'
 
 interface QA {
-  question: string | React.ReactNode;
-  answer: React.ReactNode;
+  question: string | React.ReactNode
+  answer: React.ReactNode
 }
 
 /**
@@ -160,6 +160,6 @@ const questionsAndAnswers: QA[] = [
       </>
     ),
   },
-];
+]
 
-export default questionsAndAnswers;
+export default questionsAndAnswers

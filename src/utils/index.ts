@@ -1,2 +1,2 @@
-export { getImgUrlFromAttachmentObj } from './image';
-export { sortPeople } from './people';
+export { getImgUrlFromAttachmentObj } from './image'
+export { sortPeople } from './people'

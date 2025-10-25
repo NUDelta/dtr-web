@@ -1,11 +1,11 @@
-'use client';
+'use client'
 
-import { AnimatePresence, motion } from 'framer-motion';
-import { usePeopleDirectory } from '@/hooks/usePeopleDirectory';
-import RoleBlock from './RoleBlock';
+import { AnimatePresence, motion } from 'framer-motion'
+import { usePeopleDirectory } from '@/hooks/usePeopleDirectory'
+import RoleBlock from './RoleBlock'
 
 interface PeopleDirectoryProps {
-  initialPeople: Person[];
+  initialPeople: Person[]
 }
 
 const PeopleDirectory = ({ initialPeople }: PeopleDirectoryProps) => {
@@ -16,7 +16,7 @@ const PeopleDirectory = ({ initialPeople }: PeopleDirectoryProps) => {
     setView,
     countsByStatus,
     grouped,
-  } = usePeopleDirectory(initialPeople);
+  } = usePeopleDirectory(initialPeople)
 
   return (
     <main className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
@@ -116,7 +116,7 @@ const PeopleDirectory = ({ initialPeople }: PeopleDirectoryProps) => {
         </AnimatePresence>
       </section>
     </main>
-  );
-};
+  )
+}
 
-export default PeopleDirectory;
+export default PeopleDirectory

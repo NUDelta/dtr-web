@@ -1,10 +1,10 @@
-import type { Metadata } from 'next';
-import Link from 'next/link';
+import type { Metadata } from 'next'
+import Link from 'next/link'
 
 export const metadata: Metadata = {
   title: 'Apply | DTR',
   alternates: { canonical: 'https://dtr.northwestern.edu/apply' },
-};
+}
 
 export default function Apply() {
   return (
@@ -106,5 +106,5 @@ export default function Apply() {
         </Link>
       </div>
     </div>
-  );
+  )
 }

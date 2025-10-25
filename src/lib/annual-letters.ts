@@ -80,6 +80,6 @@ const annualLetters: AnnualLetter[] = [
       { name: 'an invitation', page: '24' },
     ],
   },
-];
+]
 
-export default annualLetters;
+export default annualLetters

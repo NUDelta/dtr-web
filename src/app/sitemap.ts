@@ -1,17 +1,17 @@
-import type { MetadataRoute } from 'next';
-import { getCachedRecords } from '@/lib/airtable/airtable';
+import type { MetadataRoute } from 'next'
+import { getCachedRecords } from '@/lib/airtable/airtable'
 
-const BASE_URL = 'https://dtr.northwestern.edu';
+const BASE_URL = 'https://dtr.northwestern.edu'
 
 export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
   // Fetch dynamic project slugs from Airtable
-  const projects = await getCachedRecords('Projects');
+  const projects = await getCachedRecords('Projects')
   const projectUrls: MetadataRoute.Sitemap = projects.map(project => ({
     url: `${BASE_URL}/projects/${project.id}`,
     lastModified: new Date(),
     changeFrequency: 'monthly',
     priority: 0.6,
-  }));
+  }))
 
   // Static routes
   const staticUrls: MetadataRoute.Sitemap = [
@@ -24,7 +24,7 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
     { url: `${BASE_URL}/people`, lastModified: new Date(), changeFrequency: 'monthly', priority: 0.9 },
     { url: `${BASE_URL}/projects`, lastModified: new Date(), changeFrequency: 'weekly', priority: 0.9 },
     { url: `${BASE_URL}/what-we-learn`, lastModified: new Date(), changeFrequency: 'yearly', priority: 0.7 },
-  ];
+  ]
 
-  return [...staticUrls, ...projectUrls];
+  return [...staticUrls, ...projectUrls]
 }

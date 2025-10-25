@@ -1,6 +1,6 @@
 interface TeamMemberProps {
-  groupId: string;
-  members: PartialPerson[];
+  groupId: string
+  members: PartialPerson[]
 }
 
 export default function TeamMembers({
@@ -11,7 +11,7 @@ export default function TeamMembers({
     'Faculty',
     'Ph.D. Students',
     'Masters and Undergraduate Students',
-  ];
+  ]
 
   const roleMappingForFilter: Record<string, string[]> = {
     'Faculty': ['Faculty'],
@@ -20,7 +20,7 @@ export default function TeamMembers({
       'Masters Student Researcher',
       'Undergraduate Student Researcher',
     ],
-  };
+  }
 
   return (
     <div className="w-full">
@@ -38,22 +38,22 @@ export default function TeamMembers({
 
             <MembersForRole
               members={members.filter((member) => {
-                return roleMappingForFilter[role].includes(member.role);
+                return roleMappingForFilter[role].includes(member.role)
               })}
             />
           </div>
         ))}
       </div>
     </div>
-  );
+  )
 }
 
 interface MembersForRoleProps {
-  members: PartialPerson[];
+  members: PartialPerson[]
 }
 
 function MembersForRole({ members }: MembersForRoleProps) {
-  const memberCount = members.length;
+  const memberCount = members.length
 
   return (
     <ul className="list-none font-medium">
@@ -70,5 +70,5 @@ function MembersForRole({ members }: MembersForRoleProps) {
             <li className="italic">None</li>
           )}
     </ul>
-  );
+  )
 }

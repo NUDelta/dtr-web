@@ -1,14 +1,14 @@
-import Image from 'next/image';
+import Image from 'next/image'
 
 interface AvatarProps {
-  src: string | null;
-  alt: string;
-  size?: number;
-  fill?: boolean;
+  src: string | null
+  alt: string
+  size?: number
+  fill?: boolean
 }
 
 const Avatar = ({ src, alt, size, fill = false }: AvatarProps) => {
-  const placeholder = '/images/default-pic.png';
+  const placeholder = '/images/default-pic.png'
 
   if (fill) {
     return (
@@ -20,7 +20,7 @@ const Avatar = ({ src, alt, size, fill = false }: AvatarProps) => {
         className="h-full w-full object-cover"
         loading="lazy"
       />
-    );
+    )
   }
 
   return (
@@ -33,7 +33,7 @@ const Avatar = ({ src, alt, size, fill = false }: AvatarProps) => {
       sizes={size !== undefined ? `${size}px` : '(max-width: 640px) 128px, 160px'}
       loading="lazy"
     />
-  );
-};
+  )
+}
 
-export default Avatar;
+export default Avatar

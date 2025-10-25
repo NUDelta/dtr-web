@@ -1,9 +1,9 @@
-import type { Metadata } from 'next';
+import type { Metadata } from 'next'
 
 export const metadata: Metadata = {
   title: 'Method | DTR',
   alternates: { canonical: 'https://dtr.northwestern.edu/method' },
-};
+}
 
 export default function Method() {
   return (
@@ -90,5 +90,5 @@ export default function Method() {
         both technical challenges and the research process.
       </p>
     </div>
-  );
+  )
 }

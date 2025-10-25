@@ -1,8 +1,8 @@
-import ReactMarkdown from 'react-markdown';
+import ReactMarkdown from 'react-markdown'
 
 interface BioClampProps {
-  text: string;
-  lines?: number;
+  text: string
+  lines?: number
 }
 
 const BioClamp = ({ text, lines = 4 }: BioClampProps) => {
@@ -11,7 +11,7 @@ const BioClamp = ({ text, lines = 4 }: BioClampProps) => {
       <div className="prose max-w-none text-sm">
         <ReactMarkdown>{text}</ReactMarkdown>
       </div>
-    );
+    )
   }
 
   return (
@@ -26,7 +26,7 @@ const BioClamp = ({ text, lines = 4 }: BioClampProps) => {
     >
       <ReactMarkdown>{text}</ReactMarkdown>
     </div>
-  );
-};
+  )
+}
 
-export default BioClamp;
+export default BioClamp

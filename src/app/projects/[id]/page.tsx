@@ -1,43 +1,43 @@
-import type { Metadata } from 'next';
-import Image from 'next/image';
-import { notFound } from 'next/navigation';
-import ReactMarkdown from 'react-markdown';
-import ProjectPublications from '@/components/projects/ProjectPublications';
-import ProjectVideo from '@/components/projects/ProjectVideo';
-import TeamMembers from '@/components/projects/TeamMembers';
-import { getAllProjectIds, getProjects } from '@/lib/airtable/project';
-import generateRssFeed from '@/utils/generate-rss-feed';
+import type { Metadata } from 'next'
+import Image from 'next/image'
+import { notFound } from 'next/navigation'
+import ReactMarkdown from 'react-markdown'
+import ProjectPublications from '@/components/projects/ProjectPublications'
+import ProjectVideo from '@/components/projects/ProjectVideo'
+import TeamMembers from '@/components/projects/TeamMembers'
+import { getAllProjectIds, getProjects } from '@/lib/airtable/project'
+import generateRssFeed from '@/utils/generate-rss-feed'
 
 // Next.js will invalidate the cache when a request comes in
 // Revalidate every 6 hours, maximum 124 times per month
-export const revalidate = 21600;
+export const revalidate = 21600
 
 // We'll prerender only the params from `generateStaticParams` at build time.
 // If a request comes in for a path that hasn't been generated,
 // Next.js will server-render the page on-demand.
-export const dynamicParams = true; // or false, to 404 on unknown paths
+export const dynamicParams = true // or false, to 404 on unknown paths
 
 export async function generateStaticParams() {
-  await generateRssFeed(); // regenerate RSS feed at build time
-  const projectIds = await getAllProjectIds();
-  return projectIds.map(id => ({ id }));
+  await generateRssFeed() // regenerate RSS feed at build time
+  const projectIds = await getAllProjectIds()
+  return projectIds.map(id => ({ id }))
 }
 
 export async function generateMetadata({
   params,
 }: {
-  params: Promise<{ id: string }>;
+  params: Promise<{ id: string }>
 }): Promise<Metadata> {
-  const id = (await params).id;
-  const projects = await getProjects([id], true);
+  const id = (await params).id
+  const projects = await getProjects([id], true)
 
   if (Array.isArray(projects) && projects.length === 0) {
     return {
       title: `Project ${id} not found | DTR`,
-    };
+    }
   }
 
-  const [project] = projects;
+  const [project] = projects
 
   return {
     title: `${project.name} | DTR`,
@@ -49,22 +49,22 @@ export async function generateMetadata({
     twitter: {
       images: project.banner_image ?? '',
     },
-  };
+  }
 }
 
 export default async function IndividualProjectPage({
   params,
 }: {
-  params: Promise<{ id: string }>;
+  params: Promise<{ id: string }>
 }) {
-  const id = (await params).id;
-  const projects = await getProjects([id], true);
+  const id = (await params).id
+  const projects = await getProjects([id], true)
 
   if (Array.isArray(projects) && projects.length === 0) {
-    notFound();
+    notFound()
   }
 
-  const [project] = projects;
+  const [project] = projects
 
   return (
     <div className="mx-auto max-w-4xl bg-gray-50 p-4">
@@ -123,5 +123,5 @@ export default async function IndividualProjectPage({
       {/* Team Members */}
       <TeamMembers groupId={project.id} members={project.members} />
     </div>
-  );
+  )
 }

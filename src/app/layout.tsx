@@ -1,12 +1,12 @@
-import type { Metadata } from 'next';
-import { GoogleAnalytics } from '@next/third-parties/google';
-import { Lato } from 'next/font/google';
-import Container from '@/components/shared/Container';
-import Header from '@/components/shared/Header';
-import PopupAnnouncement from '@/components/shared/PopupAnnouncement';
-import RouterTransition from '@/components/shared/RouterTransition';
-import { feedFileName, siteUrl } from '@/lib/consts';
-import './globals.css';
+import type { Metadata } from 'next'
+import { GoogleAnalytics } from '@next/third-parties/google'
+import { Lato } from 'next/font/google'
+import Container from '@/components/shared/Container'
+import Header from '@/components/shared/Header'
+import PopupAnnouncement from '@/components/shared/PopupAnnouncement'
+import RouterTransition from '@/components/shared/RouterTransition'
+import { feedFileName, siteUrl } from '@/lib/consts'
+import './globals.css'
 
 const lato = Lato({
   weight: ['100', '300', '400', '700', '900'],
@@ -14,7 +14,7 @@ const lato = Lato({
   subsets: ['latin'],
   display: 'swap',
   variable: '--font-lato',
-});
+})
 
 export const metadata: Metadata = {
   metadataBase: new URL(`${siteUrl}`),
@@ -34,12 +34,12 @@ export const metadata: Metadata = {
   verification: {
     google: '14ltX0knmJHA_JnO3Z428TX8YioIFSWFy1yABn_Qh10',
   },
-};
+}
 
 export default function RootLayout({
   children,
 }: {
-  children: React.ReactNode;
+  children: React.ReactNode
 }) {
   return (
     <html lang="en">
@@ -56,5 +56,5 @@ export default function RootLayout({
       </body>
       <GoogleAnalytics gaId="G-0LME5PW7PW" />
     </html>
-  );
+  )
 }

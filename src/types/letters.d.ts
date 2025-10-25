@@ -1,19 +1,19 @@
 interface AnnualLetter {
   /** The name of the annual letter. e.g., "2023 Annual Letter" */
-  name: string;
+  name: string
   /** The date the annual letter was published. */
-  datePublished: Date;
+  datePublished: Date
   /** A brief description of the annual letter. */
-  description: string;
+  description: string
   /** The URL link to the annual letter. It's the relative path. */
-  link: string;
+  link: string
   /** The table of contents for the annual letter. */
-  tableOfContents: TableOfContents[];
+  tableOfContents: TableOfContents[]
 }
 
 interface TableOfContents {
   /** The name of the section. */
-  name: string;
+  name: string
   /** The page number where the section starts. */
-  page: string;
+  page: string
 }

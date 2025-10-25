@@ -1,31 +1,31 @@
-'use server';
+'use server'
 
-import type { Attachment } from 'airtable';
-import { getImgUrlFromAttachmentObj, sortPeople } from '@/utils';
-import { getCachedRecords } from './airtable';
-import { fetchPeople } from './people';
-import { getProjects } from './project';
+import type { Attachment } from 'airtable'
+import { getImgUrlFromAttachmentObj, sortPeople } from '@/utils'
+import { getCachedRecords } from './airtable'
+import { fetchPeople } from './people'
+import { getProjects } from './project'
 
 const truncateToNearestWord = (input: string, maxLength: number): string => {
   if (typeof input !== 'string' || typeof maxLength !== 'number' || maxLength <= 0) {
-    return '';
+    return ''
   }
 
   // No truncation needed
   if (input.length <= maxLength) {
-    return input;
+    return input
   }
 
-  let truncated = input.substring(0, maxLength);
+  let truncated = input.substring(0, maxLength)
 
   // Find the last space within the truncated string to avoid cutting words
-  const lastSpaceIndex = truncated.lastIndexOf(' ');
+  const lastSpaceIndex = truncated.lastIndexOf(' ')
   if (lastSpaceIndex > 0) {
-    truncated = truncated.substring(0, lastSpaceIndex);
+    truncated = truncated.substring(0, lastSpaceIndex)
   }
 
-  return `${truncated}...`;
-};
+  return `${truncated}...`
+}
 
 /**
  * Fetches all SIGs (Special Interest Groups) from the Airtable database.
@@ -56,54 +56,54 @@ const truncateToNearestWord = (input: string, maxLength: number): string => {
 export async function fetchSigs(): Promise<SIG[]> {
   try {
     // Fetch all people records from Airtable
-    const people = await fetchPeople();
+    const people = await fetchPeople()
     if (!people) {
-      console.error('Failed to fetch people records.');
-      return [];
+      console.error('Failed to fetch people records.')
+      return []
     }
 
     // Fetch all SIG records
-    const sigRecords = await getCachedRecords('SIGs');
+    const sigRecords = await getCachedRecords('SIGs')
     if (!sigRecords.length) {
-      console.warn('No SIG records found.');
-      return [];
+      console.warn('No SIG records found.')
+      return []
     }
 
     // Extract all project IDs across SIGs
     const allProjectIds = Array.from(new Set(
       sigRecords.flatMap(record => (record.fields.projects as string[]) ?? []),
-    ));
-    const projects = await getProjects(allProjectIds);
-    const projectData = new Map(projects.map(project => [project.id, project]));
+    ))
+    const projects = await getProjects(allProjectIds)
+    const projectData = new Map(projects.map(project => [project.id, project]))
 
     // Process each SIG record
     const results: SIG[] = await Promise.all(sigRecords.map(async (record) => {
       // Fetch projects linked to the SIG
-      const projectIds: string[] = (record.fields.projects as string[]) ?? [];
+      const projectIds: string[] = (record.fields.projects as string[]) ?? []
       const projects: Project[] = projectIds
         .map(projectId => projectData.get(projectId))
-        .filter((p): p is Project => p !== undefined);
+        .filter((p): p is Project => p !== undefined)
 
       // Trim project descriptions (max 150 chars, avoiding cut-off words)
       const partialProjects: PartialProject[] = projects.map((project) => {
-        const maxCharLen = 150;
+        const maxCharLen = 150
         return {
           id: project.id,
           name: project.name,
           banner_image: project.banner_image,
           description: truncateToNearestWord(project.description, maxCharLen),
           status: project.status,
-        };
-      });
+        }
+      })
 
       // Fetch people associated with the SIG
-      const fetchedMembers: string[] = (record.fields.members as string[]) ?? [];
+      const fetchedMembers: string[] = (record.fields.members as string[]) ?? []
       const facultyMentors = people.filter(
         person => ((record.fields.faculty_mentors as string[]) ?? []).includes(person.id),
-      );
+      )
       const sigHeads = people.filter(
         person => ((record.fields.sig_head as string[]) ?? []).includes(person.id),
-      );
+      )
 
       // Compile all members: Faculty → SIG Heads → General Members
       const members = Array.from(new Set(
@@ -112,7 +112,7 @@ export async function fetchSigs(): Promise<SIG[]> {
           ...sigHeads,
           ...people.filter(person => fetchedMembers.includes(person.name)),
         ]),
-      ));
+      ))
 
       // Convert full person details to PartialPerson (removing bio)
       const partialMembers: PartialPerson[] = members.map(person => ({
@@ -121,10 +121,10 @@ export async function fetchSigs(): Promise<SIG[]> {
         role: person.role,
         status: person.status,
         profile_photo: person.profile_photo,
-      }));
+      }))
 
       // Construct SIG object
-      const bannerImage = await getImgUrlFromAttachmentObj(record.fields.banner_image as Attachment[]);
+      const bannerImage = await getImgUrlFromAttachmentObj(record.fields.banner_image as Attachment[])
       return {
         id: record.id,
         name: (record.fields.name as string) ?? '',
@@ -132,13 +132,13 @@ export async function fetchSigs(): Promise<SIG[]> {
         banner_image: bannerImage,
         members: partialMembers,
         projects: partialProjects,
-      };
-    }));
+      }
+    }))
 
-    return results;
+    return results
   }
   catch (error) {
-    console.error('Error fetching SIGs:', error);
-    return [];
+    console.error('Error fetching SIGs:', error)
+    return []
   }
 }

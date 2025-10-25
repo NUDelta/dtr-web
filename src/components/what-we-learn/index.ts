@@ -1,1 +1,1 @@
-export { default as quoteChunks } from './quoteChunks';
+export { default as quoteChunks } from './quoteChunks'

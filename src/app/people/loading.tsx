@@ -1,16 +1,16 @@
-'use client';
+'use client'
 
-import { startProgress, stopProgress } from 'next-nprogress-bar';
-import { useCallback, useEffect } from 'react';
+import { startProgress, stopProgress } from 'next-nprogress-bar'
+import { useCallback, useEffect } from 'react'
 
 export default function Loading() {
-  const stableStartProgress = useCallback(startProgress, []);
-  const stableStopProgress = useCallback(stopProgress, []);
+  const stableStartProgress = useCallback(startProgress, [])
+  const stableStopProgress = useCallback(stopProgress, [])
 
   useEffect(() => {
-    stableStartProgress();
-    return () => stableStopProgress();
-  }, [stableStartProgress, stableStopProgress]);
+    stableStartProgress()
+    return () => stableStopProgress()
+  }, [stableStartProgress, stableStopProgress])
 
   return (
     <main
@@ -41,7 +41,7 @@ export default function Loading() {
         <RoleBlockSkeleton />
       </section>
     </main>
-  );
+  )
 }
 
 function SegmentedSkeleton({ labels }: { labels: string[] }) {
@@ -61,7 +61,7 @@ function SegmentedSkeleton({ labels }: { labels: string[] }) {
         </div>
       ))}
     </div>
-  );
+  )
 }
 
 function RoleBlockSkeleton() {
@@ -91,7 +91,7 @@ function RoleBlockSkeleton() {
         <div className="h-9 w-32 animate-pulse rounded-xl border bg-gray-50 " aria-hidden />
       </div>
     </section>
-  );
+  )
 }
 
 function CardSkeleton() {
@@ -114,5 +114,5 @@ function CardSkeleton() {
         <div className="mt-3 h-8 w-24 animate-pulse rounded-lg bg-gray-100 " aria-hidden />
       </div>
     </article>
-  );
+  )
 }

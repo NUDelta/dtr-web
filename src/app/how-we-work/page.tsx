@@ -1,10 +1,10 @@
-import type { Metadata } from 'next';
-import HowWeWorkList from '@/components/how-we-work/HowWeWorkList';
+import type { Metadata } from 'next'
+import HowWeWorkList from '@/components/how-we-work/HowWeWorkList'
 
 export const metadata: Metadata = {
   title: 'How We Work | DTR',
   alternates: { canonical: 'https://dtr.northwestern.edu/how-we-work' },
-};
+}
 
 export default function ValuesApproach() {
   return (
@@ -32,5 +32,5 @@ export default function ValuesApproach() {
 
       <HowWeWorkList />
     </div>
-  );
+  )
 }

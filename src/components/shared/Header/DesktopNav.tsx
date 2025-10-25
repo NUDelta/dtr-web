@@ -1,15 +1,15 @@
-import { ChevronDown } from 'lucide-react';
-import { useEffect, useRef, useState } from 'react';
-import { GROUPS, ROOT_LINKS } from './items';
-import renderIcon from './renderIcon';
+import { ChevronDown } from 'lucide-react'
+import { useEffect, useRef, useState } from 'react'
+import { GROUPS, ROOT_LINKS } from './items'
+import renderIcon from './renderIcon'
 
 interface DesktopNavProps {
-  openGroup: string | null;
-  setOpenGroup: (id: string | null) => void;
-  openWithIntent: (id: string) => void;
-  closeWithIntent: (id: string) => void;
-  isActive: (href: string) => boolean;
-  className?: string;
+  openGroup: string | null
+  setOpenGroup: (id: string | null) => void
+  openWithIntent: (id: string) => void
+  closeWithIntent: (id: string) => void
+  isActive: (href: string) => boolean
+  className?: string
 }
 
 const DesktopNav = ({
@@ -21,35 +21,35 @@ const DesktopNav = ({
   className = '',
 }: DesktopNavProps) => {
   const navItemBase
-    = 'px-3 py-2 rounded-md transition-colors focus:outline-none focus-visible:ring-2 focus-visible:ring-yellow hover:bg-yellow hover:text-black motion-reduce:transition-none';
+    = 'px-3 py-2 rounded-md transition-colors focus:outline-none focus-visible:ring-2 focus-visible:ring-yellow hover:bg-yellow hover:text-black motion-reduce:transition-none'
 
   // --- Consistent, global dropdown alignment ---
-  const triggerRefs = useRef(new Map<string, HTMLButtonElement>());
-  const [menuGlobalAlign, setMenuGlobalAlign] = useState<'left' | 'right'>('left');
+  const triggerRefs = useRef(new Map<string, HTMLButtonElement>())
+  const [menuGlobalAlign, setMenuGlobalAlign] = useState<'left' | 'right'>('left')
 
   useEffect(() => {
     const compute = () => {
-      const triggers = Array.from(triggerRefs.current.values());
+      const triggers = Array.from(triggerRefs.current.values())
       if (!triggers.length) {
-        return;
+        return
       }
       // Use the rightmost trigger to test potential overflow with fallback menu width
       const rightmost = triggers.reduce((a, b) =>
         a.getBoundingClientRect().left > b.getBoundingClientRect().left ? a : b,
-      );
-      const fallbackWidth = 224; // min-w-56
-      const rect = rightmost.getBoundingClientRect();
-      const viewportW = window.innerWidth;
-      const padding = 8;
-      const wouldOverflowRight = rect.left + fallbackWidth > viewportW - padding;
+      )
+      const fallbackWidth = 224 // min-w-56
+      const rect = rightmost.getBoundingClientRect()
+      const viewportW = window.innerWidth
+      const padding = 8
+      const wouldOverflowRight = rect.left + fallbackWidth > viewportW - padding
       // eslint-disable-next-line react-hooks-extra/no-direct-set-state-in-use-effect
-      setMenuGlobalAlign(wouldOverflowRight ? 'right' : 'left');
-    };
+      setMenuGlobalAlign(wouldOverflowRight ? 'right' : 'left')
+    }
 
-    compute();
-    window.addEventListener('resize', compute);
-    return () => window.removeEventListener('resize', compute);
-  }, []);
+    compute()
+    window.addEventListener('resize', compute)
+    return () => window.removeEventListener('resize', compute)
+  }, [])
 
   return (
     <nav className={className} aria-label="Primary">
@@ -71,8 +71,8 @@ const DesktopNav = ({
 
         {/* Dropdown groups */}
         {GROUPS.map((group) => {
-          const groupActive = group.items.some(it => isActive(it.href));
-          const open = openGroup === group.id;
+          const groupActive = group.items.some(it => isActive(it.href))
+          const open = openGroup === group.id
 
           return (
             <div
@@ -85,7 +85,7 @@ const DesktopNav = ({
               <button
                 ref={(el) => {
                   if (el) {
-                    triggerRefs.current.set(group.id, el);
+                    triggerRefs.current.set(group.id, el)
                   }
                 }}
                 type="button"
@@ -98,12 +98,12 @@ const DesktopNav = ({
                 onClick={() => setOpenGroup(open ? null : group.id)}
                 onKeyDown={(e) => {
                   if (e.key === 'ArrowDown' || e.key === 'Enter' || e.key === ' ') {
-                    e.preventDefault();
-                    setOpenGroup(group.id);
+                    e.preventDefault()
+                    setOpenGroup(group.id)
                     const first = document.querySelector<HTMLAnchorElement>(
                       `#menu-${group.id} a[role="menuitem"]`,
-                    );
-                    first?.focus();
+                    )
+                    first?.focus()
                   }
                 }}
               >
@@ -139,11 +139,11 @@ const DesktopNav = ({
                 ))}
               </ul>
             </div>
-          );
+          )
         })}
       </div>
     </nav>
-  );
-};
+  )
+}
 
-export default DesktopNav;
+export default DesktopNav

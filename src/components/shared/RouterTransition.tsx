@@ -1,6 +1,6 @@
-'use client';
+'use client'
 
-import { AppProgressBar as ProgressBar } from 'next-nprogress-bar';
+import { AppProgressBar as ProgressBar } from 'next-nprogress-bar'
 
 const RouterTransition = () => {
   return (
@@ -10,7 +10,7 @@ const RouterTransition = () => {
       options={{ showSpinner: false }}
       aria-hidden="true"
     />
-  );
-};
+  )
+}
 
-export default RouterTransition;
+export default RouterTransition

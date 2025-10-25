@@ -1,19 +1,19 @@
-import type { StatusTab } from '@/hooks/usePeopleDirectory';
-import { AnimatePresence, motion } from 'framer-motion';
-import { useState } from 'react';
-import Avatar from './Avatar';
-import BioClamp from './BioClamp';
-import PeopleCard from './PeopleCard';
+import type { StatusTab } from '@/hooks/usePeopleDirectory'
+import { AnimatePresence, motion } from 'framer-motion'
+import { useState } from 'react'
+import Avatar from './Avatar'
+import BioClamp from './BioClamp'
+import PeopleCard from './PeopleCard'
 
 function slugify(s: string) {
-  return s.toLowerCase().replace(/[^a-z0-9]+/g, '-');
+  return s.toLowerCase().replace(/[^a-z0-9]+/g, '-')
 }
 
 interface RoleBlockProps {
-  status: StatusTab;
-  role: string;
-  people: Person[];
-  view: 'card' | 'list';
+  status: StatusTab
+  role: string
+  people: Person[]
+  view: 'card' | 'list'
 }
 
 const RoleBlock = ({
@@ -24,9 +24,9 @@ const RoleBlock = ({
 }: RoleBlockProps) => {
   // Default open for all only for active page
   // Alumni small cohorts; collapsed for large ones
-  const defaultOpen = status === 'Active' || ['Faculty', 'Ph.D. Candidate', 'Ph.D. Student'].includes(role);
-  const [visible, setVisible] = useState(Math.min(people.length, 24));
-  const remaining = Math.max(0, people.length - visible);
+  const defaultOpen = status === 'Active' || ['Faculty', 'Ph.D. Candidate', 'Ph.D. Student'].includes(role)
+  const [visible, setVisible] = useState(Math.min(people.length, 24))
+  const remaining = Math.max(0, people.length - visible)
 
   return (
     <section aria-labelledby={`heading-${slugify(role)}`} className="rounded-2xl border">
@@ -115,7 +115,7 @@ const RoleBlock = ({
         )}
       </details>
     </section>
-  );
-};
+  )
+}
 
-export default RoleBlock;
+export default RoleBlock

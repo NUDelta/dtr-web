@@ -1,5 +1,5 @@
-import Image from 'next/image';
-import sections from './sections';
+import Image from 'next/image'
+import sections from './sections'
 
 export default function HowWeWorkList() {
   return (
@@ -36,5 +36,5 @@ export default function HowWeWorkList() {
         </div>
       ))}
     </div>
-  );
+  )
 }

@@ -14,16 +14,16 @@
  * the name of the publication, the conference, and the URL link to the paper (?)
  */
 interface Project {
-  id: string;
-  name: string;
-  banner_image: string | null;
-  description: string;
-  status: string;
-  demo_video: string | null;
-  sprint_video: string | null;
-  members: PartialPerson[];
-  images: ProjectImages;
-  publications: ProjectPublication[];
+  id: string
+  name: string
+  banner_image: string | null
+  description: string
+  status: string
+  demo_video: string | null
+  sprint_video: string | null
+  members: PartialPerson[]
+  images: ProjectImages
+  publications: ProjectPublication[]
 }
 
 /**
@@ -39,23 +39,23 @@ interface Project {
  *
  */
 interface PartialProject {
-  id: string;
-  name: string;
-  banner_image: string | null;
-  description: string;
-  status: string;
+  id: string
+  name: string
+  banner_image: string | null
+  description: string
+  status: string
 }
 
 interface ProjectImages {
   explainerImages: {
-    url: string;
-    description: string;
-  }[];
+    url: string
+    description: string
+  }[]
 }
 
 interface ProjectPublication {
-  id: string;
-  name: string;
-  conference: string;
-  url: string;
+  id: string
+  name: string
+  conference: string
+  url: string
 }

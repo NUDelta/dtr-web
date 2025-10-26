@@ -2,8 +2,10 @@
 
 import { AnimatePresence, motion } from 'framer-motion'
 import dynamic from 'next/dynamic'
-import { Suspense } from 'react'
+import { Suspense, useMemo } from 'react'
 import { usePeopleDirectory } from '@/hooks/usePeopleDirectory'
+import { useSearchQuery } from '@/hooks/useSearch'
+import { SearchBar } from '../shared'
 import RoleBlock from './RoleBlock'
 
 const AlumniMap = dynamic(async () => import('./AlumniMap'), { ssr: false })
@@ -22,11 +24,52 @@ const PeopleDirectory = ({ initialPeople }: PeopleDirectoryProps) => {
     grouped,
   } = usePeopleDirectory(initialPeople)
 
+  const { query, setQuery, debouncedQuery, reset } = useSearchQuery('', 300)
+
+  const filteredGrouped = useMemo(() => {
+    const q = debouncedQuery.trim().toLowerCase()
+    if (!q) {
+      return grouped
+    }
+    return grouped
+      .map(({ role, people }) => ({
+        role,
+        people: people.filter(p => p.name?.toLowerCase().includes(q)),
+      }))
+      .filter(({ people }) => people.length > 0)
+  }, [grouped, debouncedQuery])
+
+  const totalMatches = useMemo(
+    () => filteredGrouped.reduce((acc, g) => acc + g.people.length, 0),
+    [filteredGrouped],
+  )
+
   return (
-    <main className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
-      <header className="pb-4 pt-6 sm:pt-10">
-        <h1 className="text-3xl font-semibold tracking-tight">People</h1>
-        <p className="mt-1 max-w-2xl text-gray-600">Browse faculty, students, and alumni.</p>
+    <>
+      <header className="pb-4">
+        <h1 className="text-4xl font-semibold tracking-tight">People</h1>
+        <p className="mt-1 text-lg max-w-2xl text-gray-600">Browse our faculty, students, and alumni.</p>
+
+        <div className="mt-4">
+          <SearchBar
+            value={query}
+            onChange={setQuery}
+            onClear={reset}
+            placeholder={`Search ${status.toLowerCase()} by name…`}
+            className="mx-auto max-w-xl"
+          />
+          {/* subtle result count when searching */}
+          {debouncedQuery && (
+            <p className="mt-2 text-center text-sm text-gray-600">
+              {totalMatches}
+              {' '}
+              match
+              {totalMatches === 1 ? '' : 'es'}
+              {' '}
+              found
+            </p>
+          )}
+        </div>
 
         {/* Controls row */}
         <motion.div
@@ -119,27 +162,41 @@ const PeopleDirectory = ({ initialPeople }: PeopleDirectoryProps) => {
         </div>
       )}
 
-      <section aria-label="Directory" className="space-y-6 pb-10">
-        <AnimatePresence initial={false} mode="popLayout">
-          {grouped.map(({ role, people }) => (
-            <motion.div
-              key={`${role}-${view}-${status}`}
-              initial={{ opacity: 0, y: 4 }}
-              animate={{ opacity: 1, y: 0 }}
-              exit={{ opacity: 0, y: 4 }}
-              transition={{ duration: 0.15 }}
-            >
-              <RoleBlock
-                status={status}
-                role={role}
-                people={people}
-                view={view}
-              />
-            </motion.div>
-          ))}
-        </AnimatePresence>
+      <section id="people-results" aria-label="Directory" className="space-y-6 pb-10">
+        {/* No results state */}
+        {debouncedQuery && totalMatches === 0
+          ? (
+              <div className="rounded-lg border border-dashed border-gray-300 p-8 text-center text-gray-600">
+                No matches for “
+                <span className="font-semibold">{debouncedQuery}</span>
+                ” in
+                {' '}
+                {status.toLowerCase()}
+                .
+              </div>
+            )
+          : (
+              <AnimatePresence initial={false} mode="popLayout">
+                {filteredGrouped.map(({ role, people }) => (
+                  <motion.div
+                    key={`${role}-${view}-${status}`}
+                    initial={{ opacity: 0, y: 4 }}
+                    animate={{ opacity: 1, y: 0 }}
+                    exit={{ opacity: 0, y: 4 }}
+                    transition={{ duration: 0.15 }}
+                  >
+                    <RoleBlock
+                      status={status}
+                      role={role}
+                      people={people}
+                      view={view}
+                    />
+                  </motion.div>
+                ))}
+              </AnimatePresence>
+            )}
       </section>
-    </main>
+    </>
   )
 }
 

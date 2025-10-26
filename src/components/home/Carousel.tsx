@@ -195,7 +195,7 @@ export default function Carousel({
             const isActive = i === index
             return (
               <button
-                key={(images[i])?.src ?? i}
+                key={images[i].src}
                 type="button"
                 onClick={() => setSlide(i)}
                 aria-label={`Go to slide ${i + 1}`}

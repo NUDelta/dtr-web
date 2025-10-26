@@ -1,10 +1,10 @@
-import type { Metadata } from 'next';
-import { quoteChunks } from '@/components/what-we-learn';
+import type { Metadata } from 'next'
+import { quoteChunks } from '@/components/what-we-learn'
 
 export const metadata: Metadata = {
   title: 'What We Learn | DTR',
   alternates: { canonical: 'https://dtr.northwestern.edu/what-we-learn' },
-};
+}
 
 export default function WhatWeLearn() {
   return (
@@ -45,5 +45,5 @@ export default function WhatWeLearn() {
         continues to do right by students, we will do just fine.
       </div>
     </div>
-  );
+  )
 }

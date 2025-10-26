@@ -1,7 +1,7 @@
-import HomeIntro from '@/components/home/HomeIntro';
-import MediaBanner from '@/components/home/MediaBanner';
-import Slides from '@/components/home/Slides';
-import Container from '@/components/shared/Container';
+import HomeIntro from '@/components/home/HomeIntro'
+import MediaBanner from '@/components/home/MediaBanner'
+import Slides from '@/components/home/Slides'
+import Container from '@/components/shared/Container'
 
 export default function HomePage() {
   return (
@@ -15,5 +15,5 @@ export default function HomePage() {
         <MediaBanner />
       </Container>
     </>
-  );
+  )
 }

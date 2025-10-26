@@ -1,22 +1,23 @@
-import type { Metadata } from 'next';
-import ReactMarkdown from 'react-markdown';
-import TeamMembers from '@/components/projects/TeamMembers';
-import { fetchSigs } from '@/lib/airtable/sig';
+import type { Metadata } from 'next'
+import Image from 'next/image'
+import ReactMarkdown from 'react-markdown'
+import TeamMembers from '@/components/projects/TeamMembers'
+import { fetchSigs } from '@/lib/airtable/sig'
 
 // Revalidate every 6 hours, maximum 146 times per month
-export const revalidate = 21600;
+export const revalidate = 21600
 
 export const metadata: Metadata = {
   title: 'Projects | DTR',
   alternates: { canonical: 'https://dtr.northwestern.edu/projects' },
-};
+}
 
 interface BannerImages {
-  [key: string]: string;
+  [key: string]: string
 }
 
 export default async function Projects() {
-  const sigs = await fetchSigs();
+  const sigs = await fetchSigs()
 
   const bannerImages: BannerImages = {
     'Agile Research Studios':
@@ -35,7 +36,7 @@ export default async function Projects() {
     'Situational Crowdsourcing':
       'sig-photos/situational-crowdsourcing_banner-image.png',
     'Human-AI Tools': 'sig-photos/human-ai_banner-image.jpg',
-  };
+  }
 
   return (
     <div className="mx-auto max-w-4xl space-y-8">
@@ -46,11 +47,15 @@ export default async function Projects() {
           <h2 className="mb-4 text-3xl font-semibold">{sig.name}</h2>
 
           {/* SIG banner image */}
-          <img
-            src={bannerImages[sig.name]}
-            className="w-full"
-            alt={sig.name}
-          />
+          {bannerImages[sig.name] && (
+            <Image
+              src={bannerImages[sig.name]}
+              className="w-full"
+              alt={sig.name}
+              width={832}
+              height={282}
+            />
+          )}
 
           {/* SIG description */}
           <div className="prose-lg my-4">
@@ -83,5 +88,5 @@ export default async function Projects() {
         </div>
       ))}
     </div>
-  );
+  )
 }

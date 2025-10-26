@@ -1,16 +1,16 @@
-'use client';
+'use client'
 
-import { startProgress, stopProgress } from 'next-nprogress-bar';
-import { useCallback, useEffect } from 'react';
+import { startProgress, stopProgress } from 'next-nprogress-bar'
+import { useCallback, useEffect } from 'react'
 
 export default function Loading() {
-  const stableStartProgress = useCallback(startProgress, []);
-  const stableStopProgress = useCallback(stopProgress, []);
+  const stableStartProgress = useCallback(startProgress, [])
+  const stableStopProgress = useCallback(stopProgress, [])
 
   useEffect(() => {
-    stableStartProgress();
-    return () => stableStopProgress();
-  }, [stableStartProgress, stableStopProgress]);
+    stableStartProgress()
+    return () => stableStopProgress()
+  }, [stableStartProgress, stableStopProgress])
 
   return (
     <div className="mx-auto max-w-4xl bg-gray-50 p-4 animate-pulse">
@@ -59,5 +59,5 @@ export default function Loading() {
         </div>
       </div>
     </div>
-  );
+  )
 }

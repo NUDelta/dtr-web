@@ -1,10 +1,10 @@
 interface QuoteTheme {
-  descriptor: string;
-  quotes: Quote[];
+  descriptor: string
+  quotes: Quote[]
 }
 
 interface Quote {
-  text: string;
+  text: string
 }
 
 const quoteChunks: QuoteTheme[] = [
@@ -111,6 +111,6 @@ const quoteChunks: QuoteTheme[] = [
       },
     ],
   },
-];
+]
 
-export default quoteChunks;
+export default quoteChunks

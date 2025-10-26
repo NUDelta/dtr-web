@@ -1,6 +1,6 @@
-'use server';
+'use server'
 
-import type { Attachment } from 'airtable';
+import type { Attachment } from 'airtable'
 
 /**
  * Generates a cached image URL from an Airtable attachment using a stable key.
@@ -20,28 +20,28 @@ export const getImgUrlFromAttachmentObj = async (
   variant: 'full' | 'thumb' | 'large' = 'full',
 ): Promise<string | null> => {
   if (!attachmentArr || attachmentArr.length === 0) {
-    return null;
+    return null
   }
 
-  const target = attachmentArr[0];
+  const target = attachmentArr[0]
   if (!target?.type?.includes('image')) {
-    return null;
+    return null
   }
 
-  const attId = target.id; // Airtable attachment id is stable (e.g., "attXXXXXXXX")
-  const filename = target.filename || 'image';
-  const src = target.url; // Temporary signed URL from Airtable - used only on first miss
+  const attId = target.id // Airtable attachment id is stable (e.g., "attXXXXXXXX")
+  const filename = target.filename || 'image'
+  const src = target.url // Temporary signed URL from Airtable - used only on first miss
 
   if (!attId || !src) {
-    return null;
+    return null
   }
 
-  const encodedId = encodeURIComponent(attId);
-  const encodedVariant = encodeURIComponent(variant);
-  const encodedName = encodeURIComponent(filename);
-  const encodedSrc = encodeURIComponent(src);
+  const encodedId = encodeURIComponent(attId)
+  const encodedVariant = encodeURIComponent(variant)
+  const encodedName = encodeURIComponent(filename)
+  const encodedSrc = encodeURIComponent(src)
 
   // The route will persist to R2 (as WebP) on first miss, then serve/redirect.
   // Format: /api/images/{attId}/{variant}/{filename}?src={airtable_url}
-  return `/api/images/${encodedId}/${encodedVariant}/${encodedName}?src=${encodedSrc}`;
-};
+  return `/api/images/${encodedId}/${encodedVariant}/${encodedName}?src=${encodedSrc}`
+}

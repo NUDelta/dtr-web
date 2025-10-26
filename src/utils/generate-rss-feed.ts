@@ -1,11 +1,11 @@
-'use server';
+'use server'
 
-import fs from 'node:fs';
-import path from 'node:path';
-import process from 'node:process';
-import RSS from 'rss';
-import annualLetters from '@/lib/annual-letters';
-import { feedFileName, siteUrl } from '@/lib/consts';
+import fs from 'node:fs'
+import path from 'node:path'
+import process from 'node:process'
+import RSS from 'rss'
+import annualLetters from '@/lib/annual-letters'
+import { feedFileName, siteUrl } from '@/lib/consts'
 
 const generateRssFeed = async (): Promise<void> => {
   const feedOptions: RSS.FeedOptions = {
@@ -17,11 +17,11 @@ const generateRssFeed = async (): Promise<void> => {
     copyright: `All rights reserved ${new Date().getFullYear()} by DTR`,
     pubDate: new Date(),
     generator: 'Next.js + RSS for Node provided by DTR',
-  };
+  }
 
-  let feed: RSS;
+  let feed: RSS
   try {
-    feed = new RSS(feedOptions);
+    feed = new RSS(feedOptions)
 
     for (const letter of annualLetters) {
       feed.item({
@@ -30,33 +30,33 @@ const generateRssFeed = async (): Promise<void> => {
         url: `${siteUrl}${letter.link}`,
         date: letter.datePublished,
         author: 'Haoqi Zhang',
-      });
+      })
     }
   }
   catch (error) {
     if (error instanceof Error) {
-      console.error('Error creating RSS feed:', error.message);
+      console.error('Error creating RSS feed:', error.message)
     }
     else {
-      console.error('Unexpected error:', error);
+      console.error('Unexpected error:', error)
     }
-    return;
+    return
   }
 
   try {
-    const outputPath = path.join(process.cwd(), 'public', feedFileName);
-    fs.writeFileSync(outputPath, feed.xml({ indent: true }), 'utf8');
+    const outputPath = path.join(process.cwd(), 'public', feedFileName)
+    fs.writeFileSync(outputPath, feed.xml({ indent: true }), 'utf8')
     // eslint-disable-next-line no-console
-    console.info(`\nRSS feed generated at /${feedFileName} 🎉`);
+    console.info(`\nRSS feed generated at /${feedFileName} 🎉`)
   }
   catch (writeError) {
     if (writeError instanceof Error) {
-      console.error('Error writing RSS feed file:', writeError.message);
+      console.error('Error writing RSS feed file:', writeError.message)
     }
     else {
-      console.error('Unexpected error while writing file:', writeError);
+      console.error('Unexpected error while writing file:', writeError)
     }
   }
-};
+}
 
-export default generateRssFeed;
+export default generateRssFeed

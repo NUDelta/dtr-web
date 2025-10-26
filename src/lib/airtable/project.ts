@@ -1,9 +1,9 @@
-'use server';
+'use server'
 
-import type { Attachment } from 'airtable';
-import { getImgUrlFromAttachmentObj, sortPeople } from '@/utils';
-import { getCachedRecords } from './airtable';
-import { fetchPeople } from './people';
+import type { Attachment } from 'airtable'
+import { getImgUrlFromAttachmentObj, sortPeople } from '@/utils'
+import { getCachedRecords } from './airtable'
+import { fetchPeople } from './people'
 
 /**
  * Retrieves detailed project information from Airtable for multiple projects.
@@ -26,22 +26,22 @@ import { fetchPeople } from './people';
  */
 export async function getProjects(projectIds: string[], getAllData = false): Promise<Project[]> {
   try {
-    const projects = await getCachedRecords('Projects');
-    const people = await fetchPeople();
+    const projects = await getCachedRecords('Projects')
+    const people = await fetchPeople()
 
     if (!people) {
-      console.error('Failed to fetch people records.');
-      return [];
+      console.error('Failed to fetch people records.')
+      return []
     }
 
     // Filter projects based on provided IDs
-    const filteredProjects = projects.filter(p => projectIds.includes(p.id));
+    const filteredProjects = projects.filter(p => projectIds.includes(p.id))
 
     // Extract all project IDs across SIGs
     const result = await Promise.all(
       filteredProjects.map(async (projectRecord) => {
         // Fetch people associated with the project
-        const fetchedMembers = (projectRecord.fields.members as string[]) ?? [];
+        const fetchedMembers = (projectRecord.fields.members as string[]) ?? []
         const members = sortPeople(people.filter(person => fetchedMembers.includes(person.name)))
           .map(({ id, name, role, status, profile_photo }) => ({
             id,
@@ -49,10 +49,10 @@ export async function getProjects(projectIds: string[], getAllData = false): Pro
             role,
             status,
             profile_photo,
-          }));
+          }))
 
         // Fetch project banner image
-        const bannerImage = await getImgUrlFromAttachmentObj(projectRecord.fields.banner_image as Attachment[]);
+        const bannerImage = await getImgUrlFromAttachmentObj(projectRecord.fields.banner_image as Attachment[])
 
         // Construct project object
         const project: Project = {
@@ -66,33 +66,33 @@ export async function getProjects(projectIds: string[], getAllData = false): Pro
           members,
           images: { explainerImages: [] },
           publications: [],
-        };
+        }
 
         // Return partial project data if `getAllData` is false
         if (!getAllData) {
-          return project;
+          return project
         }
 
         // Fetch additional project
         const [imagesResult, publicationsResult] = await Promise.allSettled([
           fetchProjectImages(projectRecord.fields.images as string[] ?? []),
           fetchPublications(projectRecord.fields.publications as string[] ?? []),
-        ]);
+        ])
 
         // Return full project data
         return {
           ...project,
           images: imagesResult.status === 'fulfilled' ? imagesResult.value : { explainerImages: [] },
           publications: publicationsResult.status === 'fulfilled' ? publicationsResult.value : [],
-        };
+        }
       }),
-    );
+    )
 
-    return result;
+    return result
   }
   catch (error) {
-    console.error(`Error fetching projects:`, error);
-    return [];
+    console.error(`Error fetching projects:`, error)
+    return []
   }
 }
 
@@ -113,28 +113,28 @@ export async function getProjects(projectIds: string[], getAllData = false): Pro
  */
 export async function fetchProjectImages(imageDocIds: string[]): Promise<ProjectImages> {
   try {
-    const records = await getCachedRecords('Project Images');
-    const relevantRecords = records.filter(r => imageDocIds.includes(r.id));
+    const records = await getCachedRecords('Project Images')
+    const relevantRecords = records.filter(r => imageDocIds.includes(r.id))
 
-    const explainerImages: ProjectImages['explainerImages'] = [];
+    const explainerImages: ProjectImages['explainerImages'] = []
 
     // Fetch images and descriptions for each project
     for (const record of relevantRecords) {
       // Fetch up to 5 images and descriptions
       for (let i = 1; i <= 5; i++) {
-        const imageUrl = await getImgUrlFromAttachmentObj(record.fields[`image_${i}`] as Attachment[]);
-        const description = record.fields[`image_${i}_description`] as string;
+        const imageUrl = await getImgUrlFromAttachmentObj(record.fields[`image_${i}`] as Attachment[])
+        const description = record.fields[`image_${i}_description`] as string
         if (imageUrl !== null && description) {
-          explainerImages.push({ url: imageUrl, description });
+          explainerImages.push({ url: imageUrl, description })
         }
       }
     }
 
-    return { explainerImages };
+    return { explainerImages }
   }
   catch (error) {
-    console.error(`Error fetching project images:`, error);
-    return { explainerImages: [] };
+    console.error(`Error fetching project images:`, error)
+    return { explainerImages: [] }
   }
 }
 
@@ -155,27 +155,27 @@ export async function fetchProjectImages(imageDocIds: string[]): Promise<Project
  */
 export async function fetchPublications(publicationDocIds: string[]): Promise<ProjectPublication[]> {
   try {
-    const records = await getCachedRecords('Project Publications');
-    const relevantRecords = records.filter(r => publicationDocIds.includes(r.id));
+    const records = await getCachedRecords('Project Publications')
+    const relevantRecords = records.filter(r => publicationDocIds.includes(r.id))
 
-    const publications: ProjectPublication[] = [];
+    const publications: ProjectPublication[] = []
 
     for (const record of relevantRecords) {
       for (let i = 1; i <= 5; i++) {
-        const name = record.fields[`publication_${i}_name`] as string;
-        const conference = record.fields[`publication_${i}_conference`] as string;
-        const url = record.fields[`publication_${i}_url`] as string;
+        const name = record.fields[`publication_${i}_name`] as string
+        const conference = record.fields[`publication_${i}_conference`] as string
+        const url = record.fields[`publication_${i}_url`] as string
         if (name && conference && url) {
-          publications.push({ id: `${record.id}-publication-${i}`, name, conference, url });
+          publications.push({ id: `${record.id}-publication-${i}`, name, conference, url })
         }
       }
     }
 
-    return publications;
+    return publications
   }
   catch (error) {
-    console.error(`Error fetching project publications:`, error);
-    return [];
+    console.error(`Error fetching project publications:`, error)
+    return []
   }
 }
 
@@ -190,6 +190,6 @@ export async function fetchPublications(publicationDocIds: string[]): Promise<Pr
  * console.log(projectIds); // ["rec123456", "rec789101", ...]
  */
 export async function getAllProjectIds(): Promise<string[]> {
-  const projects = await getCachedRecords('Projects');
-  return projects.map(project => project.id);
+  const projects = await getCachedRecords('Projects')
+  return projects.map(project => project.id)
 }

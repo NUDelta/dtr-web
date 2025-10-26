@@ -1,15 +1,15 @@
-'use client';
+'use client'
 
-import ReactPlayer from 'react-player/youtube';
+import ReactPlayer from 'react-player/youtube'
 
 interface ProjectVideoProps {
-  title: string;
-  url: string | null;
+  title: string
+  url: string | null
 }
 
 export default function ProjectVideo({ title, url }: ProjectVideoProps) {
   if (url === null) {
-    return null;
+    return null
   }
 
   return (
@@ -19,5 +19,5 @@ export default function ProjectVideo({ title, url }: ProjectVideoProps) {
         <ReactPlayer url={url} className="react-player" width="100%" height="100%" controls />
       </div>
     </div>
-  );
+  )
 }

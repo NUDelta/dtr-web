@@ -1,17 +1,17 @@
-'use client';
+'use client'
 
-import { useClickOutside, useSessionStorage, useToggle } from '@zl-asica/react';
-import Image from 'next/image';
-import Link from 'next/link';
-import { useEffect, useMemo, useRef, useState } from 'react';
+import { useClickOutside, useSessionStorage, useToggle } from '@zl-asica/react'
+import Image from 'next/image'
+import Link from 'next/link'
+import { useEffect, useMemo, useRef, useState } from 'react'
 
 interface Announcement {
-  id: string;
-  title?: string;
-  description?: string;
-  image?: string;
-  link?: { url: string; text: string };
-  expiryDate: string; // YYYY-MM-DD format
+  id: string
+  title?: string
+  description?: string
+  image?: string
+  link?: { url: string, text: string }
+  expiryDate: string // YYYY-MM-DD format
 }
 
 const announcements: Announcement[] = [
@@ -25,39 +25,39 @@ const announcements: Announcement[] = [
     },
     expiryDate: '2025-05-09',
   },
-];
+]
 
 const PopupAnnouncement = () => {
-  const [activeAnnouncement, setActiveAnnouncement] = useState<Announcement | null>(null);
-  const ref = useRef<HTMLDivElement>(null);
-  const [isVisible, toggleIsVisible] = useToggle();
+  const [activeAnnouncement, setActiveAnnouncement] = useState<Announcement | null>(null)
+  const ref = useRef<HTMLDivElement>(null)
+  const [isVisible, toggleIsVisible] = useToggle()
   const {
     value: lastViewedDate,
     setValue: setLastViewedDate,
-  } = useSessionStorage<string>('viewed-announcement-date', '');
+  } = useSessionStorage<string>('viewed-announcement-date', '')
 
-  useClickOutside(ref, toggleIsVisible);
+  useClickOutside(ref, toggleIsVisible)
 
-  const today = useMemo(() => new Date().toISOString().split('T')[0], []);
+  const today = useMemo(() => new Date().toISOString().split('T')[0], [])
 
   useEffect(() => {
     if (lastViewedDate === today) {
-      return; // User has already viewed today
+      return // User has already viewed today
     }
 
     const validAnnouncements = announcements.filter(a =>
-      new Date(a.expiryDate) >= new Date(today));
+      new Date(a.expiryDate) >= new Date(today))
 
     if (validAnnouncements.length > 0) {
       // eslint-disable-next-line react-hooks-extra/no-direct-set-state-in-use-effect
-      setActiveAnnouncement(validAnnouncements[0]);
-      toggleIsVisible();
-      setLastViewedDate(today); // Save current date
+      setActiveAnnouncement(validAnnouncements[0])
+      toggleIsVisible()
+      setLastViewedDate(today) // Save current date
     }
-  }, [lastViewedDate, today, setLastViewedDate, toggleIsVisible]);
+  }, [lastViewedDate, today, setLastViewedDate, toggleIsVisible])
 
   if (!isVisible || !activeAnnouncement) {
-    return null;
+    return null
   }
 
   return (
@@ -122,7 +122,7 @@ const PopupAnnouncement = () => {
         </div>
       </div>
     </div>
-  );
-};
+  )
+}
 
-export default PopupAnnouncement;
+export default PopupAnnouncement

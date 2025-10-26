@@ -9,22 +9,22 @@ interface Person {
    * to find this value, click on an airtable field/person, and look at the URL at the part with the value ./recxxxxxx
    * the value of their id is that recxxxx value from the URL
    */
-  id: string;
+  id: string
   /** Person's displayed name on this section */
-  name: string;
+  name: string
   /**
    * Displayed on the website, but describes their role such as "Professor","undergraduate researcher", etc.
    * This doesn't work to actually organize the people, which is why we also have the "Role" field
    */
-  title: string;
+  title: string
   /** Drop-down version of title, used to sort people on the website (professor -> phd -> grad/ug etc) */
-  role: string;
+  role: string
   /** Drop down on airtable indicating if a person is active or inactive- this is used to also sort graduate and undergraduate students */
-  status: string;
+  status: string
   /** Bio of a particular person, displayed on the "people" page of the website */
-  bio: string;
+  bio: string
   /** URL to someone's profile photo, from the airtable database */
-  profile_photo: string | null;
+  profile_photo: string | null
 }
 
 /**
@@ -36,13 +36,13 @@ interface Person {
  */
 interface PartialPerson {
   /** id of the person, held by airtable- look at @typedef Person for more info on how to find this */
-  id: string;
+  id: string
   /** Person's displayed name on this section */
-  name: string;
+  name: string
   /** Not displayed here, but describes their role such as "Professor","undergraduate researcher", etc. */
-  role: string;
+  role: string
   /** Drop-down version of title, used to sort people on the list of names (professor -> phd -> grad/ug etc), on the SIG and project pages */
-  status: string;
+  status: string
   /** URL to someone's profile photo, from the airtable database- not displayed in these sections */
-  profile_photo: string | null;
+  profile_photo: string | null
 }

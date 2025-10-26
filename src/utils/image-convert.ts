@@ -1,9 +1,9 @@
-import type { Buffer } from 'node:buffer';
-import sharp from 'sharp';
+import type { Buffer } from 'node:buffer'
+import sharp from 'sharp'
 
 /** Global tuning for small servers (e.g., 1 vCPU/512MB droplets). Adjust as needed. */
-sharp.cache({ files: 128, items: 256, memory: 64 }); // memory is MB-ish
-sharp.concurrency(2);
+sharp.cache({ files: 128, items: 256, memory: 64 }) // memory is MB-ish
+sharp.concurrency(2)
 
 /**
  * Transcode an encoded image Buffer to WebP using sharp only.
@@ -17,11 +17,11 @@ sharp.concurrency(2);
 export async function transcodeBufferToWebp(
   input: Buffer,
   options: Partial<WebpOptions> = {},
-): Promise<{ buffer: Buffer; contentType: 'image/webp'; converted: boolean }> {
-  const quality = options.quality ?? 82;
-  const lossless = options.lossless ?? false;
-  const effort = options.effort ?? 4;
-  const targetW = options.targetWidth;
+): Promise<{ buffer: Buffer, contentType: 'image/webp', converted: boolean }> {
+  const quality = options.quality ?? 82
+  const lossless = options.lossless ?? false
+  const effort = options.effort ?? 4
+  const targetW = options.targetWidth
 
   try {
     let p = sharp(input, {
@@ -29,10 +29,10 @@ export async function transcodeBufferToWebp(
       sequentialRead: true, // memory-friendly
       animated: false, // take first frame if input is animated
       failOnError: false,
-    });
+    })
 
     // Respect EXIF rotation
-    p = p.rotate();
+    p = p.rotate()
 
     // Optional resize for thumbnails or smaller variants
     if (targetW !== undefined && Number.isFinite(targetW) && targetW > 0) {
@@ -41,11 +41,11 @@ export async function transcodeBufferToWebp(
         fit: 'inside',
         withoutEnlargement: true,
         fastShrinkOnLoad: true,
-      });
+      })
     }
 
     // HDR → SDR: force sRGB 8-bit + gamma for more natural SDR appearance
-    p = p.toColorspace('srgb').gamma();
+    p = p.toColorspace('srgb').gamma()
 
     // Encode to WebP
     const out = await p.webp({
@@ -55,14 +55,14 @@ export async function transcodeBufferToWebp(
       smartSubsample: true, // better chroma subsampling for photos
       nearLossless: false,
       alphaQuality: Math.min(quality + 5, 100), // preserve alpha edges slightly better
-    }).toBuffer();
+    }).toBuffer()
 
-    return { buffer: out, contentType: 'image/webp', converted: true };
+    return { buffer: out, contentType: 'image/webp', converted: true }
   }
   catch (err) {
     // Fallback: return original bytes so the request still succeeds
     // (If you prefer strict behavior, rethrow instead.)
-    console.warn('[image-convert] sharp failed, returning original buffer:', err);
-    return { buffer: input, contentType: 'image/webp', converted: false };
+    console.warn('[image-convert] sharp failed, returning original buffer:', err)
+    return { buffer: input, contentType: 'image/webp', converted: false }
   }
 }

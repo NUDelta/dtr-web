@@ -1,8 +1,8 @@
-import Link from 'next/link';
+import Link from 'next/link'
 
 interface QA {
-  question: string | React.ReactNode;
-  answer: React.ReactNode;
+  question: string | React.ReactNode
+  answer: React.ReactNode
 }
 
 /**
@@ -15,13 +15,13 @@ const questionsAndAnswers: QA[] = [
       <>
         DTR is offered as a
         {' '}
-        <Link
+        <a
           target="_blank"
           rel="noreferrer noopener"
           href="https://www.mccormick.northwestern.edu/computer-science/academics/courses/descriptions/315-415.html"
         >
           COMP_SCI 315/415 course
-        </Link>
+        </a>
         {' '}
         every quarter. Students can start in any quarter. Most students choose
         to continue in DTR until they graduate.
@@ -62,7 +62,7 @@ const questionsAndAnswers: QA[] = [
         While students in DTR have a lot of freedom to choose a project from a
         set that we curate in the
         {' '}
-        <a href="/projects">research areas</a>
+        <Link href="/projects" prefetch={false}>research areas</Link>
         {' '}
         we work in, the structure of DTR does not accommodate students working
         on their personal projects.
@@ -151,15 +151,15 @@ const questionsAndAnswers: QA[] = [
       <>
         Get in touch with
         {' '}
-        <Link href="mailto:hq@northwestern.edu" prefetch={false}>Haoqi</Link>
+        <a href="mailto:hq@northwestern.edu">Haoqi</a>
         {' '}
         or
         {' '}
-        <a href="/people">anyone else in DTR</a>
+        <Link href="/people" prefetch={false}>anyone else in DTR</Link>
         .
       </>
     ),
   },
-];
+]
 
-export default questionsAndAnswers;
+export default questionsAndAnswers

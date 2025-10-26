@@ -13,10 +13,10 @@
  *
  */
 interface SIG {
-  id: string;
-  name: string;
-  description: string;
-  banner_image: string | null;
-  members: PartialPerson[];
-  projects: PartialProject[];
+  id: string
+  name: string
+  description: string
+  banner_image: string | null
+  members: PartialPerson[]
+  projects: PartialProject[]
 }

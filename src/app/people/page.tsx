@@ -1,17 +1,17 @@
-import type { Metadata } from 'next';
-import PeopleProfiles from '@/components/people/PeopleProfiles';
-import { fetchPeople } from '@/lib/airtable/people';
-import { maybeRunR2CleanupFromISR } from '@/lib/r2/r2-gc';
-import { sortPeople } from '@/utils';
+import type { Metadata } from 'next'
+import PeopleDirectory from '@/components/people/PeopleDirectory'
+import { fetchPeople } from '@/lib/airtable/people'
+import { maybeRunR2CleanupFromISR } from '@/lib/r2/r2-gc'
+import { sortPeople } from '@/utils'
 
 // Revalidate every 12 hours, maximum 73 times per month
-export const revalidate = 43200;
+export const revalidate = 43200
 
 export const metadata: Metadata = {
   title: 'People | DTR',
   description: 'Meet the diverse and talented individuals who make up the DTR community, including faculty, students, and alumni.',
   alternates: { canonical: 'https://dtr.northwestern.edu/people' },
-};
+}
 
 export default async function PeoplePage() {
   // Throttled GC: at most once every 24h; delete objects not accessed in 60 days
@@ -20,21 +20,11 @@ export default async function PeoplePage() {
     maxAgeDays: 60,
     minIntervalHours: 24,
     maxDeletePerRun: 250,
-  });
+  })
 
-  const people = sortPeople((await fetchPeople()) ?? []);
+  const people = sortPeople((await fetchPeople()) ?? [])
 
   return (
-    <>
-      {/* Active faculty and students in DTR */}
-      <PeopleProfiles peopleList={people} statusFilter="Active" />
-
-      {/* Alums of DTR */}
-      <div className="prose-lg mx-auto mb-5 max-w-4xl">
-        <h2>Alumni</h2>
-      </div>
-
-      <PeopleProfiles peopleList={people} statusFilter="Alumni" />
-    </>
-  );
+    <PeopleDirectory initialPeople={people} />
+  )
 }

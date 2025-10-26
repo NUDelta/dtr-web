@@ -1,15 +1,15 @@
-import Link from 'next/link';
-import annualLetters from '@/lib/annual-letters';
+import Link from 'next/link'
+import annualLetters from '@/lib/annual-letters'
 
 interface MediaBannerProps {
-  className?: string;
+  className?: string
 }
 
 const MediaBanner = ({ className }: MediaBannerProps) => {
   const latestAnnualLetterDate = () => {
-    const sortedAnnualLetters = annualLetters.sort((a, b) => b.datePublished.getTime() - a.datePublished.getTime());
-    return sortedAnnualLetters[0].datePublished.getFullYear();
-  };
+    const sortedAnnualLetters = annualLetters.sort((a, b) => b.datePublished.getTime() - a.datePublished.getTime())
+    return sortedAnnualLetters[0].datePublished.getFullYear()
+  }
 
   return (
     <div className={`mb-4 w-full rounded-lg bg-yellow pb-2 pt-2 ${className}`}>
@@ -30,7 +30,7 @@ const MediaBanner = ({ className }: MediaBannerProps) => {
         .
       </p>
     </div>
-  );
-};
+  )
+}
 
-export default MediaBanner;
+export default MediaBanner

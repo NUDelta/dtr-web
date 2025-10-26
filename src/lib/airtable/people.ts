@@ -1,8 +1,8 @@
-'use server';
+'use server'
 
-import type { Attachment } from 'airtable';
-import { getImgUrlFromAttachmentObj } from '@/utils';
-import { getCachedRecords } from './airtable';
+import type { Attachment } from 'airtable'
+import { getImgUrlFromAttachmentObj } from '@/utils'
+import { getCachedRecords } from './airtable'
 
 /**
  * Fetches all people data from the Airtable "People" table.
@@ -20,11 +20,11 @@ import { getCachedRecords } from './airtable';
  * ```
  */
 export async function fetchPeople(): Promise<Person[] | null> {
-  const peopleRecords = await getCachedRecords('People');
+  const peopleRecords = await getCachedRecords('People')
 
   if (!peopleRecords.length) {
-    console.warn('No people records found.');
-    return null;
+    console.warn('No people records found.')
+    return null
   }
 
   return Promise.all(peopleRecords.map(async ({ id, fields }) => ({
@@ -35,5 +35,5 @@ export async function fetchPeople(): Promise<Person[] | null> {
     status: (fields.status as string) ?? 'Active',
     bio: (fields.bio as string) ?? '',
     profile_photo: await getImgUrlFromAttachmentObj(fields.profile_photo as Attachment[]),
-  })));
+  })))
 }

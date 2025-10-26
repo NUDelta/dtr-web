@@ -1,10 +1,7 @@
-import type { NextConfig } from 'next';
+import type { NextConfig } from 'next'
 
 const nextConfig: NextConfig = {
   reactStrictMode: true,
-  eslint: {
-    dirs: ['src'],
-  },
   images: {
     localPatterns: [
       {
@@ -31,6 +28,6 @@ const nextConfig: NextConfig = {
     ],
     unoptimized: true,
   },
-};
+}
 
-export default nextConfig;
+export default nextConfig

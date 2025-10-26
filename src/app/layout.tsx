@@ -47,7 +47,7 @@ export default function RootLayout({
         <RouterTransition />
         <PopupAnnouncement />
         <Header />
-        <main className="mt-8 mx-auto w-full max-w-7xl px-4 pt-16">
+        <main id="main" className="mt-8 mx-auto w-full max-w-7xl px-4 pt-16">
           {children}
         </main>
       </body>

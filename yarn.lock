@@ -2480,10 +2480,10 @@
     "@typescript-eslint/scope-manager" "^8.41.0"
     "@typescript-eslint/utils" "^8.24.1"
 
-"@zl-asica/react@^0.5.0":
-  version "0.5.0"
-  resolved "https://registry.yarnpkg.com/@zl-asica/react/-/react-0.5.0.tgz#0e1da8f21a0e3a7e9950547a8cf25e9eebb3763c"
-  integrity sha512-XTakOYxSLG8KCoqoIJGPk1AXOOyL4pnowFJu73Eyilj4YhWXwwL9X+JA9NJEzftH99gAZ0Xp5sj6OsPHt1U8oQ==
+"@zl-asica/react@^0.7.4":
+  version "0.7.4"
+  resolved "https://registry.yarnpkg.com/@zl-asica/react/-/react-0.7.4.tgz#04aafdd1e07850eac9ed2a1d8322c2045fa648b2"
+  integrity sha512-kQiyagxRr1FmTi0C8JQ2tX2pP3fCZlsDNr2TJDkpGf8HxNX554mPwtqGogqpvHefdRpPHz3Btys7eaIRToTfWA==
 
 abort-controller@^3.0.0:
   version "3.0.0"

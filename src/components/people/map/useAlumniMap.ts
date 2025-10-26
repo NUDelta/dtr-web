@@ -14,7 +14,7 @@ interface UseAlumniMapOpts {
 
 export function useAlumniMap({ csvUrl, gazetteerUrl }: UseAlumniMapOpts) {
   const [alumni, setAlumni] = useState<AlumniRow[]>([])
-  const [gaz, setGaz] = useState<Map<string, [number, number]>>(new Map())
+  const [gaz, setGaz] = useState<Map<string, [number, number]>>(() => new Map())
   const [err, setErr] = useState<string | null>(null)
   // Load alumni CSV
   const [loading, startTransition] = useTransition()

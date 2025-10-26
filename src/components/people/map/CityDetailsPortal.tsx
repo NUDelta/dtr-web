@@ -1,5 +1,6 @@
 import type { ReactNode } from 'react'
 import type { CityGroup } from './useAlumniMap'
+import { assignUUID } from '@zl-asica/react'
 import { useCallback, useEffect, useLayoutEffect, useRef, useState } from 'react'
 import { createPortal } from 'react-dom'
 
@@ -113,14 +114,14 @@ const CityDetailsPortal = ({
       {/* Scrollable list (adaptive height; small, pleasant padding) */}
       <div className="max-h-56 overflow-auto px-3 pb-3">
         <ul className="divide-y">
-          {group.people.map((p, i) => (
-            <li key={i} className="py-2">
+          {assignUUID(group.people).map(({ name, company, id }) => (
+            <li key={id} className="py-2">
               <div className="truncate text-[13px] text-gray-900">
-                <span className="font-medium">{p.name}</span>
+                <span className="font-medium">{name}</span>
                 <span className="text-gray-600">
                   {' '}
                   @
-                  {p.company}
+                  {company}
                 </span>
               </div>
             </li>

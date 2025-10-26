@@ -44,7 +44,7 @@ const PeopleCard = ({ person }: { person: Person }) => {
         <div className="pt-1">
           <button
             type="button"
-            className="cursor-pointer rounded-lg px-2 py-1 text-sm font-medium underline hover:bg-black/5 dark:hover:bg-white/5"
+            className="cursor-pointer rounded-lg px-2 py-1 text-sm font-medium underline hover:bg-black/5 "
             aria-expanded={expanded}
             onClick={() => setExpanded(v => !v)}
           >

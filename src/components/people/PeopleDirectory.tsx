@@ -2,6 +2,7 @@
 
 import { AnimatePresence, motion } from 'framer-motion'
 import { usePeopleDirectory } from '@/hooks/usePeopleDirectory'
+import AlumniMap from './AlumniMap'
 import RoleBlock from './RoleBlock'
 
 interface PeopleDirectoryProps {
@@ -32,13 +33,13 @@ const PeopleDirectory = ({ initialPeople }: PeopleDirectoryProps) => {
         >
           {/* Segmented status toggle */}
           <div
-            className="relative inline-flex select-none rounded-xl bg-gray-100 p-1 dark:bg-white/10"
+            className="relative inline-flex select-none rounded-xl bg-gray-100 p-1"
             role="tablist"
             aria-label="Membership status"
           >
             <span
               aria-hidden
-              className="pointer-events-none absolute inset-y-1 left-1 w-[calc(50%-0.25rem)] rounded-lg bg-white shadow ring-1 ring-black/5 transition-transform dark:bg-neutral-900"
+              className="pointer-events-none absolute inset-y-1 left-1 w-[calc(50%-0.25rem)] rounded-lg bg-neutral-900 shadow ring-1 ring-black/5 transition-transform "
               style={{ transform: status === 'Active' ? 'translateX(0)' : 'translateX(100%)' }}
             />
             {(['Active', 'Alumni'] as const).map(s => (
@@ -65,13 +66,13 @@ const PeopleDirectory = ({ initialPeople }: PeopleDirectoryProps) => {
 
           {/* Segmented view toggle (Card/List) */}
           <div
-            className="ml-auto relative inline-flex select-none rounded-xl bg-gray-100 p-1 dark:bg-white/10"
+            className="ml-auto relative inline-flex select-none rounded-xl bg-gray-100 p-1"
             role="tablist"
             aria-label="View mode"
           >
             <span
               aria-hidden
-              className="pointer-events-none absolute inset-y-1 left-1 w-[calc(50%-0.25rem)] rounded-lg bg-white shadow ring-1 ring-black/5 transition-transform dark:bg-neutral-900"
+              className="pointer-events-none absolute inset-y-1 left-1 w-[calc(50%-0.25rem)] rounded-lg bg-neutral-900 shadow ring-1 ring-black/5 transition-transform"
               style={{ transform: view === 'card' ? 'translateX(0)' : 'translateX(100%)' }}
             />
             {([
@@ -94,6 +95,14 @@ const PeopleDirectory = ({ initialPeople }: PeopleDirectoryProps) => {
           </div>
         </motion.div>
       </header>
+
+      {status === 'Alumni' && (
+        <AlumniMap
+          csvUrl="/data/alumni_roster.csv"
+          gazetteerUrl="/data/us_cities_all.json"
+          title="Where our alumni are"
+        />
+      )}
 
       <section aria-label="Directory" className="space-y-6 pb-10">
         <AnimatePresence initial={false} mode="popLayout">

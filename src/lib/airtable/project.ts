@@ -15,8 +15,11 @@ import { fetchPeople } from './people'
  * @async
  * @function getProjects
  * @param {string[]} projectIds - An array of unique project IDs in Airtable.
- * @param {boolean} [getAllData] - Whether to fetch additional images and publications.
- * @returns {Promise<Project[]>} A promise that resolves to an array of project details.
+ * @param {Person[] | null} [people] - Optional pre-fetched array of people records to associate with projects.
+ * @param {boolean} [allData] - Optional flag to specify the level of detail to fetch:
+ *   - If true, fetch all project data including images and publications.
+ *   - If false or omitted, only basic project details (no images, no publications) are returned.
+ * @returns {Promise<(Project | null)[]>} A promise that resolves to an array of project details.
  *
  * @example
  * ```typescript
@@ -24,14 +27,22 @@ import { fetchPeople } from './people'
  * console.log(projects);
  * ```
  */
-export async function getProjects(projectIds: string[], getAllData = false): Promise<Project[]> {
+export async function getProjects(
+  projectIds: string[],
+  people?: Person[],
+  allData?: boolean,
+): Promise<(Project | null)[]> {
   try {
     const projects = await getCachedRecords('Projects')
-    const people = await fetchPeople()
 
-    if (!people) {
-      console.error('Failed to fetch people records.')
-      return []
+    // Fetch people if not provided
+    if (people === undefined || people === null) {
+      const result = await fetchPeople()
+      if (result === null) {
+        console.error('Failed to fetch people records.')
+        return []
+      }
+      people = result
     }
 
     // Filter projects based on provided IDs
@@ -42,6 +53,10 @@ export async function getProjects(projectIds: string[], getAllData = false): Pro
       filteredProjects.map(async (projectRecord) => {
         // Fetch people associated with the project
         const fetchedMembers = (projectRecord.fields.members as string[]) ?? []
+        if (people === undefined || people === null) {
+          console.error('People records are null while fetching project members.')
+          return null
+        }
         const members = sortPeople(people.filter(person => fetchedMembers.includes(person.name)))
           .map(({ id, name, role, status, profile_photo }) => ({
             id,
@@ -52,7 +67,14 @@ export async function getProjects(projectIds: string[], getAllData = false): Pro
           }))
 
         // Fetch project banner image
-        const bannerImage = await getImgUrlFromAttachmentObj(projectRecord.fields.banner_image as Attachment[])
+        let bannerImage: string | null = null
+        if (projectRecord.fields.banner_image !== undefined
+          && projectRecord.fields.banner_image !== null
+          && Array.isArray(projectRecord.fields.banner_image)
+          && projectRecord.fields.banner_image.length > 0
+        ) {
+          bannerImage = await getImgUrlFromAttachmentObj(projectRecord.fields.banner_image as Attachment[])
+        }
 
         // Construct project object
         const project: Project = {
@@ -68,23 +90,20 @@ export async function getProjects(projectIds: string[], getAllData = false): Pro
           publications: [],
         }
 
-        // Return partial project data if `getAllData` is false
-        if (!getAllData) {
+        // Return partial project data if `allData` is false or undefined
+        if (allData === undefined || allData === false) {
           return project
         }
 
-        // Fetch additional project
         const [imagesResult, publicationsResult] = await Promise.allSettled([
           fetchProjectImages(projectRecord.fields.images as string[] ?? []),
           fetchPublications(projectRecord.fields.publications as string[] ?? []),
         ])
 
-        // Return full project data
-        return {
-          ...project,
-          images: imagesResult.status === 'fulfilled' ? imagesResult.value : { explainerImages: [] },
-          publications: publicationsResult.status === 'fulfilled' ? publicationsResult.value : [],
-        }
+        project.images = imagesResult.status === 'fulfilled' ? imagesResult.value : { explainerImages: [] }
+        project.publications = publicationsResult.status === 'fulfilled' ? publicationsResult.value : []
+
+        return project
       }),
     )
 
@@ -112,6 +131,9 @@ export async function getProjects(projectIds: string[], getAllData = false): Pro
  * ```
  */
 export async function fetchProjectImages(imageDocIds: string[]): Promise<ProjectImages> {
+  if (imageDocIds.length === 0) {
+    return { explainerImages: [] }
+  }
   try {
     const records = await getCachedRecords('Project Images')
     const relevantRecords = records.filter(r => imageDocIds.includes(r.id))
@@ -154,6 +176,9 @@ export async function fetchProjectImages(imageDocIds: string[]): Promise<Project
  * ```
  */
 export async function fetchPublications(publicationDocIds: string[]): Promise<ProjectPublication[]> {
+  if (publicationDocIds.length === 0) {
+    return []
+  }
   try {
     const records = await getCachedRecords('Project Publications')
     const relevantRecords = records.filter(r => publicationDocIds.includes(r.id))

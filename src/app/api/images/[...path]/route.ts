@@ -4,8 +4,6 @@ import { NextResponse } from 'next/server'
 import { r2Get, r2Head, r2Put, r2PutTags } from '@/lib/r2'
 import { transcodeBufferToWebp } from '@/utils/image-convert'
 
-export const runtime = 'nodejs'
-
 function toWebpKey(attId: string, variant: string, filename: string) {
   // Normalize filename to `.webp` extension; keep original basename for readability.
   const safeName = filename.replace(/\.[^.]+$/, '') || 'image'

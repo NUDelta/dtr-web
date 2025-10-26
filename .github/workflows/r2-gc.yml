@@ -1,0 +1,19 @@
+name: r2-gc
+on:
+  schedule:
+    - cron: '0 8 * * *' # Everyday 08:00 AM UTC
+  workflow_dispatch: {}
+
+jobs:
+  run:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Trigger R2 GC
+        run: |
+          curl -sS -X POST \
+            -H "x-cron-token: $R2_CRON_SECRET" \
+            -H "content-type: application/json" \
+            -d '{"prefix":"images/","maxAgeDays":60,"minIntervalHours":24,"maxDeletePerRun":250}' \
+            "https://dtr.northwestern.edu/api/r2-gc"
+        env:
+          R2_CRON_SECRET: ${{ secrets.R2_CRON_SECRET }}

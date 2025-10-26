@@ -73,8 +73,12 @@ export async function fetchSigs(): Promise<SIG[]> {
     const allProjectIds = Array.from(new Set(
       sigRecords.flatMap(record => (record.fields.projects as string[]) ?? []),
     ))
-    const projects = await getProjects(allProjectIds)
-    const projectData = new Map(projects.map(project => [project.id, project]))
+    const projects = await getProjects(allProjectIds, people)
+    const projectData = new Map(
+      projects
+        .filter((project): project is Project => project !== null)
+        .map(project => [project.id, project]),
+    )
 
     // Process each SIG record
     const results: SIG[] = await Promise.all(sigRecords.map(async (record) => {

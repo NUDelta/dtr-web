@@ -10,7 +10,6 @@ Website for the Design, Technology, and Research (DTR) program at Northwestern U
    ```env
    AIRTABLE_API_KEY=<api-key-for-airtable>
    AIRTABLE_BASE_ID=<base-id-for-airtable>
-   REVALIDATE_TIME="21600"  # Cache revalidation time in seconds (default: 21600 = 6 hours)
    AIRTABLE_LOG=1  # Enable Airtable logging in production (1 to enable, 0 to disable)
 
    R2_ENDPOINT="https://<account-id>.r2.cloudflarestorage.com"
@@ -54,5 +53,5 @@ We use [DigitalOcean's App Platform](https://www.digitalocean.com/products/app-p
 
 The website implements a two-tier caching system to minimize Airtable API usage:
 
-1. **Data Caching**: Airtable table data is cached using Next.js `unstable_cache` with automatic revalidation based on `REVALIDATE_TIME`
+1. **Data Caching**: Airtable table data is cached using Next.js `use cache` with automatic revalidation based on `cacheLife` (new feature from Next.js 16, default 12 hours).
 2. **Image Caching**: Images are downloaded once from Airtable and cached in Cloudflare R2 Bucket with hash-based invalidation and long-term caching headers.

@@ -4,11 +4,6 @@ import process from 'node:process'
 export const siteUrl = 'https://dtr.northwestern.edu' // Without trailing slash
 export const feedFileName = 'letters-feed.xml' // Without leading slash
 
-// Revalidation Time Configuration (in seconds)
-export const revalidateTime = Number.isNaN(Number(process.env.REVALIDATE_TIME))
-  ? 21600 // Default to 6 hours
-  : Number(process.env.REVALIDATE_TIME)
-
 // R2 Configuration
 export const R2_ENDPOINT = process.env.R2_ENDPOINT ?? ''
 export const R2_ACCESS_KEY_ID = process.env.R2_ACCESS_KEY_ID ?? ''

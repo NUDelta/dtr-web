@@ -8,15 +8,6 @@ import TeamMembers from '@/components/projects/TeamMembers'
 import { getAllProjectIds, getProjects } from '@/lib/airtable/project'
 import generateRssFeed from '@/utils/generate-rss-feed'
 
-// Next.js will invalidate the cache when a request comes in
-// Revalidate every 6 hours, maximum 124 times per month
-export const revalidate = 21600
-
-// We'll prerender only the params from `generateStaticParams` at build time.
-// If a request comes in for a path that hasn't been generated,
-// Next.js will server-render the page on-demand.
-export const dynamicParams = true // or false, to 404 on unknown paths
-
 export async function generateStaticParams() {
   await generateRssFeed() // regenerate RSS feed at build time
   const projectIds = await getAllProjectIds()
@@ -29,7 +20,7 @@ export async function generateMetadata({
   params: Promise<{ id: string }>
 }): Promise<Metadata> {
   const id = (await params).id
-  const projects = await getProjects([id], true)
+  const projects = await getProjects([id])
 
   if (Array.isArray(projects) && projects.length === 0) {
     return {
@@ -38,6 +29,12 @@ export async function generateMetadata({
   }
 
   const [project] = projects
+
+  if (!project) {
+    return {
+      title: `Project ${id} not found | DTR`,
+    }
+  }
 
   return {
     title: `${project.name} | DTR`,
@@ -58,13 +55,17 @@ export default async function IndividualProjectPage({
   params: Promise<{ id: string }>
 }) {
   const id = (await params).id
-  const projects = await getProjects([id], true)
+  const projects = await getProjects([id], undefined, true)
 
   if (Array.isArray(projects) && projects.length === 0) {
     notFound()
   }
 
   const [project] = projects
+
+  if (!project) {
+    notFound()
+  }
 
   return (
     <div className="mx-auto max-w-4xl bg-gray-50 p-4">

@@ -4,9 +4,6 @@ import ReactMarkdown from 'react-markdown'
 import TeamMembers from '@/components/projects/TeamMembers'
 import { fetchSigs } from '@/lib/airtable/sig'
 
-// Revalidate every 6 hours, maximum 146 times per month
-export const revalidate = 21600
-
 export const metadata: Metadata = {
   title: 'Projects | DTR',
   alternates: { canonical: 'https://dtr.northwestern.edu/projects' },

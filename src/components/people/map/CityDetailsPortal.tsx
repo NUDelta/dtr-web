@@ -20,6 +20,7 @@ const CityDetailsPortal = ({
   onClose,
 }: CityDetailsPortalProps) => {
   const [pos, setPos] = useState<{ left: number, top: number, flipX: boolean, flipY: boolean }>({ left: 0, top: 0, flipX: false, flipY: false })
+  const [portalContainer, setPortalContainer] = useState<HTMLElement>(document.body)
   const panelRef = useRef<HTMLDivElement>(null)
 
   const compute = useCallback(() => {
@@ -66,14 +67,18 @@ const CityDetailsPortal = ({
       flipY = false
     }
 
+    // eslint-disable-next-line react-hooks-extra/no-direct-set-state-in-use-effect
     setPos({ left, top, flipX, flipY })
   }, [containerRef, markerRef, zoom])
-
-  // Recompute placement on mount, zoom, resize
+  // Set portal container and recompute placement on mount, zoom, resize
   useLayoutEffect(() => {
+    if (containerRef.current) {
+      // eslint-disable-next-line react-hooks-extra/no-direct-set-state-in-use-effect
+      setPortalContainer(containerRef.current)
+    }
     compute()
     // re-run on zoom or when switching city
-  }, [zoom, group.key, compute])
+  }, [zoom, group.key, compute, containerRef])
 
   useEffect(() => {
     const on = () => compute()
@@ -130,13 +135,8 @@ const CityDetailsPortal = ({
       </div>
     </div>
   )
-
   // Render into the map container for correct stacking/positioning
-  if (!containerRef.current) {
-    return null
-  }
-
-  return createPortal(panel, containerRef.current)
+  return createPortal(panel, portalContainer)
 }
 
 export default CityDetailsPortal

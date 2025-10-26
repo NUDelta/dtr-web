@@ -1,0 +1,7 @@
+.git
+.next
+node_modules
+.pnpm-store
+.vscode
+.github
+*.log

@@ -16,7 +16,7 @@ const ProjectsClient = ({ sigs, bannerImages }: ProjectsClientProps) => {
   // auto-collapse all on mount
   const [collapsed, setCollapsed] = useState<Record<string, boolean>>({})
   useEffect(() => {
-    // eslint-disable-next-line react-hooks-extra/no-direct-set-state-in-use-effect
+    // eslint-disable-next-line react-hooks-extra/no-direct-set-state-in-use-effect, react-hooks/set-state-in-effect
     setCollapsed(Object.fromEntries(sigs.map(s => [s.id, true])))
   }, [sigs])
 

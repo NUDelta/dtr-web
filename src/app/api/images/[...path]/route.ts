@@ -141,13 +141,17 @@ export async function GET(
 async function nodeReadableToBuffer(stream: StreamingBlobPayloadOutputTypes | undefined): Promise<Buffer> {
   return new Promise<Buffer>((resolve, reject) => {
     const chunks: Buffer[] = []
-    if (!stream) {
+    if (stream === undefined) {
       return resolve(Buffer.alloc(0))
     }
-    if (typeof stream === 'object' && stream !== null && 'on' in stream && typeof stream.on === 'function') {
-      stream.on('data', (c: Buffer) => chunks.push(c))
-      stream.once('end', () => resolve(Buffer.concat(chunks)))
-      stream.once('error', reject)
+    if (typeof stream === 'object' && stream !== null && 'on' in stream) {
+      const readableStream = stream as {
+        on: (event: string, handler: (...args: any[]) => void) => void
+        once: (event: string, handler: (...args: any[]) => void) => void
+      }
+      readableStream.on('data', (c: Buffer) => chunks.push(c))
+      readableStream.once('end', () => resolve(Buffer.concat(chunks)))
+      readableStream.once('error', reject)
     }
     else {
       reject(new Error('Stream is not a Node.js Readable'))

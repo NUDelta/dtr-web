@@ -71,8 +71,8 @@ const SigCardSkeleton = ({ withBanner = true }: { withBanner?: boolean }) => (
 )
 
 export default function Loading() {
-  const stableStartProgress = useCallback(startProgress, [])
-  const stableStopProgress = useCallback(stopProgress, [])
+  const stableStartProgress = useCallback(() => startProgress(), [])
+  const stableStopProgress = useCallback(() => stopProgress(), [])
 
   useEffect(() => {
     stableStartProgress()

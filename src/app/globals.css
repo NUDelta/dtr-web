@@ -1,4 +1,4 @@
-@import "tailwindcss";
+@import 'tailwindcss';
 
 @plugin '@tailwindcss/typography';
 
@@ -102,8 +102,7 @@ body {
 /* From: https://tailwindcomponents.com/component/link-underline-animation */
 .link-underline {
   border-bottom-width: 0;
-  background-image:
-    linear-gradient(transparent, transparent), linear-gradient(#fff, #fff);
+  background-image: linear-gradient(transparent, transparent), linear-gradient(#fff, #fff);
   background-size: 0 1px;
   background-position: 0 100%;
   background-repeat: no-repeat;
@@ -111,8 +110,7 @@ body {
 }
 
 .link-underline-black {
-  background-image:
-    linear-gradient(transparent, transparent), linear-gradient(black, black);
+  background-image: linear-gradient(transparent, transparent), linear-gradient(black, black);
 }
 
 .link-underline:hover {
@@ -136,7 +134,7 @@ body {
 }
 
 /* Hide native WebKit search cancel button (blue X) globally */
-input[type="search"]::-webkit-search-cancel-button {
+input[type='search']::-webkit-search-cancel-button {
   -webkit-appearance: none;
   appearance: none;
   display: none;

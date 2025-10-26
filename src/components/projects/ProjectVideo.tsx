@@ -1,9 +1,7 @@
 'use client'
 
 import { PlayCircle } from 'lucide-react'
-import dynamic from 'next/dynamic'
-
-const ReactPlayer = dynamic(async () => import('react-player/youtube'), { ssr: false })
+import ReactPlayer from 'react-player'
 
 interface ProjectVideoProps {
   title: string
@@ -31,7 +29,7 @@ const ProjectVideo = ({ title, url }: ProjectVideoProps) => {
       <div className="relative overflow-hidden rounded-xl border border-neutral-200 bg-black">
         <div className="aspect-video">
           <ReactPlayer
-            url={url}
+            src={url}
             width="100%"
             height="100%"
             controls

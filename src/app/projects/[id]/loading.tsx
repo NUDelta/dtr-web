@@ -4,8 +4,8 @@ import { startProgress, stopProgress } from 'next-nprogress-bar'
 import { useCallback, useEffect } from 'react'
 
 export default function Loading() {
-  const stableStartProgress = useCallback(startProgress, [])
-  const stableStopProgress = useCallback(stopProgress, [])
+  const stableStartProgress = useCallback(() => startProgress(), [])
+  const stableStopProgress = useCallback(() => stopProgress(), [])
 
   useEffect(() => {
     stableStartProgress()
@@ -18,7 +18,7 @@ export default function Loading() {
       <div className="mb-4 h-8 w-3/4 rounded-md bg-gray-300" />
 
       {/* Main Banner */}
-      <div className="h-48 w-full rounded-md bg-gradient-to-r from-gray-300 via-gray-200 to-gray-300 animate-shimmer" />
+      <div className="h-48 w-full rounded-md bg-linear-to-r from-gray-300 via-gray-200 to-gray-300 animate-shimmer" />
 
       {/* Description */}
       <div className="my-8 space-y-3">

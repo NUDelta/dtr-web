@@ -53,7 +53,7 @@ const DesktopNav = ({
 
   return (
     <nav className={className} aria-label="Primary">
-      <div className="flex items-center gap-1 md:text-sm lg:text-base">
+      <div className="flex items-center gap-1 md:text-base lg:text-lg">
         {/* Root links */}
         {ROOT_LINKS.map(l => (
           <a

@@ -7,7 +7,9 @@ interface MediaBannerProps {
 
 const MediaBanner = ({ className }: MediaBannerProps) => {
   const latestAnnualLetterDate = () => {
-    const sortedAnnualLetters = annualLetters.sort((a, b) => b.datePublished.getTime() - a.datePublished.getTime())
+    const sortedAnnualLetters = annualLetters.sort((a, b) =>
+      b.datePublished.getTime() - a.datePublished.getTime(),
+    )
     return sortedAnnualLetters[0].datePublished.getFullYear()
   }
 
@@ -16,7 +18,10 @@ const MediaBanner = ({ className }: MediaBannerProps) => {
       <p className="text-center text-black">
         The
         {' '}
-        <Link href="/letters" className="link link-underline link-underline-black font-bold text-black">
+        <Link
+          href="/letters"
+          className="link link-underline link-underline-black font-bold text-black"
+        >
           {latestAnnualLetterDate()}
           {' '}
           DTR Annual Letter
@@ -24,9 +29,14 @@ const MediaBanner = ({ className }: MediaBannerProps) => {
         {' '}
         is out! Also check out the DTR documentary,
         {' '}
-        <Link target="_blank" rel="noreferrer noopener" href="https://forward.movie" className="link link-underline link-underline-black font-bold text-black">
+        <a
+          target="_blank"
+          rel="noreferrer noopener"
+          href="https://forward.movie"
+          className="link link-underline link-underline-black font-bold text-black"
+        >
           Forward
-        </Link>
+        </a>
         .
       </p>
     </div>

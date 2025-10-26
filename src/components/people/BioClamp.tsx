@@ -1,4 +1,4 @@
-import ReactMarkdown from 'react-markdown'
+import { MarkdownContents } from '@/components/shared'
 
 interface BioClampProps {
   text: string
@@ -9,7 +9,7 @@ const BioClamp = ({ text, lines = 4 }: BioClampProps) => {
   if (!lines) {
     return (
       <div className="prose max-w-none text-sm">
-        <ReactMarkdown>{text}</ReactMarkdown>
+        <MarkdownContents content={text} />
       </div>
     )
   }
@@ -24,7 +24,7 @@ const BioClamp = ({ text, lines = 4 }: BioClampProps) => {
         overflow: 'hidden',
       }}
     >
-      <ReactMarkdown>{text}</ReactMarkdown>
+      <MarkdownContents content={text} />
     </div>
   )
 }

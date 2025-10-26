@@ -1,23 +1,45 @@
 'use client'
 
-import ReactPlayer from 'react-player/youtube'
+import { PlayCircle } from 'lucide-react'
+import dynamic from 'next/dynamic'
+
+const ReactPlayer = dynamic(async () => import('react-player/youtube'), { ssr: false })
 
 interface ProjectVideoProps {
   title: string
-  url: string | null
+  url: string
 }
 
-export default function ProjectVideo({ title, url }: ProjectVideoProps) {
-  if (url === null) {
-    return null
-  }
-
+const ProjectVideo = ({ title, url }: ProjectVideoProps) => {
   return (
-    <div className="mb-8 w-full">
-      <h3 className="mb-2 border-b border-black pb-2 text-2xl font-bold">{title}</h3>
-      <div className="player-wrapper">
-        <ReactPlayer url={url} className="react-player" width="100%" height="100%" controls />
+    <section
+      aria-labelledby={`video-${title.replace(/\s+/g, '-').toLowerCase()}`}
+      className="mb-10 w-full"
+    >
+      <h2
+        id={`video-${title.replace(/\s+/g, '-').toLowerCase()}`}
+        className="mb-2 text-2xl font-bold"
+      >
+        <span className="inline-flex items-center gap-2">
+          <PlayCircle size={20} className="text-yellow-700" aria-hidden="true" />
+          {title}
+        </span>
+      </h2>
+      <div className="mb-3 h-1 w-10 rounded-full bg-yellow-300" aria-hidden="true" />
+
+      {/* Responsive 16:9 container */}
+      <div className="relative overflow-hidden rounded-xl border border-neutral-200 bg-black">
+        <div className="aspect-video">
+          <ReactPlayer
+            url={url}
+            width="100%"
+            height="100%"
+            controls
+          />
+        </div>
       </div>
-    </div>
+    </section>
   )
 }
+
+export default ProjectVideo

@@ -1,11 +1,7 @@
 import type { Metadata } from 'next'
 import PeopleDirectory from '@/components/people/PeopleDirectory'
 import { fetchPeople } from '@/lib/airtable/people'
-import { maybeRunR2CleanupFromISR } from '@/lib/r2/r2-gc'
 import { sortPeople } from '@/utils'
-
-// Revalidate every 12 hours, maximum 73 times per month
-export const revalidate = 43200
 
 export const metadata: Metadata = {
   title: 'People | DTR',
@@ -14,14 +10,6 @@ export const metadata: Metadata = {
 }
 
 export default async function PeoplePage() {
-  // Throttled GC: at most once every 24h; delete objects not accessed in 60 days
-  await maybeRunR2CleanupFromISR({
-    prefix: 'images/',
-    maxAgeDays: 60,
-    minIntervalHours: 24,
-    maxDeletePerRun: 250,
-  })
-
   const people = sortPeople((await fetchPeople()) ?? [])
 
   return (

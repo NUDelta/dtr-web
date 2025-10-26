@@ -4,7 +4,6 @@ import { useClickOutside, useHideOnScrollDown } from '@zl-asica/react'
 import Link from 'next/link'
 import { usePathname } from 'next/navigation'
 import { useEffect, useRef, useState } from 'react'
-import Container from '@/components/shared/Container'
 import DesktopNav from './DesktopNav'
 import MobileNav from './MobileNav'
 
@@ -71,11 +70,11 @@ export default function Header() {
 
       <header
         ref={headerRef}
-        className={`fixed top-0 left-0 z-50 w-full bg-black/85 backdrop-blur supports-backdrop-filter:bg-black/75 text-white transition-transform duration-300 ${
+        className={`fixed px-4 top-0 left-0 z-50 w-full bg-black/85 backdrop-blur supports-backdrop-filter:bg-black/75 text-white transition-transform duration-300 ${
           isHeaderVisible ? 'translate-y-0' : '-translate-y-full'
         }`}
       >
-        <Container className="flex max-w-6xl items-center justify-between gap-4 py-2 md:gap-6">
+        <div className="flex mx-auto max-w-7xl items-center justify-between gap-4 py-2 md:gap-6">
           <Link
             href="/"
             className="block font-semibold md:text-3xl lg:text-4xl focus:outline-none focus-visible:ring focus-visible:ring-yellow rounded-md"
@@ -108,7 +107,7 @@ export default function Header() {
             isActive={isActive}
             className="hidden md:block"
           />
-        </Container>
+        </div>
 
         {/* Mobile drawer (flat list; no folding) */}
         <MobileNav

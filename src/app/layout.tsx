@@ -1,7 +1,6 @@
 import type { Metadata } from 'next'
 import { GoogleAnalytics } from '@next/third-parties/google'
 import { Lato } from 'next/font/google'
-import Container from '@/components/shared/Container'
 import Header from '@/components/shared/Header'
 import PopupAnnouncement from '@/components/shared/PopupAnnouncement'
 import RouterTransition from '@/components/shared/RouterTransition'
@@ -48,10 +47,8 @@ export default function RootLayout({
         <RouterTransition />
         <PopupAnnouncement />
         <Header />
-        <main className="pt-16">
-          <Container className="mt-8">
-            {children}
-          </Container>
+        <main className="mt-8 mx-auto w-full max-w-7xl px-4 pt-16">
+          {children}
         </main>
       </body>
       <GoogleAnalytics gaId="G-0LME5PW7PW" />

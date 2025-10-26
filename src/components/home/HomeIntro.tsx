@@ -1,5 +1,3 @@
-import Link from 'next/link'
-
 const grants = [
   {
     href: 'https://www.nsf.gov/awardsearch/showAward?AWD_ID=1618096',
@@ -60,9 +58,13 @@ const HomeIntro = ({ className }: HomeIntroProps) => {
         {' '}
         {grants.map((grant, index) => (
           <span key={grant.href}>
-            <Link target="_blank" rel="noopener noreferrer" href={grant.href}>
+            <a
+              target="_blank"
+              rel="noopener noreferrer"
+              href={grant.href}
+            >
               {grant.label}
-            </Link>
+            </a>
             {index < grants.length - 1 ? ', ' : '.'}
           </span>
         ))}

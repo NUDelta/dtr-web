@@ -1,10 +1,10 @@
 import type { Metadata } from 'next'
 import Image from 'next/image'
 import { notFound } from 'next/navigation'
-import ReactMarkdown from 'react-markdown'
 import ProjectPublications from '@/components/projects/ProjectPublications'
 import ProjectVideo from '@/components/projects/ProjectVideo'
 import TeamMembers from '@/components/projects/TeamMembers'
+import { MarkdownContents } from '@/components/shared'
 import { getAllProjectIds, getProjects } from '@/lib/airtable/project'
 import generateRssFeed from '@/utils/generate-rss-feed'
 
@@ -85,9 +85,7 @@ export default async function IndividualProjectPage({
 
       {/* Description */}
       <div className="prose-lg my-8">
-        <ReactMarkdown>
-          {project.description ?? ''}
-        </ReactMarkdown>
+        <MarkdownContents content={project.description} />
       </div>
 
       {/* Extra images */}
@@ -104,9 +102,7 @@ export default async function IndividualProjectPage({
             {img.description.trim() !== ''
               && (
                 <div className="text-sm">
-                  <ReactMarkdown>
-                    {`Figure ${i + 1}: ${img.description}`}
-                  </ReactMarkdown>
+                  <MarkdownContents content={`Figure ${i + 1}: ${img.description}`} />
                 </div>
               )}
           </div>

@@ -40,10 +40,17 @@ function Custom404() {
       </p>
       <Link
         href="/"
-        className="rounded bg-dark-yellow px-4 py-2 text-black no-underline transition-all duration-500 hover:scale-110 hover:bg-dark-yellow hover:text-black"
+        className="rounded bg-dark-yellow px-4 py-2 text-black no-underline transition-all duration-500 hover:scale-105 hover:bg-dark-yellow hover:text-black"
       >
         Back to Home
       </Link>
+      <button
+        type="button"
+        onClick={() => globalThis.history.back()}
+        className="rounded mt-4 bg-neutral-200 px-4 py-2 text-neutral-800 no-underline transition-all duration-500 hover:scale-105 hover:bg-neutral-300 hover:text-neutral-900 cursor-pointer"
+      >
+        Back to Previous Page
+      </button>
     </main>
   )
 }

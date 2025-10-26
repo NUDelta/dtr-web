@@ -1,9 +1,12 @@
 'use client'
 
 import { AnimatePresence, motion } from 'framer-motion'
+import dynamic from 'next/dynamic'
+import { Suspense } from 'react'
 import { usePeopleDirectory } from '@/hooks/usePeopleDirectory'
-import AlumniMap from './AlumniMap'
 import RoleBlock from './RoleBlock'
+
+const AlumniMap = dynamic(async () => import('./AlumniMap'), { ssr: false })
 
 interface PeopleDirectoryProps {
   initialPeople: Person[]
@@ -97,11 +100,23 @@ const PeopleDirectory = ({ initialPeople }: PeopleDirectoryProps) => {
       </header>
 
       {status === 'Alumni' && (
-        <AlumniMap
-          csvUrl="/data/alumni_roster.csv"
-          gazetteerUrl="/data/us_cities_all.json"
-          title="Where our alumni are"
-        />
+        <div className="overflow-hidden transition-all duration-300 ease-in-out">
+          <Suspense fallback={(
+            <div className="my-6 flex items-center justify-center opacity-0 animate-[fadeIn_0.2s_ease-in-out_forwards]">
+              <div className="flex items-center gap-2 text-gray-600">
+                <div className="h-5 w-5 animate-spin rounded-full border-2 border-gray-300 border-t-gray-600"></div>
+                <span>Loading map…</span>
+              </div>
+            </div>
+          )}
+          >
+            <AlumniMap
+              csvUrl="/data/alumni_roster.csv"
+              gazetteerUrl="/data/us_cities_all.json"
+              title="Where our alumni are"
+            />
+          </Suspense>
+        </div>
       )}
 
       <section aria-label="Directory" className="space-y-6 pb-10">

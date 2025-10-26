@@ -51,7 +51,7 @@ const PeopleDirectory = ({ initialPeople }: PeopleDirectoryProps) => {
                 aria-current={status === s ? 'page' : undefined}
                 aria-controls="people-results"
                 onClick={() => setStatus(s)}
-                className={`relative z-10 inline-flex items-center gap-1 rounded-lg px-3 py-2 text-sm font-medium transition focus:outline-none focus-visible:ring-2 focus-visible:ring-indigo-500 ${status === s ? 'text-white' : 'text-gray-600 '}`}
+                className={`relative z-10 inline-flex items-center gap-1 rounded-lg px-3 py-2 text-sm font-medium cursor-pointer transition focus:outline-none focus-visible:ring-2 focus-visible:ring-indigo-500 ${status === s ? 'text-white' : 'text-gray-600 '}`}
                 title={s}
               >
                 <span>{s}</span>
@@ -86,7 +86,7 @@ const PeopleDirectory = ({ initialPeople }: PeopleDirectoryProps) => {
                 aria-selected={view === key}
                 aria-controls="people-results"
                 onClick={() => setView(key)}
-                className={`relative z-10 inline-flex items-center gap-1 rounded-lg px-3 py-2 text-sm font-medium transition focus:outline-none focus-visible:ring-2 focus-visible:ring-indigo-500 ${view === key ? 'text-white' : 'text-gray-600'}`}
+                className={`relative z-10 inline-flex items-center gap-1 rounded-lg px-3 py-2 text-sm font-medium cursor-pointer transition focus:outline-none focus-visible:ring-2 focus-visible:ring-indigo-500 ${view === key ? 'text-white' : 'text-gray-600'}`}
                 title={label}
               >
                 <span>{label}</span>

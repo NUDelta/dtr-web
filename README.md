@@ -17,6 +17,7 @@ Website for the Design, Technology, and Research (DTR) program at Northwestern U
    R2_SECRET_ACCESS_KEY="<secret-access-key-for-r2>"
    R2_BUCKET="<bucket-name-for-r2>"
    R2_CLEANUP_MAX_AGE_DAYS="45"  # Max age in days for R2 cleanup (default: 45)
+   R2_CRON_SECRET="<cron-secret-for-r2>"  # Secret for R2 cleanup cron job
    ```
 
 3. Run `yarn install` to install packages.

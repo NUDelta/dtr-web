@@ -6,7 +6,7 @@ on:
       - main
 
 jobs:
-  deploy-preview:
+  pr-lint-check:
     runs-on: ubuntu-latest
     permissions:
       contents: read
@@ -17,18 +17,36 @@ jobs:
       - name: 📥 Checkout code
         uses: actions/checkout@v4
 
-      - name: 📦 Restore yarn cache
+      - name: 🛠️ Install  pnpm
+        uses: pnpm/action-setup@v4
+        with:
+          run_install: false
+
+      - name: 🛠️ Setup Node
         uses: actions/setup-node@v4
         with:
           node-version: 'lts/*'
-          cache: yarn
+          cache: pnpm
+
+      - name: 🗂️ Get pnpm store directory
+        shell: bash
+        run: |
+          echo "STORE_PATH=$(pnpm store path --silent)" >> $GITHUB_ENV
+
+      - uses: actions/cache@v4
+        name: ⚡ Setup pnpm cache
+        with:
+          path: ${{ env.STORE_PATH }}
+          key: ${{ runner.os }}-pnpm-store-${{ hashFiles('**/pnpm-lock.yaml') }}
+          restore-keys: |
+            ${{ runner.os }}-pnpm-store-
 
       - name: 📂 Install dependencies
-        run: yarn install --immutable
+        run: pnpm install
 
       # 🚨 Run Lint check
       - name: 🚨 Run Lint
-        run: yarn run lint:fix | tee lint-results.txt
+        run: pnpm run lint:fix | tee lint-results.txt
 
       # 🚮 Clean up all results for comment
       - name: 🚮 Clean up results

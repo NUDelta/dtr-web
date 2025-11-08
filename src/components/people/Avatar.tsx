@@ -30,7 +30,11 @@ const Avatar = ({ src, alt, size, fill = false }: AvatarProps) => {
       width={size ?? 80}
       height={size ?? 80}
       className="inline-block rounded-xl object-cover"
-      sizes={size !== undefined ? `${size}px` : '(max-width: 640px) 128px, 160px'}
+      sizes={
+        size !== undefined
+          ? `${size}px`
+          : '(max-width: 640px) 128px, 160px'
+      }
       loading="lazy"
     />
   )

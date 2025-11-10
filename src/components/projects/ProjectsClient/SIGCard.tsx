@@ -73,7 +73,7 @@ const SIGCard = ({
           >
             <ChevronDown size={16} />
           </motion.span>
-          <span className="text-neutral-800">{isCollapsed ? 'Show' : 'Hide'}</span>
+          <span className="text-neutral-800">{isCollapsed ? 'Show Projects' : 'Hide Projects'}</span>
         </button>
       </div>
 
@@ -107,22 +107,23 @@ const SIGCard = ({
                 {(sig.projects ?? []).map(project => (
                   <li
                     key={project.id}
-                    className="rounded-lg border border-neutral-200 bg-white p-4 transition hover:shadow-md focus-within:shadow-md"
+                    className="rounded-lg border border-neutral-200 bg-white p-4 transition hover:shadow-md focus:outline-none focus:ring-2 focus:ring-yellow-500"
                   >
-                    <h5 className="mb-1 text-base font-semibold">
-                      <Link
-                        href={`/projects/${project.id}`}
-                        className="inline-block focus:outline-none focus:ring-2 focus:ring-yellow-500"
-                        aria-label={`Open project ${project.name}`}
-                      >
+                    <Link
+                      href={`/projects/${project.id}`}
+                      className="inline-block"
+                      aria-label={`Open project ${project.name}`}
+                    >
+                      <h5 className="mb-1 text-base font-semibold">
                         {project.name}
-                      </Link>
-                    </h5>
-                    {project.description && (
-                      <div className="prose prose-sm max-w-none text-neutral-700">
-                        <MarkdownContents content={project.description} />
-                      </div>
-                    )}
+                      </h5>
+                      {project.description && (
+                        <div className="prose prose-sm max-w-none text-neutral-700">
+                          <MarkdownContents content={project.description} />
+                        </div>
+                      )}
+                    </Link>
+
                   </li>
                 ))}
                 {(sig.projects ?? []).length === 0 && (

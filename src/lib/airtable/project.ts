@@ -1,6 +1,6 @@
 'use server'
 
-import type { Attachment } from 'airtable'
+import type { Attachment } from 'ts-airtable'
 import { getImgUrlFromAttachmentObj, sortPeople } from '@/utils'
 import { getCachedRecords } from './airtable'
 import { fetchPeople } from './people'
@@ -33,7 +33,7 @@ export async function getProjects(
   allData?: boolean,
 ): Promise<(Project | null)[]> {
   try {
-    const projects = await getCachedRecords('Projects')
+    const projects = await getCachedRecords<AirtableProject>('Projects')
 
     // Fetch people if not provided
     if (people === undefined || people === null) {
@@ -52,7 +52,7 @@ export async function getProjects(
     const result = await Promise.all(
       filteredProjects.map(async (projectRecord) => {
         // Fetch people associated with the project
-        const fetchedMembers = (projectRecord.fields.members as string[]) ?? []
+        const fetchedMembers = projectRecord.fields.members ?? []
         if (people === undefined || people === null) {
           console.error('People records are null while fetching project members.')
           return null
@@ -73,18 +73,18 @@ export async function getProjects(
           && Array.isArray(projectRecord.fields.banner_image)
           && projectRecord.fields.banner_image.length > 0
         ) {
-          bannerImage = await getImgUrlFromAttachmentObj(projectRecord.fields.banner_image as Attachment[])
+          bannerImage = await getImgUrlFromAttachmentObj(projectRecord.fields.banner_image)
         }
 
         // Construct project object
         const project: Project = {
           id: projectRecord.id,
-          name: (projectRecord.fields.name as string) ?? '',
+          name: projectRecord.fields.name ?? '',
           banner_image: bannerImage,
-          description: (projectRecord.fields.description as string) ?? '',
-          status: (projectRecord.fields.status as string) ?? 'Active',
-          demo_video: (projectRecord.fields.demo_video as string) ?? null,
-          sprint_video: (projectRecord.fields.sprint_video as string) ?? null,
+          description: projectRecord.fields.description ?? '',
+          status: projectRecord.fields.status ?? 'Active',
+          demo_video: projectRecord.fields.demo_video ?? null,
+          sprint_video: projectRecord.fields.sprint_video ?? null,
           members,
           images: { explainerImages: [] },
           publications: [],
@@ -96,8 +96,8 @@ export async function getProjects(
         }
 
         const [imagesResult, publicationsResult] = await Promise.allSettled([
-          fetchProjectImages(projectRecord.fields.images as string[] ?? []),
-          fetchPublications(projectRecord.fields.publications as string[] ?? []),
+          fetchProjectImages(projectRecord.fields.images ?? []),
+          fetchPublications(projectRecord.fields.publications ?? []),
         ])
 
         project.images = imagesResult.status === 'fulfilled' ? imagesResult.value : { explainerImages: [] }

@@ -1,3 +1,13 @@
+interface AirtablePerson {
+  id: string
+  name: string
+  title: string
+  role: string
+  status: string
+  bio: string
+  profile_photo: Attachment[] | null
+}
+
 /**
  * @typedef Person
  * all possible information about a person, including their name, title (professor, undergrad,grad, stella, etc), and their bio/profile photo
@@ -24,7 +34,7 @@ interface Person {
   /** Bio of a particular person, displayed on the "people" page of the website */
   bio: string
   /** URL to someone's profile photo, from the airtable database */
-  profile_photo: string | null
+  profile_photo: Attachment[] | string | null
 }
 
 /**
@@ -34,15 +44,4 @@ interface Person {
  * We have this type because it allows us to more quickly fetch content about people in cases where we don't need their bios
  * this is displayed on the "Projects" and "Sigs" part of the website, which only display someone's name and if they're active/graduated
  */
-interface PartialPerson {
-  /** id of the person, held by airtable- look at @typedef Person for more info on how to find this */
-  id: string
-  /** Person's displayed name on this section */
-  name: string
-  /** Not displayed here, but describes their role such as "Professor","undergraduate researcher", etc. */
-  role: string
-  /** Drop-down version of title, used to sort people on the list of names (professor -> phd -> grad/ug etc), on the SIG and project pages */
-  status: string
-  /** URL to someone's profile photo, from the airtable database- not displayed in these sections */
-  profile_photo: string | null
-}
+type PartialPerson = Omit<Person, 'bio' | 'title'>

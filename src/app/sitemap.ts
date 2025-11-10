@@ -5,7 +5,7 @@ const BASE_URL = 'https://dtr.northwestern.edu'
 
 export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
   // Fetch dynamic project slugs from Airtable
-  const projects = await getCachedRecords('Projects')
+  const projects = await getCachedRecords<AirtableProject>('Projects')
   const projectUrls: MetadataRoute.Sitemap = projects.map(project => ({
     url: `${BASE_URL}/projects/${project.id}`,
     lastModified: new Date(),

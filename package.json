@@ -5,7 +5,7 @@
   "packageManager": "pnpm@10.20.0",
   "homepage": "https://github.com/NUDelta/dtr-web",
   "engines": {
-    "node": "22.x"
+    "node": ">=22.x"
   },
   "scripts": {
     "dev": "next dev",
@@ -20,7 +20,6 @@
     "@aws-sdk/client-s3": "^3.922.0",
     "@next/third-parties": "16.0.1",
     "@zl-asica/react": "^0.7.4",
-    "airtable": "^0.12.2",
     "clsx": "^2.1.1",
     "d3-scale": "^4.0.2",
     "framer-motion": "^12.23.24",
@@ -36,7 +35,8 @@
     "rehype-raw": "^7.0.0",
     "remark-gfm": "^4.0.1",
     "rss": "^1.2.2",
-    "sharp": "^0.34.4"
+    "sharp": "^0.34.4",
+    "ts-airtable": "^0.2.2"
   },
   "devDependencies": {
     "@antfu/eslint-config": "^6.2.0",

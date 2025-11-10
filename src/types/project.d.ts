@@ -1,3 +1,19 @@
+interface AirtableProject {
+  id: string
+  name: string
+  banner_image: string | null
+  description: string
+  status: string
+  demo_video: string | null
+  sprint_video: string | null
+  /** Array of member IDs associated with the project */
+  members: string[] | null
+  /** Array of image URLs associated with the project */
+  images: string[] | null
+  /** Array of publications associated with the project */
+  publications: string[]
+}
+
 /**
  * type that describes projects- including relevant videos, images, members, and associated publications
  * @typedef {object} Project

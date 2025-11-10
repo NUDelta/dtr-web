@@ -1,6 +1,6 @@
 'use server'
 
-import type { Attachment } from 'airtable'
+import type { Attachment } from 'ts-airtable'
 
 /**
  * Generates a cached image URL from an Airtable attachment using a stable key.
@@ -43,5 +43,9 @@ export const getImgUrlFromAttachmentObj = async (
 
   // The route will persist to R2 (as WebP) on first miss, then serve/redirect.
   // Format: /api/images/{attId}/{variant}/{filename}?src={airtable_url}
-  return `/api/images/${encodedId}/${encodedVariant}/${encodedName}?src=${encodedSrc}`
+  const url = `/api/images/${encodedId}/${encodedVariant}/${encodedName}?src=${encodedSrc}`
+  fetch(url).catch(() => {
+    // Ignore errors - this is just a prefetch to warm the cache.
+  })
+  return url
 }

@@ -1,3 +1,14 @@
+interface AirtableSIG {
+  id: string
+  name: string
+  description: string
+  banner_image: Attachment[] | null
+  members: string[] | null
+  sig_head: string[] | null
+  faculty_mentors: string[] | null
+  projects: string[] | null
+}
+
 /**
  * @typedef SIG
  * @property {string} id: Id of the SIG, held by airtable-
@@ -19,4 +30,6 @@ interface SIG {
   banner_image: string | null
   members: PartialPerson[]
   projects: PartialProject[]
+  sig_head?: string[]
+  faculty_mentors?: string[]
 }

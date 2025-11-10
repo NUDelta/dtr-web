@@ -1,9 +1,9 @@
 import { AnimatePresence, motion } from 'framer-motion'
 import { ChevronDown } from 'lucide-react'
-import Image from 'next/image'
 import Link from 'next/link'
 import TeamMembers from '@/components/projects/TeamMembers'
 import { MarkdownContents } from '@/components/shared'
+import { getImageSources } from '@/utils/get-image-sources'
 import { cardAppear, collapseVariants } from './utils'
 
 interface SIGCardProps {
@@ -19,6 +19,10 @@ const SIGCard = ({
   toggle,
   bannerImages,
 }: SIGCardProps) => {
+  const banner = bannerImages[sig.name]
+
+  const sources = banner ? getImageSources(banner) : null
+
   return (
     <motion.article
       role="listitem"
@@ -30,16 +34,19 @@ const SIGCard = ({
       {/* top bar */}
       <div className="h-1.5 w-full bg-yellow-400" aria-hidden="true" />
 
-      {bannerImages[sig.name] && (
-        <div className="relative aspect-16/7 w-full">
-          <Image
-            src={bannerImages[sig.name]}
-            alt={`${sig.name} banner`}
-            fill
-            sizes="(max-width: 768px) 100vw, 50vw"
-            className="object-cover"
-            priority={false}
-          />
+      {sources && (
+        <div className="relative aspect-16/7 w-full overflow-hidden">
+          <picture>
+            <source srcSet={sources.avif} type="image/avif" />
+            <source srcSet={sources.webp} type="image/webp" />
+            <img
+              src={sources.fallback}
+              alt={`${sig.name} banner`}
+              loading="lazy"
+              decoding="async"
+              className="absolute inset-0 h-full w-full object-cover"
+            />
+          </picture>
         </div>
       )}
 
@@ -70,7 +77,7 @@ const SIGCard = ({
         </button>
       </div>
 
-      <div className="px-5">
+      <div className="px-5 mb-3">
         {sig.description
           ? (
               <div className="prose max-w-none text-neutral-800 prose-a:underline">

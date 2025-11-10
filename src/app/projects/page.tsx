@@ -20,16 +20,16 @@ interface BannerImages {
 }
 
 const bannerImages: BannerImages = {
-  'Agile Research Studios': '/sig-photos/agile-research-studios_banner-image.png',
-  'Context-Aware Metacognitive Practices': '/sig-photos/camp_banner-image.png',
-  'Networked Orchestration Technologies': '/sig-photos/networked-orchestration-technologies_banner-image.png',
-  'Opportunistic Collective Experiences': '/sig-photos/opportunistic-collective-experiences.png',
-  'Readily Available Learning Experiences': '/sig-photos/readily-available-learning-experiences_banner-image.png',
-  'Breaking Boundaries': '/sig-photos/breaking-boundaries_banner-image.png',
-  'On-the-Go Crowdsourcing': '/sig-photos/on-the-go-crowdsourcing_banner-image.png',
-  'Playful Learning': '/sig-photos/playful-learning_banner-image.png',
-  'Situational Crowdsourcing': '/sig-photos/situational-crowdsourcing_banner-image.png',
-  'Human-AI Tools': '/sig-photos/human-ai_banner-image.jpg',
+  'Agile Research Studios': 'images/sig-photos/agile-research-studios_banner-image.png',
+  'Context-Aware Metacognitive Practices': 'images/sig-photos/camp_banner-image.png',
+  'Networked Orchestration Technologies': 'images/sig-photos/networked-orchestration-technologies_banner-image.png',
+  'Opportunistic Collective Experiences': 'images/sig-photos/opportunistic-collective-experiences.png',
+  'Readily Available Learning Experiences': 'images/sig-photos/readily-available-learning-experiences_banner-image.png',
+  'Breaking Boundaries': 'images/sig-photos/breaking-boundaries_banner-image.png',
+  'On-the-Go Crowdsourcing': 'images/sig-photos/on-the-go-crowdsourcing_banner-image.png',
+  'Playful Learning': 'images/sig-photos/playful-learning_banner-image.png',
+  'Situational Crowdsourcing': 'images/sig-photos/situational-crowdsourcing_banner-image.png',
+  'Human-AI Tools': 'images/sig-photos/human-ai_banner-image.jpg',
 }
 
 export default async function ProjectsPage() {
@@ -49,7 +49,6 @@ export default async function ProjectsPage() {
         sigs={sigs}
         bannerImages={bannerImages}
       />
-
     </>
   )
 }

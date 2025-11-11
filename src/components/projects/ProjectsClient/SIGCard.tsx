@@ -2,8 +2,7 @@ import { AnimatePresence, motion } from 'framer-motion'
 import { ChevronDown } from 'lucide-react'
 import Link from 'next/link'
 import TeamMembers from '@/components/projects/TeamMembers'
-import { MarkdownContents } from '@/components/shared'
-import { getImageSources } from '@/utils/get-image-sources'
+import { AdaptiveImage, MarkdownContents } from '@/components/shared'
 import { cardAppear, collapseVariants } from './utils'
 
 interface SIGCardProps {
@@ -21,8 +20,6 @@ const SIGCard = ({
 }: SIGCardProps) => {
   const banner = bannerImages[sig.name]
 
-  const sources = banner ? getImageSources(banner) : null
-
   return (
     <motion.article
       role="listitem"
@@ -34,19 +31,15 @@ const SIGCard = ({
       {/* top bar */}
       <div className="h-1.5 w-full bg-yellow-400" aria-hidden="true" />
 
-      {sources && (
+      {banner !== null && (
         <div className="relative aspect-16/7 w-full overflow-hidden">
-          <picture>
-            <source srcSet={sources.avif} type="image/avif" />
-            <source srcSet={sources.webp} type="image/webp" />
-            <img
-              src={sources.fallback}
-              alt={`${sig.name} banner`}
-              loading="lazy"
-              decoding="async"
-              className="absolute inset-0 h-full w-full object-cover"
-            />
-          </picture>
+          <AdaptiveImage
+            src={banner}
+            alt={`${sig.name} banner`}
+            loading="lazy"
+            decoding="async"
+            className="absolute inset-0 h-full w-full object-cover"
+          />
         </div>
       )}
 

@@ -3,9 +3,8 @@
 import { AnimatePresence, motion } from 'framer-motion'
 import { ChevronLeft, ChevronRight, Pause, Play } from 'lucide-react'
 import { useId, useMemo, useState } from 'react'
+import { AdaptiveImage } from '@/components/shared'
 import { useCarousel } from '@/hooks/useCarousel'
-
-import { getImageSources } from '@/utils/get-image-sources'
 
 const images = [
   'images/home-carousel/1.jpg',
@@ -50,8 +49,6 @@ export default function Carousel({
     intervalMs,
     startAutoPlay,
   })
-
-  const sources = getImageSources(images[index])
 
   const announceId = `${id}-carousel-status`
   const descId = `${id}-carousel-desc`
@@ -117,20 +114,16 @@ export default function Carousel({
               }}
               className="absolute inset-0 will-change-transform will-change-opacity"
             >
-              <picture>
-                <source srcSet={sources.avif} type="image/avif" />
-                <source srcSet={sources.webp} type="image/webp" />
-                <img
-                  src={sources.fallback}
-                  alt={`Slide ${index + 1} of ${total}`}
-                  loading="lazy"
-                  decoding="async"
-                  sizes="(max-width: 640px) 100vw, (max-width: 1024px) 90vw, 1200px"
-                  className="absolute inset-0 h-full w-full object-cover"
-                  onLoad={() => setLoaded(prev => ({ ...prev, [index]: true }))}
-                  draggable={false}
-                />
-              </picture>
+              <AdaptiveImage
+                src={images[index]}
+                alt={`Slide ${index + 1} of ${total}`}
+                loading="lazy"
+                decoding="async"
+                sizes="(max-width: 640px) 100vw, (max-width: 1024px) 90vw, 1200px"
+                className="absolute inset-0 h-full w-full object-cover"
+                onLoad={() => setLoaded(prev => ({ ...prev, [index]: true }))}
+                draggable={false}
+              />
             </motion.div>
           </AnimatePresence>
 

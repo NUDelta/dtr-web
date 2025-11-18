@@ -9,23 +9,24 @@ type LiProps = React.LiHTMLAttributes<HTMLLIElement>
 type ParagraphProps = React.HTMLAttributes<HTMLParagraphElement>
 type ImgProps = React.ImgHTMLAttributes<HTMLImageElement>
 type StrongProps = React.HTMLAttributes<HTMLElement>
+type BlockquoteProps = React.HTMLAttributes<HTMLQuoteElement>
+type EmphasisProps = React.HTMLAttributes<HTMLElement>
+type HrProps = React.HTMLAttributes<HTMLHRElement>
+type PreProps = React.HTMLAttributes<HTMLPreElement>
+type CodeProps = React.HTMLAttributes<HTMLElement> & {
+  inline?: boolean
+}
 
 export const markdownComponents: Partial<MarkdownComponents> = {
   // Link styling: gray text with soft yellow background highlight
   a: ({ className, ...props }: AnchorProps) => {
-    const isUnstyled = className?.includes('unstyled-link')
-
     return (
       <a
         className={cn(
-          // Skip default link styling when "unstyled-link" is present
-          !isUnstyled
-          && [
-            'text-gray-700 font-normal',
-            'bg-[#fff9bc] hover:bg-dark-yellow',
-            'no-underline transition-colors duration-150 ease-in-out',
-            'px-[0.15em]',
-          ].join(' '),
+          'text-gray-700 font-normal',
+          'bg-[#fff9bc] hover:bg-dark-yellow',
+          'no-underline transition-colors duration-150 ease-in-out',
+          'px-[0.15em]',
           className,
         )}
         {...props}
@@ -49,6 +50,28 @@ export const markdownComponents: Partial<MarkdownComponents> = {
     <strong
       className={cn(
         'font-semibold',
+        className,
+      )}
+      {...props}
+    />
+  ),
+
+  // Emphasis / italics
+  em: ({ className, ...props }: EmphasisProps) => (
+    <em
+      className={cn(
+        'italic',
+        className,
+      )}
+      {...props}
+    />
+  ),
+
+  // Horizontal rule
+  hr: ({ className, ...props }: HrProps) => (
+    <hr
+      className={cn(
+        'my-8 border-t border-dashed border-gray-300',
         className,
       )}
       {...props}
@@ -98,6 +121,48 @@ export const markdownComponents: Partial<MarkdownComponents> = {
     />
   ),
 
+  // h4 — smaller subsection heading
+  h4: ({ className, ...props }: HeadingProps) => (
+    <h4
+      className={cn(
+        'mt-6 mb-2',
+        'text-lg lg:text-xl font-semibold',
+        'scroll-m-24',
+        className,
+      )}
+      {...props}
+    />
+  ),
+
+  // h5 — label-like heading
+  h5: ({ className, ...props }: HeadingProps) => (
+    <h5
+      className={cn(
+        'mt-4 mb-2',
+        'text-base font-semibold text-gray-800',
+        'scroll-m-24',
+        className,
+      )}
+      {...props}
+    />
+  ),
+
+  // Blockquote / quote
+  blockquote: ({ className, ...props }: BlockquoteProps) => (
+    <blockquote
+      className={cn(
+      // Container
+        'my-6 rounded-lg border border-gray-200 border-l-4 border-l-black bg-[#fffdf0]',
+        'px-4 py-3',
+        // Typography
+        'text-[0.97rem] leading-relaxed text-gray-800 italic',
+        // Tighter spacing for nested paragraphs
+        '[&>p]:my-2 [&>p:first-child]:mt-0 [&>p:last-child]:mb-0',
+        className,
+      )}
+      {...props}
+    />
+  ),
   // Unordered list (equivalent to `.prose ul`)
   ul: ({ className, ...props }: UlProps) => (
     <ul
@@ -130,6 +195,45 @@ export const markdownComponents: Partial<MarkdownComponents> = {
       {...props}
     />
   ),
+
+  // Code blocks
+  pre: ({ className, ...props }: PreProps) => (
+    <pre
+      className={cn(
+        'my-4 overflow-x-auto rounded-lg bg-gray-900 text-gray-50',
+        'p-4 text-sm leading-relaxed',
+        className,
+      )}
+      {...props}
+    />
+  ),
+
+  // Inline code
+  code: ({ className, inline, ...props }: CodeProps) => {
+    if (inline) {
+      return (
+        <code
+          className={cn(
+            'rounded bg-gray-100 px-1 py-0.5',
+            'font-mono text-[0.95em]',
+            className,
+          )}
+          {...props}
+        />
+      )
+    }
+
+    // For fenced code, styling is mostly handled by <pre>; keep this minimal.
+    return (
+      <code
+        className={cn(
+          'font-mono text-[0.9em]',
+          className,
+        )}
+        {...props}
+      />
+    )
+  },
 
   // Images inside MDX
   img: ({ className, ...props }: ImgProps) => (

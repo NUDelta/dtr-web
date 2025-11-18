@@ -11,6 +11,7 @@ export const metadata: Metadata = {
 export default function Letters() {
   return (
     <div className="prose mx-auto max-w-4xl">
+      <h1>Annual Letters & Resources</h1>
       {/* Annual Letters Placeholder */}
       <h2>Annual Letters</h2>
       <p>

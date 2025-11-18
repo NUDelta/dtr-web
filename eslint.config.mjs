@@ -14,6 +14,7 @@ export default antfu({
   lessOpinionated: true,
   ignores: [
     '**.md',
+    'next-env.d.ts',
   ],
 }, {
   files: ['src/app/**/loading.tsx'],

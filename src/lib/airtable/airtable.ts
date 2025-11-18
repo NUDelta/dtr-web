@@ -1,9 +1,7 @@
-import 'server-only'
-
 import process from 'node:process'
 import type { AirtableFieldSet } from 'ts-airtable'
 import Airtable from 'ts-airtable'
-import { cacheLife } from 'next/cache'
+// import { cacheLife } from 'next/cache'
 import { logProd, nowMs } from '@/lib/logger'
 import { createCloudflareApiKvCacheStore } from './cloudflare-kv-cache'
 import { CLOUDFLARE_ACCOUNT_ID, CLOUDFLARE_KV_NAMESPACE_ID } from '@/lib/consts'
@@ -86,21 +84,8 @@ async function fetchAirtableRecordsRaw<TFields = Record<string, unknown>>(
 export async function getCachedRecords<TFields = AirtableFieldSet>(
   tableName: string,
 ): Promise<Row<TFields>[]> {
-  'use cache'
-  cacheLife('halfDays')
+  // 'use cache'
+  // cacheLife('halfDays')
 
-  // Coalesce concurrent calls for the same table within this process.
-  // const existing = inflight.get(tableName)
-  // if (existing) {
-  //   return existing as Promise<Row<TFields>[]>
-  // }
-
-  const p: Promise<Row<TFields>[]> = fetchAirtableRecordsRaw<TFields>(tableName)
-  //   .finally(() => {
-  //     // Always clear the inflight slot, even on rejection.
-  //     inflight.delete(tableName)
-  //   })
-
-  // inflight.set(tableName, p as Promise<AnyRow[]>)
-  return p
+  return fetchAirtableRecordsRaw<TFields>(tableName)
 }

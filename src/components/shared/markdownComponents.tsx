@@ -1,25 +1,9 @@
 import type { Components as MarkdownComponents } from 'react-markdown'
 import { cn } from '@/utils'
 
-type AnchorProps = React.AnchorHTMLAttributes<HTMLAnchorElement>
-type HeadingProps = React.HTMLAttributes<HTMLHeadingElement>
-type UlProps = React.HTMLAttributes<HTMLUListElement>
-type OlProps = React.HTMLAttributes<HTMLOListElement>
-type LiProps = React.LiHTMLAttributes<HTMLLIElement>
-type ParagraphProps = React.HTMLAttributes<HTMLParagraphElement>
-type ImgProps = React.ImgHTMLAttributes<HTMLImageElement>
-type StrongProps = React.HTMLAttributes<HTMLElement>
-type BlockquoteProps = React.HTMLAttributes<HTMLQuoteElement>
-type EmphasisProps = React.HTMLAttributes<HTMLElement>
-type HrProps = React.HTMLAttributes<HTMLHRElement>
-type PreProps = React.HTMLAttributes<HTMLPreElement>
-type CodeProps = React.HTMLAttributes<HTMLElement> & {
-  inline?: boolean
-}
-
 export const markdownComponents: Partial<MarkdownComponents> = {
   // Link styling: gray text with soft yellow background highlight
-  a: ({ className, ...props }: AnchorProps) => {
+  a: ({ className, ...props }) => {
     return (
       <a
         className={cn(
@@ -35,7 +19,7 @@ export const markdownComponents: Partial<MarkdownComponents> = {
   },
 
   // Paragraphs
-  p: ({ className, ...props }: ParagraphProps) => (
+  p: ({ className, ...props }) => (
     <p
       className={cn(
         'my-4 leading-relaxed',
@@ -46,7 +30,7 @@ export const markdownComponents: Partial<MarkdownComponents> = {
   ),
 
   // Bolded
-  strong: ({ className, ...props }: StrongProps) => (
+  strong: ({ className, ...props }) => (
     <strong
       className={cn(
         'font-semibold',
@@ -57,7 +41,7 @@ export const markdownComponents: Partial<MarkdownComponents> = {
   ),
 
   // Emphasis / italics
-  em: ({ className, ...props }: EmphasisProps) => (
+  em: ({ className, ...props }) => (
     <em
       className={cn(
         'italic',
@@ -68,7 +52,7 @@ export const markdownComponents: Partial<MarkdownComponents> = {
   ),
 
   // Horizontal rule
-  hr: ({ className, ...props }: HrProps) => (
+  hr: ({ className, ...props }) => (
     <hr
       className={cn(
         'my-8 border-t border-dashed border-gray-300',
@@ -78,8 +62,8 @@ export const markdownComponents: Partial<MarkdownComponents> = {
     />
   ),
 
-  // h1 (optional, for top-level titles)
-  h1: ({ className, ...props }: HeadingProps) => (
+  // h1 (for top-level titles)
+  h1: ({ className, ...props }) => (
     <h1
       className={cn(
         'mt-6 mb-4',
@@ -91,8 +75,8 @@ export const markdownComponents: Partial<MarkdownComponents> = {
     />
   ),
 
-  // h2 — matches old `.prose h2` styles
-  h2: ({ className, ...props }: HeadingProps) => (
+  // h2
+  h2: ({ className, ...props }) => (
     <h2
       className={cn(
         // border-bottom: 1px solid black; padding-bottom: 0.5rem;
@@ -109,7 +93,7 @@ export const markdownComponents: Partial<MarkdownComponents> = {
   ),
 
   // h3 for sub-sections
-  h3: ({ className, ...props }: HeadingProps) => (
+  h3: ({ className, ...props }) => (
     <h3
       className={cn(
         'mt-8 mb-3',
@@ -122,7 +106,7 @@ export const markdownComponents: Partial<MarkdownComponents> = {
   ),
 
   // h4 — smaller subsection heading
-  h4: ({ className, ...props }: HeadingProps) => (
+  h4: ({ className, ...props }) => (
     <h4
       className={cn(
         'mt-6 mb-2',
@@ -135,7 +119,7 @@ export const markdownComponents: Partial<MarkdownComponents> = {
   ),
 
   // h5 — label-like heading
-  h5: ({ className, ...props }: HeadingProps) => (
+  h5: ({ className, ...props }) => (
     <h5
       className={cn(
         'mt-4 mb-2',
@@ -148,7 +132,7 @@ export const markdownComponents: Partial<MarkdownComponents> = {
   ),
 
   // Blockquote / quote
-  blockquote: ({ className, ...props }: BlockquoteProps) => (
+  blockquote: ({ className, ...props }) => (
     <blockquote
       className={cn(
       // Container
@@ -164,7 +148,7 @@ export const markdownComponents: Partial<MarkdownComponents> = {
     />
   ),
   // Unordered list (equivalent to `.prose ul`)
-  ul: ({ className, ...props }: UlProps) => (
+  ul: ({ className, ...props }) => (
     <ul
       className={cn(
         'my-4 ml-6 list-disc space-y-1',
@@ -175,7 +159,7 @@ export const markdownComponents: Partial<MarkdownComponents> = {
   ),
 
   // Ordered list (equivalent to `.prose ol`)
-  ol: ({ className, ...props }: OlProps) => (
+  ol: ({ className, ...props }) => (
     <ol
       className={cn(
         'my-4 ml-6 list-decimal space-y-1',
@@ -186,7 +170,7 @@ export const markdownComponents: Partial<MarkdownComponents> = {
   ),
 
   // List item
-  li: ({ className, ...props }: LiProps) => (
+  li: ({ className, ...props }) => (
     <li
       className={cn(
         'leading-relaxed',
@@ -197,7 +181,7 @@ export const markdownComponents: Partial<MarkdownComponents> = {
   ),
 
   // Code blocks
-  pre: ({ className, ...props }: PreProps) => (
+  pre: ({ className, ...props }) => (
     <pre
       className={cn(
         'my-4 overflow-x-auto rounded-lg bg-gray-900 text-gray-50',
@@ -209,8 +193,10 @@ export const markdownComponents: Partial<MarkdownComponents> = {
   ),
 
   // Inline code
-  code: ({ className, inline, ...props }: CodeProps) => {
-    if (inline) {
+  code: ({ className, children, ...props }) => {
+    const match = typeof className === 'string' ? /language-(\w+)/.exec(className) : null
+
+    if (!match) {
       return (
         <code
           className={cn(
@@ -219,11 +205,12 @@ export const markdownComponents: Partial<MarkdownComponents> = {
             className,
           )}
           {...props}
-        />
+        >
+          {children}
+        </code>
       )
     }
 
-    // For fenced code, styling is mostly handled by <pre>; keep this minimal.
     return (
       <code
         className={cn(
@@ -231,12 +218,14 @@ export const markdownComponents: Partial<MarkdownComponents> = {
           className,
         )}
         {...props}
-      />
+      >
+        {children}
+      </code>
     )
   },
 
   // Images inside MDX
-  img: ({ className, ...props }: ImgProps) => (
+  img: ({ className, ...props }) => (
     // eslint-disable-next-line next/no-img-element
     <img
       className={cn(

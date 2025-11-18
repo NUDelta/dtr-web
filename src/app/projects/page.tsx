@@ -52,3 +52,6 @@ export default async function ProjectsPage() {
     </>
   )
 }
+
+// Revalidate every 6 hours
+export const revalidate = 21_600

@@ -24,8 +24,8 @@ export function logProd(message: string, meta: LogMeta = {}) {
   }
 
   // Emit to console
-  // eslint-disable-next-line no-console
-  console.log(JSON.stringify(record))
+  // // eslint-disable-next-line no-console
+  // console.log(JSON.stringify(record))
 
   // Fire R2 persistence (await inside try to keep the log durable at very low cadence)
   appendMonthlyNdjsonLine(JSON.stringify(record), record.ts).catch((err) => {

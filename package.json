@@ -8,9 +8,9 @@
     "node": ">=22.x"
   },
   "scripts": {
-    "dev": "next dev",
-    "build": "pnpm lint:ci && next build",
-    "start": "next start -H 0.0.0.0 -p ${PORT:-8080}",
+    "dev": "next dev --webpack",
+    "build": "pnpm lint:ci && next build --webpack",
+    "start": "next start --webpack -H 0.0.0.0 -p ${PORT:-8080}",
     "lint": "eslint .",
     "lint:ci": "eslint . --max-warnings=0 || true",
     "lint:fix": "eslint . --fix",

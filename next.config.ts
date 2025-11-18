@@ -2,7 +2,6 @@ import type { NextConfig } from 'next'
 
 const nextConfig: NextConfig = {
   output: 'standalone',
-  cacheComponents: true,
   cacheLife: {
     halfDays: {
       stale: 60 * 60 * 6, // 6 hours

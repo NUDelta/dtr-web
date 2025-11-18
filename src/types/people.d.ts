@@ -34,7 +34,7 @@ interface Person {
   /** Bio of a particular person, displayed on the "people" page of the website */
   bio: string
   /** URL to someone's profile photo, from the airtable database */
-  profile_photo: Attachment[] | string | null
+  profile_photo: string | null
 }
 
 /**

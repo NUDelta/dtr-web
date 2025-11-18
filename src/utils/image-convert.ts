@@ -5,64 +5,102 @@ import sharp from 'sharp'
 sharp.cache({ files: 128, items: 256, memory: 64 }) // memory is MB-ish
 sharp.concurrency(2)
 
+interface MultiFormatOptions {
+  /**
+   * Maximum bounding box for width/height in pixels.
+   * The longer side will be clamped to this value, preserving aspect ratio.
+   */
+  maxDimension?: number
+  webp?: {
+    quality?: number
+    lossless?: boolean
+    effort?: number
+  }
+  avif?: {
+    quality?: number
+    lossless?: boolean
+    effort?: number
+  }
+}
+
 /**
- * Transcode an encoded image Buffer to WebP using sharp only.
+ * Decode an encoded image buffer and produce both AVIF and WebP variants.
  *
- * - Decodes common formats (JPEG/PNG/HEIC/WebP/etc.)
- * - Honors EXIF orientation
- * - Optional downscale (keeps aspect ratio, never upscales)
- * - Forces SDR: converts to sRGB and applies gamma mapping to tone-map HDR/wide-gamut
- * - Strips metadata by default (sharp does not copy metadata unless `.withMetadata()` is used)
+ * - Decodes common formats (JPEG/PNG/HEIC/WebP/etc.).
+ * - Honors EXIF orientation.
+ * - Resizes to fit inside a max bounding box (if provided).
+ * - Forces SDR (sRGB + gamma).
+ * - Strips metadata by default.
  */
-export async function transcodeBufferToWebp(
+export async function transcodeBufferToOptimizedImages(
   input: Buffer,
-  options: Partial<WebpOptions> = {},
-): Promise<{ buffer: Buffer, contentType: 'image/webp', converted: boolean }> {
-  const quality = options.quality ?? 82
-  const lossless = options.lossless ?? false
-  const effort = options.effort ?? 4
-  const targetW = options.targetWidth
+  options: MultiFormatOptions = {},
+): Promise<{ avif: Buffer, webp: Buffer, converted: boolean }> {
+  const maxDimension = options.maxDimension ?? 2400
+
+  const webpQuality = options.webp?.quality ?? 82
+  const webpLossless = options.webp?.lossless ?? false
+  const webpEffort = options.webp?.effort ?? 4
+
+  const avifQuality = options.avif?.quality ?? 55
+  const avifLossless = options.avif?.lossless ?? false
+  const avifEffort = options.avif?.effort ?? 4
 
   try {
-    let p = sharp(input, {
+    let pipeline = sharp(input, {
       unlimited: false,
-      sequentialRead: true, // memory-friendly
-      animated: false, // take first frame if input is animated
+      sequentialRead: true,
+      animated: false,
       failOnError: false,
     })
 
-    // Respect EXIF rotation
-    p = p.rotate()
+    // Respect EXIF rotation.
+    pipeline = pipeline.rotate()
 
-    // Optional resize for thumbnails or smaller variants
-    if (targetW !== undefined && Number.isFinite(targetW) && targetW > 0) {
-      p = p.resize({
-        width: Math.floor(targetW),
+    // Clamp both width and height to maxDimension (fit inside, no upscaling).
+    if (Number.isFinite(maxDimension) && maxDimension > 0) {
+      pipeline = pipeline.resize({
+        width: Math.floor(maxDimension),
+        height: Math.floor(maxDimension),
         fit: 'inside',
         withoutEnlargement: true,
         fastShrinkOnLoad: true,
       })
     }
 
-    // HDR → SDR: force sRGB 8-bit + gamma for more natural SDR appearance
-    p = p.toColorspace('srgb').gamma()
+    // HDR -> SDR: force sRGB 8-bit + gamma for more natural SDR appearance.
+    pipeline = pipeline.toColorspace('srgb').gamma()
 
-    // Encode to WebP
-    const out = await p.webp({
-      quality,
-      lossless,
-      effort,
-      smartSubsample: true, // better chroma subsampling for photos
-      nearLossless: false,
-      alphaQuality: Math.min(quality + 5, 100), // preserve alpha edges slightly better
-    }).toBuffer()
+    const base = pipeline
 
-    return { buffer: out, contentType: 'image/webp', converted: true }
+    const [webp, avif] = await Promise.all([
+      base
+        .clone()
+        .webp({
+          quality: webpQuality,
+          lossless: webpLossless,
+          effort: webpEffort,
+          smartSubsample: true,
+          nearLossless: false,
+          alphaQuality: Math.min(webpQuality + 5, 100),
+        })
+        .toBuffer(),
+      base
+        .clone()
+        .avif({
+          quality: avifQuality,
+          lossless: avifLossless,
+          effort: avifEffort,
+        })
+        .toBuffer(),
+    ])
+
+    return { avif, webp, converted: true }
   }
   catch (err) {
-    // Fallback: return original bytes so the request still succeeds
-    // (If you prefer strict behavior, rethrow instead.)
-    console.warn('[image-convert] sharp failed, returning original buffer:', err)
-    return { buffer: input, contentType: 'image/webp', converted: false }
+    // Fallback: return original bytes as WebP-ish payload.
+    // If handled outside, rethrow instead.
+    console.warn('[image-convert] multi-format sharp failed, returning original buffer:', err)
+    return { avif: input, webp: input, converted: false }
   }
 }

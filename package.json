@@ -2,7 +2,7 @@
   "name": "dtr-web",
   "version": "2.0.0",
   "private": true,
-  "packageManager": "pnpm@10.20.0",
+  "packageManager": "pnpm@10.22.0",
   "homepage": "https://github.com/NUDelta/dtr-web",
   "engines": {
     "node": ">=22.x"

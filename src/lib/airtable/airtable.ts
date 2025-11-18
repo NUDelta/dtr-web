@@ -2,11 +2,23 @@ import 'server-only'
 
 import process from 'node:process'
 import type { AirtableFieldSet } from 'ts-airtable'
-import Airtable, { InMemoryCacheStore } from 'ts-airtable'
+import Airtable from 'ts-airtable'
 import { cacheLife } from 'next/cache'
 import { logProd, nowMs } from '@/lib/logger'
+import { createCloudflareApiKvCacheStore } from './cloudflare-kv-cache'
+import { CLOUDFLARE_ACCOUNT_ID, CLOUDFLARE_KV_NAMESPACE_ID } from '@/lib/consts'
+import { CloudflareClient } from '@/lib/cloudflare'
 
-const store = new InMemoryCacheStore()
+/** Default TTL for Airtable records cache: 6 hours. */
+const TTL = 1000 * 60 * 60 * 6
+
+const store = createCloudflareApiKvCacheStore({
+  client: CloudflareClient,
+  accountId: CLOUDFLARE_ACCOUNT_ID,
+  namespaceId: CLOUDFLARE_KV_NAMESPACE_ID,
+  keyPrefix: 'airtable-cache',
+  minCloudflareTtlSeconds: TTL / 1000,
+})
 
 /** Configure Airtable SDK (server-only). */
 Airtable.configure({
@@ -14,11 +26,17 @@ Airtable.configure({
   apiKey: process.env.AIRTABLE_API_KEY ?? '',
   recordsCache: {
     store,
-    defaultTtlMs: 1000 * 60 * 60 * 6, // 6 hours
+    defaultTtlMs: TTL,
     methods: {
       listRecords: true,
       listAllRecords: true,
       getRecord: true,
+    },
+    onError: (err, context) => {
+      logProd('airtable.cache.error', {
+        error: err instanceof Error ? err.message : String(err),
+        context,
+      })
     },
   },
 })
@@ -58,22 +76,6 @@ async function fetchAirtableRecordsRaw<TFields = Record<string, unknown>>(
   }))
 }
 
-type AnyRow = Row<unknown>
-
-/**
- * In-process coalescing of concurrent reads for the same table.
- * Keep this on globalThis to survive HMR / multi-module instances in dev.
- */
-declare global {
-  // eslint-disable-next-line vars-on-top
-  var __airtableInflight: Map<string, Promise<AnyRow[]>> | undefined
-}
-const g = globalThis as typeof globalThis & {
-  __airtableInflight?: Map<string, Promise<AnyRow[]>>
-}
-g.__airtableInflight ??= new Map<string, Promise<AnyRow[]>>()
-const inflight = g.__airtableInflight
-
 /**
  * Public entry: uses Next.js Server Cache in prod + in-process coalescing always.
  * - 'use cache' + cacheLife('halfDays') lets Next manage cross-request caching in prod.
@@ -88,17 +90,17 @@ export async function getCachedRecords<TFields = AirtableFieldSet>(
   cacheLife('halfDays')
 
   // Coalesce concurrent calls for the same table within this process.
-  const existing = inflight.get(tableName)
-  if (existing) {
-    return existing as Promise<Row<TFields>[]>
-  }
+  // const existing = inflight.get(tableName)
+  // if (existing) {
+  //   return existing as Promise<Row<TFields>[]>
+  // }
 
   const p: Promise<Row<TFields>[]> = fetchAirtableRecordsRaw<TFields>(tableName)
-    .finally(() => {
-      // Always clear the inflight slot, even on rejection.
-      inflight.delete(tableName)
-    })
+  //   .finally(() => {
+  //     // Always clear the inflight slot, even on rejection.
+  //     inflight.delete(tableName)
+  //   })
 
-  inflight.set(tableName, p as Promise<AnyRow[]>)
+  // inflight.set(tableName, p as Promise<AnyRow[]>)
   return p
 }

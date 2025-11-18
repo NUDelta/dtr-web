@@ -5,7 +5,7 @@ Website for the Design, Technology, and Research (DTR) program at Northwestern U
 ## Setup
 
 1. Make sure you have [Node.js](https://nodejs.org/en/) and [pnpm](https://pnpm.io/installation#using-corepack) (recommend install with corepack) installed.
-2. Clone the repository, and change the `.env.example` file to `.env`, filling in the required environment variables.
+2. Clone the repository, and copy the `.env.example` file and rename it to `.env`, filling in the required environment variables.
 3. Run `pnpm install` to install packages.
 
 ## Running Code Locally

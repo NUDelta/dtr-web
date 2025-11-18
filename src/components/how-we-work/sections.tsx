@@ -1,25 +1,23 @@
-import type { StaticImageData } from 'next/image'
+const CommunityBbq = 'images/how-we-work/community-bbq.png'
+const CommunityCircle = 'images/how-we-work/community-circle.png'
+const CommunityUist = 'images/how-we-work/community-uist.png'
 
-import CommunityBbq from './assets/community-bbq.png'
-import CommunityCircle from './assets/community-circle.png'
-import CommunityUist from './assets/community-uist.png'
+const ProblemsHow = 'images/how-we-work/problems-how.png'
+const ProblemsProcess = 'images/how-we-work/problems-process.jpg'
+const ProblemsPyrus = 'images/how-we-work/problems-pyrus.png'
 
-import ProblemsHow from './assets/problems-how.png'
-import ProblemsProcess from './assets/problems-process.jpg'
-import ProblemsPyrus from './assets/problems-pyrus.png'
+const ResearchOpenhouse = 'images/how-we-work/research-openhouse.png'
+const ResearchSccs = 'images/how-we-work/research-sccs.png'
+const ResearchSig = 'images/how-we-work/research-sig.png'
 
-import ResearchOpenhouse from './assets/research-openhouse.png'
-import ResearchSccs from './assets/research-sccs.png'
-import ResearchSig from './assets/research-sig.png'
-
-import WorkingAgile from './assets/working-agile.png'
-import WorkingGlance from './assets/working-glance.png'
-import WorkingGrowth from './assets/working-growth.png'
+const WorkingAgile = 'images/how-we-work/working-agile.png'
+const WorkingGlance = 'images/how-we-work/working-glance.png'
+const WorkingGrowth = 'images/how-we-work/working-growth.png'
 
 interface SubSection {
   title: string
   description: React.ReactNode
-  imagePath: StaticImageData | null
+  imagePath: string | null
 }
 
 interface Section {

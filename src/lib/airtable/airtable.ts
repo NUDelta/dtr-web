@@ -1,75 +1,86 @@
-import 'server-only'
+'use server'
 
-import process from 'node:process'
-import Airtable from 'airtable'
-import { cacheLife } from 'next/cache'
-import { logProd, nowMs } from '@/lib/logger'
+import Airtable from 'ts-airtable'
+import { createCloudflareApiKvCacheStore } from './cloudflare-kv-cache'
+import {
+  AIRTABLE_API_KEY,
+  AIRTABLE_BASE_ID,
+  CLOUDFLARE_ACCOUNT_ID,
+  CLOUDFLARE_KV_NAMESPACE_ID,
+} from '@/lib/consts'
+import { CloudflareClient } from '@/lib/cloudflare'
+import { createKvLogger } from '@/lib/kv-logger'
+import { safeLog } from '@/lib/logger'
+
+/** Default TTL for Airtable records cache: 12 hours. */
+const TTL = 1000 * 60 * 60 * 12
+
+const logger = createKvLogger({
+  client: CloudflareClient,
+  accountId: CLOUDFLARE_ACCOUNT_ID,
+  namespaceId: CLOUDFLARE_KV_NAMESPACE_ID,
+  keyPrefix: 'airtable-log',
+  logTtlSeconds: 60 * 60 * 24 * 180, // keep 180 days of logs
+})
+
+const store = createCloudflareApiKvCacheStore({
+  client: CloudflareClient,
+  accountId: CLOUDFLARE_ACCOUNT_ID,
+  namespaceId: CLOUDFLARE_KV_NAMESPACE_ID,
+  keyPrefix: 'airtable-cache',
+  minCloudflareTtlSeconds: TTL / 1000,
+  logger,
+})
 
 /** Configure Airtable SDK (server-only). */
 Airtable.configure({
   endpointUrl: 'https://api.airtable.com',
-  apiKey: process.env.AIRTABLE_API_KEY ?? '',
+  apiKey: AIRTABLE_API_KEY,
+  recordsCache: {
+    store,
+    defaultTtlMs: TTL,
+    methods: {
+      listRecords: true,
+      listAllRecords: true,
+      getRecord: true,
+    },
+    onError: (err, context) => {
+      safeLog(logger, {
+        kind: context.op,
+        key: context.key,
+        error: err,
+        fullKey: `${context.prefix}:${context.key}`,
+        timestamp: Date.now(),
+      })
+    },
+  },
 })
 
-const base = Airtable.base(process.env.AIRTABLE_BASE_ID ?? '')
+const base = Airtable.base(AIRTABLE_BASE_ID)
 
-interface Row {
+interface Row<TFields = Record<string, unknown>> {
   id: string
-  fields: Record<string, unknown>
+  fields: TFields
 }
 
 /**
- * Low-level fetcher that actually hits Airtable.
- * Called only on cache miss / first fill.
+ * Cache enabled fetch of all records from an Airtable table.
+ *
+ * Caching is handled by Airtable TS with Cloudflare KV Cache Store.
+ *
+ * @see https://airtable.zla.app/guide/features/caching
+ *
+ * @typeParam TFields - Shape of the record fields for this table.
+ * @param tableName - Airtable table name or ID.
  */
-async function fetchAirtableRecordsRaw(tableName: string): Promise<Row[]> {
-  const t0 = nowMs()
-  logProd('airtable.fetch.start', { table: tableName })
-
+export async function getCachedRecords<TFields = Record<string, unknown>>(
+  tableName: string,
+): Promise<Row<TFields>[]> {
   const records = await base(tableName).select().all()
 
-  logProd('airtable.fetch.done', {
-    table: tableName,
-    rows: records.length,
-    ms: nowMs() - t0,
-  })
-
-  return records.map(r => ({ id: r.id, fields: r.fields }))
-}
-
-/**
- * In-process coalescing of concurrent reads for the same table.
- * Keep this on globalThis to survive HMR / multi-module instances in dev.
- */
-declare global {
-  // eslint-disable-next-line vars-on-top
-  var __airtableInflight: Map<string, Promise<Row[]>> | undefined
-}
-const g = globalThis as unknown as { __airtableInflight?: Map<string, Promise<Row[]>> }
-g.__airtableInflight ??= new Map<string, Promise<Row[]>>()
-const inflight = g.__airtableInflight
-
-/**
- * Public entry: uses Next.js Server Cache in prod + in-process coalescing always.
- * - 'use cache' + cacheLife('halfDays') lets Next manage cross-request caching in prod.
- * - The in-process inflight map avoids thundering herds during the first fill.
- */
-export async function getCachedRecords(tableName: string): Promise<Row[]> {
-  'use cache'
-  cacheLife('halfDays')
-
-  // Coalesce concurrent calls for the same table within this process.
-  const existing = inflight.get(tableName)
-  if (existing) {
-    return existing
-  }
-
-  const p = fetchAirtableRecordsRaw(tableName)
-    .finally(() => {
-      // Always clear the inflight slot, even on rejection.
-      inflight.delete(tableName)
-    })
-
-  inflight.set(tableName, p)
-  return p
+  // !NOTE: We trust the Airtable schema matches the TFields provided by caller.
+  return records.map(r => ({
+    id: r.id,
+    fields: r.fields as TFields,
+  }))
 }

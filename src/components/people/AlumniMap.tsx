@@ -10,6 +10,7 @@ interface AlumniMapProps {
   csvUrl?: string // default: /data/alumni_roster.csv
   gazetteerUrl?: string // default: /data/us_cities_all.json
   title?: string
+  className?: string
 }
 
 const geoStyle = {
@@ -22,6 +23,7 @@ const AlumniMap = ({
   csvUrl = '/data/alumni_roster.csv',
   gazetteerUrl = '/data/us_cities_all.json',
   title = 'Where our alumni are',
+  className,
 }: AlumniMapProps) => {
   const {
     loading,
@@ -72,7 +74,7 @@ const AlumniMap = ({
   }, [setSelectedKey])
 
   return (
-    <section aria-label="Alumni Map (USA)" className="mx-auto my-6 w-full rounded-2xl border">
+    <section aria-label="Alumni Map (USA)" className={`mx-auto my-6 w-full rounded-2xl border ${className}`}>
       <div className="flex items-center justify-between px-4 py-3">
         <h3 className="text-lg font-semibold">{title}</h3>
         <div className="flex items-center gap-2">

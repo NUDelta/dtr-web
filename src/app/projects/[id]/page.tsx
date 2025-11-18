@@ -164,9 +164,9 @@ export default async function IndividualProjectPage({
         && <ProjectPublications publications={project.publications} />}
 
       {/* Videos */}
-      { project.demo_video !== null && project.demo_video.trim() !== ''
+      { project.demo_video !== null && project.demo_video?.trim() !== ''
         && <ProjectVideo title="Demo video" url={project.demo_video} /> }
-      { project.sprint_video !== null && project.sprint_video.trim() !== ''
+      { project.sprint_video !== null && project.sprint_video?.trim() !== ''
         && <ProjectVideo title="Sprint video" url={project.sprint_video} /> }
 
       {/* Team Members */}
@@ -182,3 +182,6 @@ export default async function IndividualProjectPage({
     </div>
   )
 }
+
+// Revalidate every 6 hours
+export const revalidate = 21_600

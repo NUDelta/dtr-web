@@ -2,17 +2,17 @@
 
 import { AnimatePresence, motion } from 'framer-motion'
 import { ChevronLeft, ChevronRight, Pause, Play } from 'lucide-react'
-import Image from 'next/image'
 import { useId, useMemo, useState } from 'react'
+import { AdaptiveImage } from '@/components/shared'
 import { useCarousel } from '@/hooks/useCarousel'
 
-import image1 from './assets/1.jpg'
-import image2 from './assets/2.jpg'
-import image3 from './assets/3.jpg'
-import image4 from './assets/4.jpg'
-import image5 from './assets/5.jpg'
-
-const images = [image1, image2, image3, image4, image5] as const
+const images = [
+  'images/home-carousel/1.jpg',
+  'images/home-carousel/2.jpg',
+  'images/home-carousel/3.jpg',
+  'images/home-carousel/4.jpg',
+  'images/home-carousel/5.jpg',
+]
 
 type Dir = 'next' | 'prev'
 
@@ -114,15 +114,13 @@ export default function Carousel({
               }}
               className="absolute inset-0 will-change-transform will-change-opacity"
             >
-              <Image
+              <AdaptiveImage
                 src={images[index]}
                 alt={`Slide ${index + 1} of ${total}`}
-                fill
-                // Hint responsive sizes to Next.js for better perf
+                loading="lazy"
+                decoding="async"
                 sizes="(max-width: 640px) 100vw, (max-width: 1024px) 90vw, 1200px"
-                priority={index === 0}
-                placeholder="blur"
-                className="object-cover rounded-lg"
+                className="absolute inset-0 h-full w-full object-cover"
                 onLoad={() => setLoaded(prev => ({ ...prev, [index]: true }))}
                 draggable={false}
               />
@@ -195,7 +193,7 @@ export default function Carousel({
             const isActive = i === index
             return (
               <button
-                key={images[i].src}
+                key={images[i]}
                 type="button"
                 onClick={() => setSlide(i)}
                 aria-label={`Go to slide ${i + 1}`}

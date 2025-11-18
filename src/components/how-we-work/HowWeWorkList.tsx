@@ -1,4 +1,4 @@
-import Image from 'next/image'
+import { AdaptiveImage } from '@/components/shared'
 import sections from './sections'
 
 export default function HowWeWorkList() {
@@ -19,9 +19,16 @@ export default function HowWeWorkList() {
                 }`}
               >
                 {/* Image (if available) */}
-                {subsection.imagePath && (
+                {subsection.imagePath !== null && (
                   <div className="w-full md:w-1/3">
-                    <Image src={subsection.imagePath} alt={subsection.title} className="w-full h-auto" />
+                    <AdaptiveImage
+                      src={subsection.imagePath}
+                      alt={subsection.title}
+                      loading="lazy"
+                      decoding="async"
+                      className="w-full h-auto"
+
+                    />
                   </div>
                 )}
 
@@ -31,10 +38,12 @@ export default function HowWeWorkList() {
                   {subsection.description}
                 </div>
               </div>
-            ))}
+            ),
+            )}
           </div>
         </div>
-      ))}
+      ),
+      )}
     </div>
   )
 }

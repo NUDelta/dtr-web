@@ -16,3 +16,6 @@ export default async function PeoplePage() {
     <PeopleDirectory initialPeople={people} />
   )
 }
+
+// Revalidate every 6 hours
+export const revalidate = 21_600

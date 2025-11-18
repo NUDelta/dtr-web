@@ -5,7 +5,10 @@ interface BioClampProps {
   lines?: number
 }
 
-const BioClamp = ({ text, lines = 4 }: BioClampProps) => {
+const BioClamp = ({
+  text,
+  lines = 4,
+}: BioClampProps) => {
   if (!lines) {
     return (
       <div className="prose max-w-none text-sm">

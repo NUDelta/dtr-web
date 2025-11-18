@@ -1,6 +1,6 @@
 'use server'
 
-import type { Attachment } from 'airtable'
+import type { Attachment } from 'ts-airtable'
 
 /**
  * Generates a cached image URL from an Airtable attachment using a stable key.
@@ -18,6 +18,7 @@ import type { Attachment } from 'airtable'
 export const getImgUrlFromAttachmentObj = async (
   attachmentArr?: Attachment[],
   variant: 'full' | 'thumb' | 'large' = 'full',
+  opts?: { prefetch?: boolean },
 ): Promise<string | null> => {
   if (!attachmentArr || attachmentArr.length === 0) {
     return null
@@ -43,5 +44,17 @@ export const getImgUrlFromAttachmentObj = async (
 
   // The route will persist to R2 (as WebP) on first miss, then serve/redirect.
   // Format: /api/images/{attId}/{variant}/{filename}?src={airtable_url}
-  return `/api/images/${encodedId}/${encodedVariant}/${encodedName}?src=${encodedSrc}`
+  const baseUrl = `/api/images/${encodedId}/${encodedVariant}/${encodedName}`
+
+  if (opts?.prefetch) {
+    // Warm-only call: populate cache if needed, but do not stream image.
+    const warmUrl = `${baseUrl}?src=${encodedSrc}&mode=warm`
+    fetch(warmUrl).catch(() => {})
+  }
+
+  // This is the URL to put into <img src=...>. It will:
+  // - hit R2 if the cache is warm
+  // - or fall back to full pipeline if somehow prefetch didn't happen
+  const serveUrl = `${baseUrl}?src=${encodedSrc}`
+  return serveUrl
 }

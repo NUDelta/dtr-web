@@ -1,6 +1,5 @@
 'use server'
 
-import type { Attachment } from 'airtable'
 import { getImgUrlFromAttachmentObj, sortPeople } from '@/utils'
 import { getCachedRecords } from './airtable'
 import { fetchPeople } from './people'
@@ -63,7 +62,7 @@ export async function fetchSigs(): Promise<SIG[]> {
     }
 
     // Fetch all SIG records
-    const sigRecords = await getCachedRecords('SIGs')
+    const sigRecords = await getCachedRecords<AirtableSIG>('SIGs')
     if (!sigRecords.length) {
       console.warn('No SIG records found.')
       return []
@@ -71,7 +70,7 @@ export async function fetchSigs(): Promise<SIG[]> {
 
     // Extract all project IDs across SIGs
     const allProjectIds = Array.from(new Set(
-      sigRecords.flatMap(record => (record.fields.projects as string[]) ?? []),
+      sigRecords.flatMap(record => record.fields.projects ?? []),
     ))
     const projects = await getProjects(allProjectIds, people)
     const projectData = new Map(
@@ -83,7 +82,7 @@ export async function fetchSigs(): Promise<SIG[]> {
     // Process each SIG record
     const results: SIG[] = await Promise.all(sigRecords.map(async (record) => {
       // Fetch projects linked to the SIG
-      const projectIds: string[] = (record.fields.projects as string[]) ?? []
+      const projectIds: string[] = record.fields.projects ?? []
       const projects: Project[] = projectIds
         .map(projectId => projectData.get(projectId))
         .filter((p): p is Project => p !== undefined)
@@ -101,12 +100,12 @@ export async function fetchSigs(): Promise<SIG[]> {
       })
 
       // Fetch people associated with the SIG
-      const fetchedMembers: string[] = (record.fields.members as string[]) ?? []
+      const fetchedMembers: string[] = (record.fields.members) ?? []
       const facultyMentors = people.filter(
-        person => ((record.fields.faculty_mentors as string[]) ?? []).includes(person.id),
+        person => (record.fields.faculty_mentors ?? []).includes(person.id),
       )
       const sigHeads = people.filter(
-        person => ((record.fields.sig_head as string[]) ?? []).includes(person.id),
+        person => (record.fields.sig_head ?? []).includes(person.id),
       )
 
       // Compile all members: Faculty → SIG Heads → General Members
@@ -128,11 +127,11 @@ export async function fetchSigs(): Promise<SIG[]> {
       }))
 
       // Construct SIG object
-      const bannerImage = await getImgUrlFromAttachmentObj(record.fields.banner_image as Attachment[])
+      const bannerImage = await getImgUrlFromAttachmentObj(record.fields.banner_image ?? [])
       return {
         id: record.id,
-        name: (record.fields.name as string) ?? '',
-        description: (record.fields.description as string) ?? '',
+        name: (record.fields.name) ?? '',
+        description: (record.fields.description) ?? '',
         banner_image: bannerImage,
         members: partialMembers,
         projects: partialProjects,

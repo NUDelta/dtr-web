@@ -34,11 +34,14 @@ We use [DigitalOcean's App Platform](https://www.digitalocean.com/products/app-p
 - [Next.js](https://nextjs.org/)
 - [TailwindCSS](https://tailwindcss.com/)
 - [Typescript](https://www.typescriptlang.org/)
-- [Airtable](https://airtable.com/) and [Airtable API](https://airtable.com/api)
+- [Airtable](https://airtable.com/) and [Airtable TS](https://airtable.zla.app) for content management
+- [Cloudflare R2](https://developers.cloudflare.com/r2/) for image storage and caching
+- [Cloudflare Workers KV](https://developers.cloudflare.com/workers/runtime-apis/workers-kv/) for data caching
+- [Docker](https://www.docker.com/) for containerization in production
 
 ## Caching Architecture
 
 The website implements a two-tier caching system to minimize Airtable API usage:
 
-1. **Data Caching**: Airtable table data is cached using Next.js `use cache` with automatic revalidation based on `cacheLife` (new feature from Next.js 16, default 12 hours).
-2. **Image Caching**: Images are downloaded once from Airtable and cached in Cloudflare R2 Bucket with hash-based invalidation and long-term caching headers.
+1. **Data Caching**: Airtable table data is cached using [Airtable TS](https://airtable.zla.app)'s built-in caching interface and injected Cloudflare KV Cache Store, with logging.
+2. **Image Caching**: Images are downloaded once from Airtable, transformed into modern optimized formats (e.g., WebP, AVIF), and cached in Cloudflare R2 Bucket with hash-based invalidation and long-term caching headers.

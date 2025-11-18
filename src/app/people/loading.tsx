@@ -19,15 +19,26 @@ export default function Loading() {
       aria-live="polite"
     >
       <header className="pb-4 pt-6 sm:pt-10">
-        <h1 className="text-3xl font-semibold tracking-tight">People</h1>
-        <p className="mt-1 max-w-2xl text-gray-600">Loading directory…</p>
+        <h1 className="text-4xl font-semibold tracking-tight">People</h1>
+        <p className="mt-1 max-w-2xl text-lg text-gray-600">
+          Browse our faculty, students, and alumni.
+        </p>
 
-        {/* Controls row */}
-        <div className="mt-4 flex flex-wrap items-center gap-2">
-          {/* Segmented status toggle skeleton */}
+        {/* Search skeleton */}
+        <div className="mb-6">
+          <div className="relative mx-auto max-w-xl">
+            <div className="pointer-events-none absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 rounded bg-yellow-300" />
+            <div className="h-10 w-full rounded-full border border-neutral-200 bg-white" />
+            <div className="absolute right-2 top-1/2 -translate-y-1/2 h-6 w-6 rounded-full border border-neutral-200 bg-white" />
+          </div>
+        </div>
+
+        {/* View controls row (status + view mode) */}
+        <div className="mt-4 flex flex-wrap items-center gap-3">
+          {/* Status segmented control skeleton */}
           <SegmentedSkeleton labels={['Active', 'Alumni']} />
 
-          {/* Segmented view toggle skeleton (Card/List) */}
+          {/* View toggle skeleton (Card/List), pushed right on larger screens */}
           <div className="ml-auto">
             <SegmentedSkeleton labels={['Card', 'List']} />
           </div>
@@ -47,17 +58,17 @@ export default function Loading() {
 function SegmentedSkeleton({ labels }: { labels: string[] }) {
   return (
     <div
-      className="inline-flex select-none items-center gap-2 rounded-xl bg-gray-100 p-1 "
+      className="inline-flex select-none items-center gap-1 rounded-full border border-gray-200 bg-gray-50 p-1"
       role="tablist"
       aria-label="Loading segmented control"
     >
       {labels.map((label, i) => (
         <div
           key={`${label}-${i}`}
-          className="animate-pulse rounded-lg bg-white px-3 py-2 shadow ring-1 ring-black/5 "
+          className="rounded-full bg-white px-3 py-1.5 shadow-sm ring-1 ring-black/5"
           aria-hidden
         >
-          <span className="block h-4 w-12 rounded bg-gray-200 " />
+          <span className="block h-4 w-12 animate-pulse rounded bg-gray-200" />
         </div>
       ))}
     </div>
@@ -66,11 +77,11 @@ function SegmentedSkeleton({ labels }: { labels: string[] }) {
 
 function RoleBlockSkeleton() {
   return (
-    <section className="rounded-2xl border">
+    <section className="rounded-2xl border border-gray-200 bg-white/70 shadow-sm">
       {/* Summary row */}
-      <div className="flex items-center justify-between gap-3 rounded-2xl px-4 py-3">
-        <div className="h-6 w-40 animate-pulse rounded bg-gray-200 " />
-        <div className="h-4 w-16 animate-pulse rounded bg-gray-200 " />
+      <div className="flex items-center justify-between gap-3 rounded-2xl border-b border-gray-100 bg-gray-50 px-4 py-3">
+        <div className="h-6 w-40 animate-pulse rounded bg-gray-200" />
+        <div className="h-4 w-16 animate-pulse rounded bg-gray-200" />
       </div>
 
       {/* Cards grid skeleton */}
@@ -88,7 +99,10 @@ function RoleBlockSkeleton() {
 
       {/* Show more button skeleton */}
       <div className="flex items-center justify-center p-4 pt-0">
-        <div className="h-9 w-32 animate-pulse rounded-xl border bg-gray-50 " aria-hidden />
+        <div
+          className="h-9 w-32 animate-pulse rounded-xl border border-gray-200 bg-gray-50"
+          aria-hidden
+        />
       </div>
     </section>
   )
@@ -96,22 +110,43 @@ function RoleBlockSkeleton() {
 
 function CardSkeleton() {
   return (
-    <article className="overflow-hidden rounded-2xl border shadow-sm">
+    <article className="overflow-hidden rounded-2xl border border-gray-200 bg-white/80 shadow-sm">
       {/* Image placeholder */}
       <div className="relative aspect-square w-full overflow-hidden bg-gray-100">
-        <div className="absolute inset-0 animate-pulse bg-gray-200 " aria-hidden />
+        <div
+          className="absolute inset-0 animate-pulse bg-gray-200"
+          aria-hidden
+        />
       </div>
 
       {/* Text lines */}
       <div className="space-y-2 p-4">
-        <div className="h-5 w-3/4 animate-pulse rounded bg-gray-200 " aria-hidden />
-        <div className="h-4 w-1/2 animate-pulse rounded bg-gray-200 " aria-hidden />
+        <div
+          className="h-5 w-3/4 animate-pulse rounded bg-gray-200"
+          aria-hidden
+        />
+        <div
+          className="h-4 w-1/2 animate-pulse rounded bg-gray-200"
+          aria-hidden
+        />
         <div className="mt-3 space-y-2">
-          <div className="h-3 w-full animate-pulse rounded bg-gray-200 " aria-hidden />
-          <div className="h-3 w-5/6 animate-pulse rounded bg-gray-200 " aria-hidden />
-          <div className="h-3 w-2/3 animate-pulse rounded bg-gray-200 " aria-hidden />
+          <div
+            className="h-3 w-full animate-pulse rounded bg-gray-200"
+            aria-hidden
+          />
+          <div
+            className="h-3 w-5/6 animate-pulse rounded bg-gray-200"
+            aria-hidden
+          />
+          <div
+            className="h-3 w-2/3 animate-pulse rounded bg-gray-200"
+            aria-hidden
+          />
         </div>
-        <div className="mt-3 h-8 w-24 animate-pulse rounded-lg bg-gray-100 " aria-hidden />
+        <div
+          className="mt-3 h-8 w-24 animate-pulse rounded-lg bg-gray-100"
+          aria-hidden
+        />
       </div>
     </article>
   )

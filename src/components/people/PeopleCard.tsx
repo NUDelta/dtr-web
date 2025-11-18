@@ -1,6 +1,6 @@
 import { motion } from 'framer-motion'
 import { memo, useState } from 'react'
-import Modal from '@/components/shared/Modal'
+import { Modal } from '@/components/shared'
 import { useInViewOnce } from '@/hooks/useInViewOnce'
 import Avatar from './Avatar'
 import BioClamp from './BioClamp'

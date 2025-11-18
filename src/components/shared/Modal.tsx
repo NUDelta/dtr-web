@@ -1,7 +1,7 @@
 'use client'
 
 import { AnimatePresence, motion } from 'framer-motion'
-import { useEffect, useId, useRef, useState } from 'react'
+import { useEffect, useId, useRef } from 'react'
 import { createPortal } from 'react-dom'
 
 interface ModalProps {
@@ -30,36 +30,33 @@ const Modal = ({
   headingLevel = 2,
   children,
 }: ModalProps) => {
-  const [mounted, setMounted] = useState(false)
   const dialogRef = useRef<HTMLDivElement | null>(null)
   const previouslyFocused = useRef<HTMLElement | null>(null)
 
   const titleId = useId()
   const descriptionId = useId()
 
-  useEffect(() => {
-    // eslint-disable-next-line react-hooks/set-state-in-effect, react-hooks-extra/no-direct-set-state-in-use-effect
-    setMounted(true)
-  }, [])
-
   // Lock body scrolling
   useEffect(() => {
-    if (!mounted || !open) {
+    if (!open) {
       return
     }
+
     const body = document.body
     const originalOverflow = body.style.overflow
     body.style.overflow = 'hidden'
+
     return () => {
       body.style.overflow = originalOverflow
     }
-  }, [mounted, open])
+  }, [open])
 
   // Focus management + ESC / Tab trap
   useEffect(() => {
-    if (!mounted || !open) {
+    if (!open) {
       return
     }
+
     const dialogEl = dialogRef.current
     if (!dialogEl) {
       return
@@ -112,15 +109,12 @@ const Modal = ({
     document.addEventListener('keydown', handleKeyDown)
 
     return () => {
-      // Return focus back
       document.removeEventListener('keydown', handleKeyDown)
       previouslyFocused.current?.focus?.()
     }
-  }, [mounted, open, onClose])
+  }, [open, onClose])
 
-  if (!mounted) {
-    return null
-  }
+  // Server-side rendering guard
   if (typeof document === 'undefined') {
     return null
   }

@@ -14,6 +14,7 @@ import {
 export const ROOT_LINKS: { href: string, label: string }[] = [
   { href: '/people', label: 'People' },
   { href: '/projects', label: 'Projects' },
+  { href: '/letters', label: 'Annual Letters & Resources' },
 ]
 
 // Dropdown groups (triggers are buttons)
@@ -26,7 +27,6 @@ export const GROUPS: {
     { href: '/method', label: 'Method' },
     { href: '/how-we-work', label: 'How We Work' },
     { href: '/what-we-learn', label: 'What We Learn' },
-    { href: '/letters', label: 'Letters & Resources' },
   ] },
   { id: 'join', label: 'Join', items: [
     { href: '/apply', label: 'Apply' },

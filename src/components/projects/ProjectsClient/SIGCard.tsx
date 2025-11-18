@@ -31,7 +31,7 @@ const SIGCard = ({
       {/* top bar */}
       <div className="h-1.5 w-full bg-yellow-400" aria-hidden="true" />
 
-      {banner !== null && (
+      {banner !== undefined && banner !== null && banner !== '' && (
         <div className="relative aspect-16/7 w-full overflow-hidden">
           <AdaptiveImage
             src={banner}

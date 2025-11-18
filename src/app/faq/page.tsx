@@ -3,6 +3,7 @@ import questionsAndAnswers from '@/components/faq/questionsAndAnswers'
 
 export const metadata: Metadata = {
   title: 'Frequently Asked Questions | DTR',
+  description: 'Find answers to the most frequently asked questions about DTR, our programs, and how to get involved.',
   alternates: { canonical: 'https://dtr.northwestern.edu/faq' },
 }
 

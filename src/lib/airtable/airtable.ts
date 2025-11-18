@@ -2,13 +2,22 @@ import process from 'node:process'
 import type { AirtableFieldSet } from 'ts-airtable'
 import Airtable from 'ts-airtable'
 // import { cacheLife } from 'next/cache'
-import { logProd, nowMs } from '@/lib/logger'
 import { createCloudflareApiKvCacheStore } from './cloudflare-kv-cache'
 import { CLOUDFLARE_ACCOUNT_ID, CLOUDFLARE_KV_NAMESPACE_ID } from '@/lib/consts'
 import { CloudflareClient } from '@/lib/cloudflare'
+import { createKvLogger } from '@/lib/kv-logger'
+import { safeLog } from '@/lib/logger'
 
 /** Default TTL for Airtable records cache: 6 hours. */
 const TTL = 1000 * 60 * 60 * 6
+
+const logger = createKvLogger({
+  client: CloudflareClient,
+  accountId: CLOUDFLARE_ACCOUNT_ID,
+  namespaceId: CLOUDFLARE_KV_NAMESPACE_ID,
+  keyPrefix: 'airtable-log',
+  logTtlSeconds: 60 * 60 * 24 * 180, // keep 180 days of logs
+})
 
 const store = createCloudflareApiKvCacheStore({
   client: CloudflareClient,
@@ -16,6 +25,7 @@ const store = createCloudflareApiKvCacheStore({
   namespaceId: CLOUDFLARE_KV_NAMESPACE_ID,
   keyPrefix: 'airtable-cache',
   minCloudflareTtlSeconds: TTL / 1000,
+  logger,
 })
 
 /** Configure Airtable SDK (server-only). */
@@ -31,9 +41,12 @@ Airtable.configure({
       getRecord: true,
     },
     onError: (err, context) => {
-      logProd('airtable.cache.error', {
-        error: err instanceof Error ? err.message : String(err),
-        context,
+      safeLog(logger, {
+        kind: context.op,
+        key: context.key,
+        error: err,
+        fullKey: `${context.prefix}:${context.key}`,
+        timestamp: Date.now(),
       })
     },
   },
@@ -56,16 +69,7 @@ interface Row<TFields = Record<string, unknown>> {
 async function fetchAirtableRecordsRaw<TFields = Record<string, unknown>>(
   tableName: string,
 ): Promise<Row<TFields>[]> {
-  const t0 = nowMs()
-  logProd('airtable.fetch.start', { table: tableName })
-
   const records = await base(tableName).select().all()
-
-  logProd('airtable.fetch.done', {
-    table: tableName,
-    rows: records.length,
-    ms: nowMs() - t0,
-  })
 
   // !NOTE: We trust the Airtable schema matches the TFields provided by caller.
   return records.map(r => ({

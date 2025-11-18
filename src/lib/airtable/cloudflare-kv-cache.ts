@@ -1,49 +1,5 @@
-import type Cloudflare from 'cloudflare'
 import type { AirtableCacheStore } from 'ts-airtable'
-
-/**
- * Small envelope stored in KV so we can enforce TTL in userland even if
- * Cloudflare's expiration_ttl is not applied or not supported by the client.
- */
-interface KvEnvelope<T> {
-  value: T
-  /**
-   * Absolute expiration timestamp in milliseconds since epoch.
-   * If omitted, the entry never expires at the application level.
-   */
-  expiresAt?: number
-}
-
-interface CloudflareApiKvCacheStoreOptions {
-  /**
-   * Pre-configured Cloudflare API client.
-   *
-   * Recommended:
-   *   const client = new Cloudflare({ apiToken: process.env.CLOUDFLARE_API_TOKEN! })
-   */
-  client: Cloudflare
-
-  /** Cloudflare account ID that owns the KV namespace. */
-  accountId: string
-
-  /** KV namespace ID where cache entries will be stored. */
-  namespaceId: string
-
-  /**
-   * Optional global prefix for all cache keys written to KV.
-   * This helps avoid collisions with other KV data.
-   *
-   * Final KV key will be `${keyPrefix}:${key}`.
-   */
-  keyPrefix?: string
-
-  /**
-   * Minimum TTL (in seconds) that we will send to Cloudflare's
-   * `expiration_ttl` parameter. Workers KV docs state that expirationTtl
-   * has a minimum of ~60 seconds, so 60s is a safe default.
-   */
-  minCloudflareTtlSeconds?: number
-}
+import { safeLog } from '../logger'
 
 /**
  * Adds an optional prefix in front of a logical cache key.
@@ -110,6 +66,7 @@ export function createCloudflareApiKvCacheStore(
     namespaceId,
     keyPrefix,
     minCloudflareTtlSeconds = 60,
+    logger,
   } = options
 
   return {
@@ -173,6 +130,7 @@ export function createCloudflareApiKvCacheStore(
         = expiresAt !== undefined ? { value, expiresAt } : { value }
 
       const serialized = JSON.stringify(envelope)
+      const timestamp = Date.now()
 
       // cloudflare-typescript:
       // client.kv.namespaces.values.update(namespaceId, keyName, params?, options?)
@@ -181,20 +139,39 @@ export function createCloudflareApiKvCacheStore(
         value: serialized,
         ...(expiration_ttl !== undefined ? { expiration_ttl } : {}),
       })
+
+      safeLog(logger, {
+        kind: 'set',
+        key,
+        fullKey,
+        timestamp,
+        ttlMs,
+        expiresAt,
+      })
     },
 
     async delete(key: string): Promise<void> {
       const fullKey = withOptionalPrefix(keyPrefix, key)
+      const timestamp = Date.now()
 
       await client.kv.namespaces.values.delete(namespaceId, fullKey, {
         account_id: accountId,
+      })
+
+      safeLog(logger, {
+        kind: 'delete',
+        key,
+        fullKey,
+        timestamp,
+        affectedCount: 1,
       })
     },
 
     async deleteByPrefix(prefix: string): Promise<void> {
       const fullPrefix = withOptionalPrefix(keyPrefix, prefix)
-
+      const timestamp = Date.now()
       let cursor: string | undefined
+      let totalDeleted = 0
 
       // Paginate through all keys that start with the given prefix
       // and delete them in batches.
@@ -224,6 +201,7 @@ export function createCloudflareApiKvCacheStore(
             // Body is the array of key strings to delete.
             body: keyNames,
           })
+          totalDeleted += keyNames.length
         }
 
         const nextCursor = page.result_info?.cursors?.after
@@ -233,6 +211,14 @@ export function createCloudflareApiKvCacheStore(
 
         cursor = nextCursor
       }
+
+      safeLog(logger, {
+        kind: 'deleteByPrefix',
+        key: prefix,
+        fullKey: fullPrefix,
+        timestamp,
+        affectedCount: totalDeleted,
+      })
     },
   }
 }

@@ -51,12 +51,12 @@ const MobileNav = ({
         {/* Grouped secondary sections with headers */}
         {SECTIONS.map(section => (
           <div key={section.id} role="group" aria-labelledby={`m-${section.id}`} className="pb-1">
-            <h2
+            <span
               id={`m-${section.id}`}
               className="px-4 pt-3 pb-1 text-xs font-medium uppercase tracking-wider text-white/50"
             >
               {section.label}
-            </h2>
+            </span>
             <ul>
               {section.items.map(item => (
                 <li key={item.href} className="border-b border-white/10 last:border-none">

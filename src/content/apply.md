@@ -2,7 +2,7 @@
 
 > Interested in joining us? Follow the steps below:
 
-1. Learn more about DTR by [browsing this website](/), [reading the agile research paper](http://users.eecs.northwestern.edu/~hq/papers/ars-cscw2017.pdf), or [watching the documentary](https://www.forward.movie/).
+1. Learn more about DTR by [browsing this website](/), [reading some DTR letters](/letters), or [watching the documentary](https://www.forward.movie/).
 
 2. Complete the [application form](https://docs.google.com/forms/d/12PJFFoPrk6CzopB0mAm2Go3eLFBzNMMmwjDtCNAdKEc/viewform) to tell us more about you and when you can meet with us. You should apply in the quarter _prior_ to the one in which you want to join DTR (for example, to join in Spring quarter, apply during the preceding Winter quarter). Applications should be submitted within a few days of the quarterly DTR Open House (usually in the middle of the quarter), or by week 5–6 of the current quarter. Applications received after this will be reviewed as part of the next quarter’s cycle.
 

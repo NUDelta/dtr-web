@@ -69,8 +69,8 @@ importers:
         specifier: ^0.34.5
         version: 0.34.5
       ts-airtable:
-        specifier: ^0.2.3
-        version: 0.2.3
+        specifier: ^0.3.1
+        version: 0.3.1
     devDependencies:
       '@antfu/eslint-config':
         specifier: ^6.2.0
@@ -3750,8 +3750,8 @@ packages:
   trough@2.2.0:
     resolution: {integrity: sha512-tmMpK00BjZiUyVyvrBK7knerNgmgvcV/KLVyuma/SC+TQN167GrMRciANTz09+k3zW8L8t60jWO1GpfkZdjTaw==}
 
-  ts-airtable@0.2.3:
-    resolution: {integrity: sha512-nOFMiKz33PnsYkx0+zqbcqvo39emW8Gu8snmrss25Aom5ce54niCMJ5eZ6tv6vOg3IF1aIwPuGAUI+tfcfRXvw==}
+  ts-airtable@0.3.1:
+    resolution: {integrity: sha512-6socK2JrIH7GSsvN7LSUrlhaLSrJdwsYnXtYYlxo7lCTemij5cl2dcy527a2qpFOibicHLj7HK1dvAUJnvzs5g==}
     engines: {node: '>=18'}
 
   ts-api-utils@2.1.0:
@@ -8680,7 +8680,7 @@ snapshots:
 
   trough@2.2.0: {}
 
-  ts-airtable@0.2.3: {}
+  ts-airtable@0.3.1: {}
 
   ts-api-utils@2.1.0(typescript@5.9.3):
     dependencies:

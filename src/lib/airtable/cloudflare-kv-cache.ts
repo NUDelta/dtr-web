@@ -1,4 +1,5 @@
-import type { AirtableCacheStore } from 'ts-airtable'
+import type { AirtableCacheStore, Attachment } from 'ts-airtable'
+import { ensureImageInR2 } from '../image-cache'
 import { safeLog } from '../logger'
 
 /**
@@ -219,6 +220,32 @@ export function createCloudflareApiKvCacheStore(
         timestamp,
         affectedCount: totalDeleted,
       })
+    },
+
+    async transformAttachment(attachment: Attachment, _ctx: unknown): Promise<Attachment> {
+      // Non-image attachments are passed through unchanged.
+      if (!attachment?.type?.startsWith('image/')) {
+        return attachment
+      }
+
+      try {
+        const { url } = await ensureImageInR2(attachment, 'full')
+
+        return {
+          ...attachment,
+          url,
+        }
+      }
+      catch (error) {
+        // If anything goes wrong, log and fall back to the original URL.
+        safeLog(logger, {
+          kind: 'transformAttachmentError',
+          timestamp: Date.now(),
+          fullKey: attachment.id,
+          error,
+        })
+        return attachment
+      }
     },
   }
 }

@@ -8,3 +8,6 @@ interface WebpOptions {
   /** Downscale to this width (px) while preserving aspect ratio. Won’t upscale. */
   targetWidth: number
 }
+
+type ImageFormat = 'avif' | 'webp'
+type ImageVariant = 'full' | 'thumb' | 'large'

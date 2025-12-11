@@ -127,9 +127,10 @@ export async function maybeRunR2CleanupFromISR(opts: GCOptions = {}) {
   const minIntervalHours = opts.minIntervalHours ?? 24
   const last = await getLastRun()
   if (last) {
-    const hours = (Date.now() - last.getTime()) / (1000 * 60 * 60)
-    if (hours < minIntervalHours) {
-      return { skipped: true, reason: `last run ${hours.toFixed(1)}h ago` }
+    const minutes = (Date.now() - last.getTime()) / (1000 * 60)
+    // Skip if last run is within the interval (with 5min buffer).
+    if (minutes < (minIntervalHours * 60) - 5) {
+      return { skipped: true, reason: `last run ${(minutes / 60).toFixed(1)}h ago` }
     }
   }
 

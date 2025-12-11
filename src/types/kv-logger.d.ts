@@ -1,6 +1,6 @@
 type Cloudflare = import('cloudflare').Cloudflare
 
-type CacheKind = 'get' | 'set' | 'delete' | 'deleteByPrefix'
+type CacheKind = 'get' | 'set' | 'delete' | 'deleteByPrefix' | 'transformAttachmentError'
 
 interface CacheLogEvent {
   kind: CacheKind

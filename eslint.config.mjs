@@ -12,10 +12,7 @@ export default antfu({
     quotes: 'single',
   },
   lessOpinionated: true,
-  ignores: [
-    '**.md',
-    'next-env.d.ts',
-  ],
+  ignores: ['next-env.d.ts'],
 }, {
   files: ['src/app/**/loading.tsx'],
   rules: {
@@ -25,10 +22,5 @@ export default antfu({
   files: ['src/app/**/page.tsx'],
   rules: {
     'react-dom/no-dangerously-set-innerhtml': 'off',
-  },
-}, {
-  files: ['src/lib/airtable/airtable.ts'],
-  rules: {
-    'perfectionist/sort-imports': 'off',
   },
 })

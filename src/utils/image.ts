@@ -3,22 +3,15 @@
 import type { Attachment } from 'ts-airtable'
 
 /**
- * Generates a cached image URL from an Airtable attachment using a stable key.
+ * Returns the image URL for the first Airtable attachment.
  *
- * Instead of returning a temporary Airtable URL, this function generates
- * a local API endpoint URL backed by R2 persistent cache. The cache key
- * is the stable Airtable `attachment.id`, so it won't churn when the
- * signed Airtable URL rotates/expires. The `src` query param is only used
- * on the very first cache miss to fetch and populate R2, and ignored afterwards.
- *
- * @param {Attachment[] | undefined} attachmentArr - Airtable attachments array.
- * @param {('full'|'thumb'|'large')} variant - Optional size/variant bucket to avoid collisions across sizes.
- * @returns {Promise<string | null>} Local cached WebP URL or null if no valid image.
+ * When using `recordsCache` with a store that implements
+ * `transformAttachment`, this will already be a stable local URL
+ * (e.g. `/api/images/{attId}/full/{filename}`) that no need to
+ * exposes Airtable's signed URL.
  */
 export const getImgUrlFromAttachmentObj = async (
   attachmentArr?: Attachment[],
-  variant: 'full' | 'thumb' | 'large' = 'full',
-  opts?: { prefetch?: boolean },
 ): Promise<string | null> => {
   if (!attachmentArr || attachmentArr.length === 0) {
     return null
@@ -29,32 +22,5 @@ export const getImgUrlFromAttachmentObj = async (
     return null
   }
 
-  const attId = target.id // Airtable attachment id is stable (e.g., "attXXXXXXXX")
-  const filename = target.filename || 'image'
-  const src = target.url // Temporary signed URL from Airtable - used only on first miss
-
-  if (!attId || !src) {
-    return null
-  }
-
-  const encodedId = encodeURIComponent(attId)
-  const encodedVariant = encodeURIComponent(variant)
-  const encodedName = encodeURIComponent(filename)
-  const encodedSrc = encodeURIComponent(src)
-
-  // The route will persist to R2 (as WebP) on first miss, then serve/redirect.
-  // Format: /api/images/{attId}/{variant}/{filename}?src={airtable_url}
-  const baseUrl = `/api/images/${encodedId}/${encodedVariant}/${encodedName}`
-
-  if (opts?.prefetch) {
-    // Warm-only call: populate cache if needed, but do not stream image.
-    const warmUrl = `${baseUrl}?src=${encodedSrc}&mode=warm`
-    fetch(warmUrl).catch(() => {})
-  }
-
-  // This is the URL to put into <img src=...>. It will:
-  // - hit R2 if the cache is warm
-  // - or fall back to full pipeline if somehow prefetch didn't happen
-  const serveUrl = `${baseUrl}?src=${encodedSrc}`
-  return serveUrl
+  return target.url ?? null
 }

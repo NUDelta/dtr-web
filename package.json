@@ -2,7 +2,7 @@
   "name": "dtr-web",
   "version": "2.0.0",
   "private": true,
-  "packageManager": "pnpm@10.22.0",
+  "packageManager": "pnpm@10.25.0",
   "homepage": "https://github.com/NUDelta/dtr-web",
   "engines": {
     "node": ">=22.x"
@@ -10,7 +10,7 @@
   "scripts": {
     "dev": "next dev --webpack",
     "build": "pnpm lint:ci && next build --webpack",
-    "start": "next start --webpack -H 0.0.0.0 -p ${PORT:-8080}",
+    "start": "next start -H 0.0.0.0 -p ${PORT:-8080}",
     "lint": "eslint .",
     "lint:ci": "eslint . --max-warnings=0 || true",
     "lint:fix": "eslint . --fix",
@@ -18,18 +18,18 @@
   },
   "dependencies": {
     "@aws-sdk/client-s3": "^3.933.0",
-    "@next/third-parties": "16.0.3",
+    "@next/third-parties": "16.0.9",
     "@zl-asica/react": "^0.13.0",
     "cloudflare": "^5.2.0",
     "clsx": "^2.1.1",
     "d3-scale": "^4.0.2",
     "framer-motion": "^12.23.24",
-    "lucide-react": "^0.554.0",
-    "next": "16.0.3",
+    "lucide-react": "^0.560.0",
+    "next": "16.0.9",
     "next-nprogress-bar": "^2.4.7",
     "papaparse": "^5.5.3",
-    "react": "19.2.0",
-    "react-dom": "19.2.0",
+    "react": "19.2.2",
+    "react-dom": "19.2.2",
     "react-markdown": "^10.1.0",
     "react-player": "^3.4.0",
     "react-simple-maps": "^3.0.0",
@@ -48,28 +48,25 @@
     "@types/d3-scale": "^4.0.9",
     "@types/node": "^24.10.1",
     "@types/papaparse": "^5.5.0",
-    "@types/react": "19.2.6",
+    "@types/react": "19.2.7",
     "@types/react-dom": "^19.2.3",
     "@types/react-simple-maps": "^3.0.6",
     "@types/rss": "^0.0.32",
+    "baseline-browser-mapping": "^2.9.6",
     "eslint": "^9.39.1",
-    "eslint-config-next": "16.0.3",
+    "eslint-config-next": "16.0.9",
     "eslint-plugin-format": "^1.0.1",
     "eslint-plugin-react-hooks": "^7.0.1",
     "eslint-plugin-react-refresh": "^0.4.20",
     "husky": "^9.1.7",
     "lint-staged": "^16.2.6",
     "postcss": "^8.5.3",
-    "prettier": "^3.5.3",
     "tailwindcss": "^4.1.17",
     "typescript": "^5.8.3"
   },
   "lint-staged": {
-    "src/**/*.{js,jsx,ts,tsx,json}": [
+    "src/**/*.{js,jsx,ts,tsx,json,md,mdx}": [
       "eslint --fix"
-    ],
-    "src/**/*.{md,json}": [
-      "prettier --write"
     ]
   },
   "browserslist": {

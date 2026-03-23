@@ -2,6 +2,7 @@ import type { DirectoryStatus, SIGDirectoryItem } from './types'
 import { ChevronDown, FolderKanban, Users } from 'lucide-react'
 import { useState } from 'react'
 import TeamMembers from '@/components/projects/TeamMembers'
+import { groupMembersByRole } from '@/components/projects/TeamMembers/utils'
 import { AdaptiveImage, MarkdownContents } from '@/components/shared'
 import ProjectPreviewCard from './ProjectPreviewCard'
 
@@ -20,10 +21,17 @@ const SIGSection = ({
   const primaryProjects = currentStatus === 'Active' ? sig.activeProjects : sig.inactiveProjects
   const hasInactiveProjects = currentStatus === 'Active' && sig.inactiveProjects.length > 0
   const [inactiveProjectsOverride, setInactiveProjectsOverride] = useState<boolean | null>(null)
+  const [showTeam, setShowTeam] = useState(false)
   const showInactiveProjects = inactiveProjectsOverride ?? sig.shouldAutoExpandInactive
+  const groupedMembers = groupMembersByRole(sig.members)
+  const memberSummary = [
+    { label: 'Faculty', count: groupedMembers.Faculty.length },
+    { label: 'Students', count: groupedMembers.Students.length },
+    { label: 'Affiliates', count: groupedMembers['Affiliates & Others'].length },
+  ].filter(item => item.count > 0)
 
   return (
-    <article className="mb-6 break-inside-avoid overflow-hidden rounded-[28px] border border-neutral-200 bg-white shadow-sm">
+    <article className="overflow-hidden rounded-[28px] border border-neutral-200 bg-white shadow-sm">
       {banner && (
         <div className="relative aspect-16/6 overflow-hidden border-b border-neutral-200">
           <AdaptiveImage
@@ -85,7 +93,7 @@ const SIGSection = ({
                 shown
               </p>
             </div>
-            <div className="grid grid-cols-1 gap-4">
+            <div className="grid grid-cols-1 gap-4 md:grid-cols-2 xl:grid-cols-3">
               {primaryProjects.map(project => (
                 <ProjectPreviewCard key={project.id} project={project} />
               ))}
@@ -123,7 +131,7 @@ const SIGSection = ({
             </div>
 
             {showInactiveProjects && (
-              <div id={`sig-inactive-project-grid-${sig.id}`} className="grid grid-cols-1 gap-4">
+              <div id={`sig-inactive-project-grid-${sig.id}`} className="grid grid-cols-1 gap-4 md:grid-cols-2 xl:grid-cols-3">
                 {sig.inactiveProjects.map(project => (
                   <ProjectPreviewCard key={project.id} project={project} />
                 ))}
@@ -132,9 +140,53 @@ const SIGSection = ({
           </section>
         )}
 
-        <div className="border-t border-neutral-200 pt-6">
-          <TeamMembers groupId={sig.id} members={sig.members} />
-        </div>
+        <section className="border-t border-neutral-200 pt-6" aria-labelledby={`sig-team-summary-${sig.id}`}>
+          <div className="flex flex-col gap-4 lg:flex-row lg:items-start lg:justify-between">
+            <div className="space-y-3">
+              <div className="flex items-center gap-2">
+                <h3 id={`sig-team-summary-${sig.id}`} className="text-lg font-semibold text-neutral-950">
+                  Team
+                </h3>
+                <span className="rounded-full bg-neutral-100 px-2 py-0.5 text-sm text-neutral-600">
+                  {sig.memberCount}
+                </span>
+              </div>
+              <div className="flex flex-wrap gap-2">
+                {memberSummary.map(({ label, count }) => (
+                  <span
+                    key={label}
+                    className="inline-flex rounded-full border border-neutral-200 bg-neutral-50 px-2.5 py-1 text-xs font-medium text-neutral-700"
+                  >
+                    {count}
+                    {' '}
+                    {label}
+                  </span>
+                ))}
+              </div>
+            </div>
+
+            <button
+              type="button"
+              aria-expanded={showTeam}
+              aria-controls={`sig-team-details-${sig.id}`}
+              onClick={() => setShowTeam(value => !value)}
+              className="inline-flex items-center justify-center gap-2 rounded-full border border-neutral-200 bg-white px-3 py-1.5 text-sm font-medium text-neutral-700 transition hover:border-yellow-300 hover:text-neutral-950 focus:outline-none focus-visible:ring-2 focus-visible:ring-yellow-300"
+            >
+              {showTeam ? 'Hide team' : 'Show team'}
+              <ChevronDown
+                size={16}
+                aria-hidden="true"
+                className={`transition-transform duration-200 ${showTeam ? 'rotate-180' : ''}`}
+              />
+            </button>
+          </div>
+
+          {showTeam && (
+            <div id={`sig-team-details-${sig.id}`} className="mt-5">
+              <TeamMembers groupId={sig.id} members={sig.members} />
+            </div>
+          )}
+        </section>
       </div>
     </article>
   )

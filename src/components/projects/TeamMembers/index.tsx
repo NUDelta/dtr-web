@@ -1,6 +1,6 @@
 import type { RoleGroups } from './utils'
 import MembersForRole from './MembersForRole'
-import { bucketForRole } from './utils'
+import { groupMembersByRole } from './utils'
 
 interface TeamMemberProps {
   groupId: string
@@ -9,14 +9,7 @@ interface TeamMemberProps {
 
 const TeamMembers = ({ groupId, members }: TeamMemberProps) => {
   // Group people by role bucket
-  const grouped: Record<RoleGroups, PartialPerson[]> = {
-    'Faculty': [],
-    'Students': [],
-    'Affiliates & Others': [],
-  }
-  for (const m of members) {
-    grouped[bucketForRole(m.role)].push(m)
-  }
+  const grouped = groupMembersByRole(members)
 
   const leftOrder: RoleGroups[] = ['Faculty', 'Affiliates & Others']
   const rightOrder: RoleGroups[] = ['Students']

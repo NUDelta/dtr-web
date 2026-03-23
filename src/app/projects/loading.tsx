@@ -27,7 +27,7 @@ const ProjectPreviewSkeleton = () => (
 const SigSectionSkeleton = ({ withBanner = true }: { withBanner?: boolean }) => (
   <article
     aria-hidden="true"
-    className="mb-6 break-inside-avoid overflow-hidden rounded-[28px] border border-neutral-200 bg-white shadow-sm"
+    className="overflow-hidden rounded-[28px] border border-neutral-200 bg-white shadow-sm"
   >
     {withBanner
       ? (
@@ -53,26 +53,27 @@ const SigSectionSkeleton = ({ withBanner = true }: { withBanner?: boolean }) => 
           <div className="h-6 w-36 rounded bg-neutral-200" />
           <div className="h-4 w-14 rounded bg-neutral-200" />
         </div>
-        <div className="grid grid-cols-1 gap-4">
+        <div className="grid grid-cols-1 gap-4 md:grid-cols-2 xl:grid-cols-3">
+          <ProjectPreviewSkeleton />
           <ProjectPreviewSkeleton />
           <ProjectPreviewSkeleton />
         </div>
       </div>
 
       <div className="border-t border-neutral-200 pt-5">
-        <div className="mb-3 h-7 w-20 rounded bg-neutral-200" />
-        <div className="mb-4 h-1 w-10 rounded-full bg-yellow-100" />
-        <div className="grid grid-cols-1 gap-6 md:grid-cols-2">
+        <div className="flex flex-col gap-4 lg:flex-row lg:items-start lg:justify-between">
           <div className="space-y-3">
-            <div className="h-4 w-36 rounded bg-neutral-200" />
-            <Line w="w-10/12" />
-            <Line w="w-8/12" />
+            <div className="flex items-center gap-2">
+              <div className="h-7 w-20 rounded bg-neutral-200" />
+              <div className="h-6 w-10 rounded-full bg-neutral-100" />
+            </div>
+            <div className="flex flex-wrap gap-2">
+              <div className="h-6 w-20 rounded-full bg-neutral-100" />
+              <div className="h-6 w-24 rounded-full bg-neutral-100" />
+              <div className="h-6 w-22 rounded-full bg-neutral-100" />
+            </div>
           </div>
-          <div className="space-y-3">
-            <div className="h-4 max-w-full rounded bg-neutral-200 sm:w-44" />
-            <Line w="w-9/12" />
-            <Line w="w-7/12" />
-          </div>
+          <div className="h-9 w-28 rounded-full border border-neutral-200 bg-white" />
         </div>
       </div>
     </div>
@@ -116,7 +117,7 @@ export default function Loading() {
         </div>
       </header>
 
-      <div className="lg:columns-2 lg:gap-6">
+      <div className="space-y-6">
         {[true, false, true].map((withBanner, i) => (
           <SigSectionSkeleton key={`sig-${i}`} withBanner={withBanner} />
         ))}

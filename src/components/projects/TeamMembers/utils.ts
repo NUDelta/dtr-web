@@ -26,6 +26,20 @@ export const bucketForRole = (role: string): RoleGroups => {
   return 'Affiliates & Others'
 }
 
+export const groupMembersByRole = (members: PartialPerson[]): Record<RoleGroups, PartialPerson[]> => {
+  const grouped: Record<RoleGroups, PartialPerson[]> = {
+    'Faculty': [],
+    'Students': [],
+    'Affiliates & Others': [],
+  }
+
+  for (const member of members) {
+    grouped[bucketForRole(member.role)].push(member)
+  }
+
+  return grouped
+}
+
 export const sortPeople = (a: PartialPerson, b: PartialPerson) => {
   // Active first, then by name
   const aw = a.status === 'Alumni' ? 1 : 0

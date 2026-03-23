@@ -36,20 +36,10 @@ export default async function ProjectsPage() {
   const sigs = await fetchSigs()
 
   return (
-    <>
-      <header className="mb-8">
-        <h1 className="text-balance text-4xl font-bold leading-tight">SIGs & Projects</h1>
-        <p className="mt-2 max-w-3xl text-lg text-neutral-700">
-          Browse our Special Interest Groups (SIGs), discover current projects, and meet the teams behind them.
-          Use search and filters to quickly narrow down.
-        </p>
-      </header>
-
-      <ProjectsClient
-        sigs={sigs}
-        bannerImages={bannerImages}
-      />
-    </>
+    <ProjectsClient
+      sigs={sigs}
+      bannerImages={bannerImages}
+    />
   )
 }
 

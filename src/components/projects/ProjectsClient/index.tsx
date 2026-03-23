@@ -73,11 +73,11 @@ const ProjectsClient = ({ sigs, bannerImages }: ProjectsClientProps) => {
       <section
         id="projects-results"
         aria-live="polite"
-        className="grid grid-cols-1 gap-6 pb-10 lg:grid-cols-2 2xl:grid-cols-3"
+        className="pb-10 lg:columns-2 lg:gap-6 2xl:columns-3"
       >
         {filteredSigs.length === 0
           ? (
-              <div className="rounded-[28px] border border-dashed border-gray-300 bg-white p-8 text-center text-gray-600 lg:col-span-2 2xl:col-span-3">
+              <div className="rounded-[28px] border border-dashed border-gray-300 bg-white p-8 text-center text-gray-600 lg:break-inside-avoid">
                 {debouncedQuery
                   ? (
                       <>

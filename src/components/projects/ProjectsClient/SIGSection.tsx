@@ -23,7 +23,7 @@ const SIGSection = ({
   const showInactiveProjects = inactiveProjectsOverride ?? sig.shouldAutoExpandInactive
 
   return (
-    <article className="h-full overflow-hidden rounded-[28px] border border-neutral-200 bg-white shadow-sm">
+    <article className="mb-6 break-inside-avoid overflow-hidden rounded-[28px] border border-neutral-200 bg-white shadow-sm">
       {banner && (
         <div className="relative aspect-[16/6] overflow-hidden border-b border-neutral-200">
           <AdaptiveImage
@@ -37,7 +37,7 @@ const SIGSection = ({
         </div>
       )}
 
-      <div className="flex h-full flex-col space-y-6 p-6">
+      <div className="space-y-6 p-6">
         <header className="space-y-4">
           <div className="flex flex-wrap gap-2">
             <span className="inline-flex rounded-full border border-yellow-200 bg-yellow-50 px-2.5 py-1 text-xs font-semibold uppercase tracking-wide text-yellow-900">
@@ -132,7 +132,7 @@ const SIGSection = ({
           </section>
         )}
 
-        <div className="mt-auto border-t border-neutral-200 pt-6">
+        <div className="border-t border-neutral-200 pt-6">
           <TeamMembers groupId={sig.id} members={sig.members} />
         </div>
       </div>

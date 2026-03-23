@@ -20,8 +20,8 @@ export const useCarousel = ({
   const [paused, setPaused] = useState(false)
 
   const timerRef = useRef<number | null>(null)
-  const pointerStartX = useRef<number | null>(null)
-  const wasFocused = useRef(false)
+  const pointerStartXRef = useRef<number | null>(null)
+  const wasFocusedRef = useRef(false)
 
   const prefersReducedMotion
     = typeof window !== 'undefined'
@@ -93,7 +93,7 @@ export const useCarousel = ({
   useEffect(() => {
     const onKey = (e: KeyboardEvent) => {
       // Only react when carousel (or its children) has focus
-      if (!wasFocused.current) {
+      if (!wasFocusedRef.current) {
         return
       }
       if (e.key === 'ArrowRight') {
@@ -115,15 +115,15 @@ export const useCarousel = ({
 
   // ---------- Pointer (touch) swipe ----------
   const onTouchStart: React.TouchEventHandler<HTMLDivElement> = (e) => {
-    pointerStartX.current = e.touches[0].clientX
+    pointerStartXRef.current = e.touches[0].clientX
   }
 
   const onTouchEnd: React.TouchEventHandler<HTMLDivElement> = (e) => {
-    if (pointerStartX.current == null) {
+    if (pointerStartXRef.current == null) {
       return
     }
-    const dx = e.changedTouches[0].clientX - pointerStartX.current
-    pointerStartX.current = null
+    const dx = e.changedTouches[0].clientX - pointerStartXRef.current
+    pointerStartXRef.current = null
     const minSwipe = 50
     if (dx <= -minSwipe) {
       goNext()
@@ -154,6 +154,6 @@ export const useCarousel = ({
     onTouchEnd,
 
     // refs (exposed as-is, matching your version)
-    wasFocusedRef: wasFocused,
+    wasFocusedRef,
   }
 }

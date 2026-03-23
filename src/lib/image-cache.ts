@@ -7,6 +7,7 @@ import { transcodeBufferToOptimizedImages } from '@/utils/image-convert'
 
 /** Maximum bounding box for width/height when transcoding. */
 const MAX_DIMENSION = 2400
+const FILE_EXTENSION_PATTERN = /\.[^.]+$/
 
 /**
  * Normalize filename and attach requested extension.
@@ -20,7 +21,7 @@ export async function buildImageObjectKey(
   filename: string,
   format: ImageFormat,
 ): Promise<string> {
-  const base = filename.replace(/\.[^.]+$/, '') || 'image'
+  const base = filename.replace(FILE_EXTENSION_PATTERN, '') || 'image'
   return `images/${attId}/${variant}/${base}.${format}`
 }
 

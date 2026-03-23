@@ -1,8 +1,10 @@
 import { motion } from 'framer-motion'
 import PeopleCard from './PeopleCard'
 
+const NON_ALPHANUMERIC_PATTERN = /[^a-z0-9]+/g
+
 function slugify(s: string) {
-  return s.toLowerCase().replace(/[^a-z0-9]+/g, '-')
+  return s.toLowerCase().replace(NON_ALPHANUMERIC_PATTERN, '-')
 }
 
 interface RoleBlockProps {

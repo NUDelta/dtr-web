@@ -12,7 +12,7 @@ export default function Header() {
   const [openGroup, setOpenGroup] = useState<string | null>(null) // desktop dropdown id
   const headerRef = useRef<HTMLDivElement>(null)
   const isHeaderVisible = useHideOnScrollDown(headerRef, 50)
-  const hoverTimer = useRef<number | null>(null)
+  const hoverTimerRef = useRef<number | null>(null)
   const pathname = usePathname()
 
   const isActive = (href: string) => pathname === href || pathname?.startsWith(href)
@@ -40,20 +40,20 @@ export default function Header() {
   }, [])
 
   const clearHoverTimer = () => {
-    if (hoverTimer.current !== null) {
-      window.clearTimeout(hoverTimer.current)
-      hoverTimer.current = null
+    if (hoverTimerRef.current !== null) {
+      window.clearTimeout(hoverTimerRef.current)
+      hoverTimerRef.current = null
     }
   }
 
   const openWithIntent = (id: string) => {
     clearHoverTimer()
-    hoverTimer.current = window.setTimeout(setOpenGroup, 80, id)
+    hoverTimerRef.current = window.setTimeout(setOpenGroup, 80, id)
   }
 
   const closeWithIntent = (id: string) => {
     clearHoverTimer()
-    hoverTimer.current = window.setTimeout(() => {
+    hoverTimerRef.current = window.setTimeout(() => {
       setOpenGroup(g => (g === id ? null : g))
     }, 180)
   }

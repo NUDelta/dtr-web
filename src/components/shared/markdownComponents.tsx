@@ -1,6 +1,8 @@
 import type { Components as MarkdownComponents } from 'react-markdown'
 import { cn } from '@/utils'
 
+const LANGUAGE_CLASS_PATTERN = /language-(\w+)/
+
 export const markdownComponents: Partial<MarkdownComponents> = {
   // Link styling: gray text with soft yellow background highlight
   a: ({ className, ...props }) => {
@@ -194,7 +196,7 @@ export const markdownComponents: Partial<MarkdownComponents> = {
 
   // Inline code
   code: ({ className, children, ...props }) => {
-    const match = typeof className === 'string' ? /language-(\w+)/.exec(className) : null
+    const match = typeof className === 'string' ? LANGUAGE_CLASS_PATTERN.exec(className) : null
 
     if (!match) {
       return (

@@ -99,14 +99,6 @@ export default function Loading() {
         <div className="h-9 w-64 rounded bg-neutral-200" />
         <div className="mt-3 h-5 w-[38rem] max-w-full rounded bg-neutral-200" />
 
-        <div className="mt-6 rounded-[28px] border border-yellow-100 bg-white p-5 shadow-sm">
-          <div className="h-4 w-28 rounded bg-yellow-100" />
-          <div className="mt-3 space-y-2">
-            <Line w="w-full" />
-            <Line w="w-10/12" />
-          </div>
-        </div>
-
         <div className="mt-6">
           <div className="relative mx-auto max-w-xl">
             <div className="pointer-events-none absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 rounded bg-yellow-300" />
@@ -124,7 +116,7 @@ export default function Loading() {
         </div>
       </header>
 
-      <div className="space-y-6">
+      <div className="grid grid-cols-1 gap-6 lg:grid-cols-2 2xl:grid-cols-3">
         {[true, false, true].map((withBanner, i) => (
           <SigSectionSkeleton key={`sig-${i}`} withBanner={withBanner} />
         ))}

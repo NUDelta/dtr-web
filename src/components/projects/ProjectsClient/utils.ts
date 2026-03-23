@@ -12,6 +12,9 @@ const INACTIVE_PROJECT_STATUS_KEYWORDS = [
 const matchesQuery = (value: string, query: string) =>
   value.toLowerCase().includes(query)
 
+const sortProjectsByName = (a: PartialProject, b: PartialProject) =>
+  a.name.localeCompare(b.name, undefined, { sensitivity: 'base' })
+
 export function normalizeProjectDirectoryStatus(status?: string | null): DirectoryStatus {
   const normalized = status?.trim().toLowerCase() ?? ''
 
@@ -28,10 +31,10 @@ export function deriveSIGDirectoryItems(sigs: SIG[]): SIGDirectoryItem[] {
   return sigs.map((sig) => {
     const activeProjects = (sig.projects ?? []).filter(
       project => normalizeProjectDirectoryStatus(project.status) === 'Active',
-    )
+    ).sort(sortProjectsByName)
     const inactiveProjects = (sig.projects ?? []).filter(
       project => normalizeProjectDirectoryStatus(project.status) === 'Inactive',
-    )
+    ).sort(sortProjectsByName)
     const status: DirectoryStatus = activeProjects.length > 0 ? 'Active' : 'Inactive'
 
     return {
@@ -39,6 +42,7 @@ export function deriveSIGDirectoryItems(sigs: SIG[]): SIGDirectoryItem[] {
       status,
       activeProjects,
       inactiveProjects,
+      shouldAutoExpandInactive: false,
       projectCounts: {
         active: activeProjects.length,
         inactive: inactiveProjects.length,
@@ -75,10 +79,6 @@ export function filterSIGDirectoryItems(
       = matchesQuery(sig.name, normalizedQuery)
         || matchesQuery(sig.description ?? '', normalizedQuery)
 
-    if (sigMatches) {
-      return [sig]
-    }
-
     // Search stays inside the selected status tab, but active SIGs can still
     // surface inactive work in their secondary subsection when it matches.
     const activeProjects = sig.activeProjects.filter(project =>
@@ -88,6 +88,10 @@ export function filterSIGDirectoryItems(
       matchesQuery(`${project.name} ${project.description ?? ''}`, normalizedQuery),
     )
 
+    if (sigMatches) {
+      return [sig]
+    }
+
     if (activeProjects.length === 0 && inactiveProjects.length === 0) {
       return []
     }
@@ -96,6 +100,7 @@ export function filterSIGDirectoryItems(
       ...sig,
       activeProjects,
       inactiveProjects,
+      shouldAutoExpandInactive: inactiveProjects.length > 0,
     }]
   })
 }
@@ -108,5 +113,6 @@ export function getVisibleProjectCount(
     return sig.inactiveProjects.length
   }
 
-  return sig.activeProjects.length + sig.inactiveProjects.length
+  return sig.activeProjects.length
+    + (sig.shouldAutoExpandInactive ? sig.inactiveProjects.length : 0)
 }

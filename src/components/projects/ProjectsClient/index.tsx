@@ -31,17 +31,6 @@ const ProjectsClient = ({ sigs, bannerImages }: ProjectsClientProps) => {
           and jump directly into the projects behind that work.
         </p>
 
-        <div className="mt-6 rounded-[28px] border border-yellow-200 bg-gradient-to-br from-yellow-50 via-white to-white p-5 shadow-sm">
-          <p className="text-sm font-semibold uppercase tracking-[0.18em] text-yellow-900">
-            What is a SIG?
-          </p>
-          <p className="mt-2 max-w-3xl text-sm leading-6 text-gray-700">
-            SIGs are DTR&apos;s long-running areas of research and making. Each group gathers
-            people around a theme, and the projects below show the experiments, systems, and
-            studies that theme has produced over time.
-          </p>
-        </div>
-
         <div className="mt-6">
           <SearchBar
             value={query}
@@ -81,10 +70,14 @@ const ProjectsClient = ({ sigs, bannerImages }: ProjectsClientProps) => {
         />
       </header>
 
-      <section id="projects-results" aria-live="polite" className="space-y-6 pb-10">
+      <section
+        id="projects-results"
+        aria-live="polite"
+        className="grid grid-cols-1 gap-6 pb-10 lg:grid-cols-2 2xl:grid-cols-3"
+      >
         {filteredSigs.length === 0
           ? (
-              <div className="rounded-[28px] border border-dashed border-gray-300 bg-white p-8 text-center text-gray-600">
+              <div className="rounded-[28px] border border-dashed border-gray-300 bg-white p-8 text-center text-gray-600 lg:col-span-2 2xl:col-span-3">
                 {debouncedQuery
                   ? (
                       <>

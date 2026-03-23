@@ -1,5 +1,6 @@
 import type { DirectoryStatus, SIGDirectoryItem } from './types'
-import { FolderKanban, Users } from 'lucide-react'
+import { ChevronDown, FolderKanban, Users } from 'lucide-react'
+import { useState } from 'react'
 import TeamMembers from '@/components/projects/TeamMembers'
 import { AdaptiveImage, MarkdownContents } from '@/components/shared'
 import ProjectPreviewCard from './ProjectPreviewCard'
@@ -17,10 +18,12 @@ const SIGSection = ({
 }: SIGSectionProps) => {
   const banner = bannerImages[sig.name] ?? sig.banner_image ?? undefined
   const primaryProjects = currentStatus === 'Active' ? sig.activeProjects : sig.inactiveProjects
-  const showInactiveProjects = currentStatus === 'Active' && sig.inactiveProjects.length > 0
+  const hasInactiveProjects = currentStatus === 'Active' && sig.inactiveProjects.length > 0
+  const [inactiveProjectsOverride, setInactiveProjectsOverride] = useState<boolean | null>(null)
+  const showInactiveProjects = inactiveProjectsOverride ?? sig.shouldAutoExpandInactive
 
   return (
-    <article className="overflow-hidden rounded-[28px] border border-neutral-200 bg-white shadow-sm">
+    <article className="h-full overflow-hidden rounded-[28px] border border-neutral-200 bg-white shadow-sm">
       {banner && (
         <div className="relative aspect-[16/6] overflow-hidden border-b border-neutral-200">
           <AdaptiveImage
@@ -34,7 +37,7 @@ const SIGSection = ({
         </div>
       )}
 
-      <div className="space-y-6 p-6">
+      <div className="flex h-full flex-col space-y-6 p-6">
         <header className="space-y-4">
           <div className="flex flex-wrap gap-2">
             <span className="inline-flex rounded-full border border-yellow-200 bg-yellow-50 px-2.5 py-1 text-xs font-semibold uppercase tracking-wide text-yellow-900">
@@ -82,7 +85,7 @@ const SIGSection = ({
                 shown
               </p>
             </div>
-            <div className="grid grid-cols-1 gap-4 lg:grid-cols-2">
+            <div className="grid grid-cols-1 gap-4">
               {primaryProjects.map(project => (
                 <ProjectPreviewCard key={project.id} project={project} />
               ))}
@@ -90,27 +93,46 @@ const SIGSection = ({
           </section>
         )}
 
-        {showInactiveProjects && (
+        {hasInactiveProjects && (
           <section aria-labelledby={`sig-inactive-projects-${sig.id}`} className="space-y-4 rounded-2xl border border-dashed border-neutral-200 bg-neutral-50/70 p-4">
             <div className="flex items-center justify-between gap-3">
-              <h3 id={`sig-inactive-projects-${sig.id}`} className="text-lg font-semibold text-neutral-900">
-                Inactive projects
-              </h3>
-              <p className="text-sm text-neutral-500">
-                {sig.inactiveProjects.length}
-                {' '}
-                archived in this SIG
-              </p>
+              <div>
+                <h3 id={`sig-inactive-projects-${sig.id}`} className="text-lg font-semibold text-neutral-900">
+                  Inactive projects
+                </h3>
+                <p className="text-sm text-neutral-500">
+                  {sig.inactiveProjects.length}
+                  {' '}
+                  archived in this SIG
+                </p>
+              </div>
+              <button
+                type="button"
+                aria-expanded={showInactiveProjects}
+                aria-controls={`sig-inactive-project-grid-${sig.id}`}
+                onClick={() => setInactiveProjectsOverride(value => !(value ?? sig.shouldAutoExpandInactive))}
+                className="inline-flex items-center gap-2 rounded-full border border-neutral-200 bg-white px-3 py-1.5 text-sm font-medium text-neutral-700 transition hover:border-yellow-300 hover:text-neutral-950 focus:outline-none focus-visible:ring-2 focus-visible:ring-yellow-300"
+              >
+                {showInactiveProjects ? 'Hide' : 'Show'}
+                <ChevronDown
+                  size={16}
+                  aria-hidden="true"
+                  className={`transition-transform duration-200 ${showInactiveProjects ? 'rotate-180' : ''}`}
+                />
+              </button>
             </div>
-            <div className="grid grid-cols-1 gap-4 lg:grid-cols-2">
-              {sig.inactiveProjects.map(project => (
-                <ProjectPreviewCard key={project.id} project={project} />
-              ))}
-            </div>
+
+            {showInactiveProjects && (
+              <div id={`sig-inactive-project-grid-${sig.id}`} className="grid grid-cols-1 gap-4">
+                {sig.inactiveProjects.map(project => (
+                  <ProjectPreviewCard key={project.id} project={project} />
+                ))}
+              </div>
+            )}
           </section>
         )}
 
-        <div className="border-t border-neutral-200 pt-6">
+        <div className="mt-auto border-t border-neutral-200 pt-6">
           <TeamMembers groupId={sig.id} members={sig.members} />
         </div>
       </div>

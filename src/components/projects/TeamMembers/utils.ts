@@ -1,7 +1,6 @@
 const ROLE_GROUPS = [
   'Faculty',
-  'Ph.D. Students',
-  'Masters and Undergraduate Students',
+  'Students',
   'Affiliates & Others',
 ] as const
 
@@ -9,8 +8,9 @@ export type RoleGroups = (typeof ROLE_GROUPS)[number]
 
 const roleMappingForFilter: Record<RoleGroups, string[]> = {
   'Faculty': ['Faculty'],
-  'Ph.D. Students': ['Ph.D. Student', 'Ph.D. Candidate'],
-  'Masters and Undergraduate Students': [
+  'Students': [
+    'Ph.D. Student',
+    'Ph.D. Candidate',
     'Masters Student Researcher',
     'Undergraduate Student Researcher',
   ],

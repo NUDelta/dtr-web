@@ -11,16 +11,15 @@ const TeamMembers = ({ groupId, members }: TeamMemberProps) => {
   // Group people by role bucket
   const grouped: Record<RoleGroups, PartialPerson[]> = {
     'Faculty': [],
-    'Ph.D. Students': [],
-    'Masters and Undergraduate Students': [],
+    'Students': [],
     'Affiliates & Others': [],
   }
   for (const m of members) {
     grouped[bucketForRole(m.role)].push(m)
   }
 
-  const leftOrder: RoleGroups[] = ['Faculty', 'Ph.D. Students', 'Affiliates & Others']
-  const rightOrder: RoleGroups[] = ['Masters and Undergraduate Students']
+  const leftOrder: RoleGroups[] = ['Faculty', 'Affiliates & Others']
+  const rightOrder: RoleGroups[] = ['Students']
 
   return (
     <section aria-labelledby={`team-${groupId}`} className="w-full">

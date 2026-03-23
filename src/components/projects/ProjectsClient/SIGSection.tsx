@@ -25,7 +25,7 @@ const SIGSection = ({
   return (
     <article className="mb-6 break-inside-avoid overflow-hidden rounded-[28px] border border-neutral-200 bg-white shadow-sm">
       {banner && (
-        <div className="relative aspect-[16/6] overflow-hidden border-b border-neutral-200">
+        <div className="relative aspect-16/6 overflow-hidden border-b border-neutral-200">
           <AdaptiveImage
             src={banner}
             alt={`${sig.name} banner`}
@@ -33,7 +33,7 @@ const SIGSection = ({
             loading="lazy"
             decoding="async"
           />
-          <div className="absolute inset-0 bg-gradient-to-t from-black/40 via-black/10 to-transparent" aria-hidden="true" />
+          <div className="absolute inset-0 bg-linear-to-t from-black/40 via-black/10 to-transparent" aria-hidden="true" />
         </div>
       )}
 

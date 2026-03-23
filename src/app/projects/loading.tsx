@@ -31,7 +31,7 @@ const SigSectionSkeleton = ({ withBanner = true }: { withBanner?: boolean }) => 
   >
     {withBanner
       ? (
-          <div className="relative aspect-[16/6] w-full bg-neutral-200" />
+          <div className="relative aspect-16/6 w-full bg-neutral-200" />
         )
       : null}
 
@@ -97,7 +97,7 @@ export default function Loading() {
     >
       <header className="pb-4">
         <div className="h-9 w-64 rounded bg-neutral-200" />
-        <div className="mt-3 h-5 max-w-full rounded bg-neutral-200 sm:w-[38rem]" />
+        <div className="mt-3 h-5 max-w-full rounded bg-neutral-200 sm:w-152" />
 
         <div className="mt-6">
           <div className="relative mx-auto max-w-xl">
@@ -116,7 +116,7 @@ export default function Loading() {
         </div>
       </header>
 
-      <div className="lg:columns-2 lg:gap-6 2xl:columns-3">
+      <div className="lg:columns-2 lg:gap-6">
         {[true, false, true].map((withBanner, i) => (
           <SigSectionSkeleton key={`sig-${i}`} withBanner={withBanner} />
         ))}

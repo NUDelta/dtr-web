@@ -30,6 +30,7 @@ const bannerImages: BannerImages = {
   'Playful Learning': 'images/sig-photos/playful-learning_banner-image.png',
   'Situational Crowdsourcing': 'images/sig-photos/situational-crowdsourcing_banner-image.png',
   'Human-AI Tools': 'images/sig-photos/human-ai_banner-image.jpg',
+  'Human Learning': 'images/sig-photos/humanlearning.png',
 }
 
 export default async function ProjectsPage() {

@@ -48,7 +48,7 @@ export default function Header() {
 
   const openWithIntent = (id: string) => {
     clearHoverTimer()
-    hoverTimer.current = window.setTimeout(() => setOpenGroup(id), 80)
+    hoverTimer.current = window.setTimeout(setOpenGroup, 80, id)
   }
 
   const closeWithIntent = (id: string) => {

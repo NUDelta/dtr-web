@@ -35,7 +35,7 @@ const SigSectionSkeleton = ({ withBanner = true }: { withBanner?: boolean }) => 
         )
       : null}
 
-    <div className="space-y-5 p-6">
+    <div className="space-y-5 p-4 sm:p-6">
       <div className="flex flex-wrap gap-2">
         <div className="h-6 w-24 rounded-full bg-yellow-100" />
         <div className="h-6 w-24 rounded-full bg-neutral-100" />
@@ -117,10 +117,39 @@ export default function Loading() {
         </div>
       </header>
 
-      <div className="space-y-6">
-        {[true, false, true].map((withBanner, i) => (
-          <SigSectionSkeleton key={`sig-${i}`} withBanner={withBanner} />
-        ))}
+      <div className="xl:grid xl:grid-cols-[minmax(0,1fr)_18rem] xl:items-start xl:gap-8">
+        <div className="space-y-6">
+          {[true, false, true].map((withBanner, i) => (
+            <SigSectionSkeleton key={`sig-${i}`} withBanner={withBanner} />
+          ))}
+        </div>
+
+        <aside className="hidden xl:block">
+          <div className="sticky top-24 rounded-[28px] border border-neutral-200 bg-white p-5 shadow-sm">
+            <div className="h-4 w-28 rounded bg-neutral-200" />
+            <div className="mt-4 space-y-3">
+              <div className="rounded-2xl border border-neutral-200 bg-neutral-50 p-3">
+                <div className="h-4 w-20 rounded bg-neutral-200" />
+                <div className="mt-2 h-8 w-14 rounded bg-neutral-200" />
+              </div>
+              <div className="rounded-2xl border border-neutral-200 bg-neutral-50 p-3">
+                <div className="h-4 w-24 rounded bg-neutral-200" />
+                <div className="mt-2 h-8 w-14 rounded bg-neutral-200" />
+              </div>
+            </div>
+            <div className="mt-5 border-t border-neutral-200 pt-5">
+              <div className="h-4 w-24 rounded bg-neutral-200" />
+              <div className="mt-3 space-y-2">
+                {Array.from({ length: 5 }).map((_, index) => (
+                  <div key={index} className="flex items-start gap-3 rounded-2xl border border-neutral-100 px-3 py-2">
+                    <div className="h-7 w-8 rounded-full bg-neutral-100" />
+                    <div className="mt-1 h-4 flex-1 rounded bg-neutral-200" />
+                  </div>
+                ))}
+              </div>
+            </div>
+          </div>
+        </aside>
       </div>
     </div>
   )

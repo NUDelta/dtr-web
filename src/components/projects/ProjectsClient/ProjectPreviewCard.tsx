@@ -18,16 +18,16 @@ const ProjectPreviewCard = ({ project }: ProjectPreviewCardProps) => {
   return (
     <Link
       href={`/projects/${project.id}`}
-      className="group block rounded-2xl border border-neutral-200 bg-white p-4 shadow-sm transition duration-200 hover:-translate-y-1 hover:border-yellow-300 hover:shadow-md focus:outline-none focus-visible:ring-2 focus-visible:ring-yellow-300 focus-visible:ring-offset-2"
+      className="group block rounded-2xl border border-neutral-200 bg-white p-4 shadow-sm transition duration-200 hover:-translate-y-1 hover:border-yellow-300 hover:shadow-md focus:outline-none focus-visible:ring-2 focus-visible:ring-yellow-300 focus-visible:ring-offset-2 sm:p-5"
       aria-label={`Open project ${project.name}`}
     >
       <article className="h-full">
-        <div className="flex flex-wrap items-start justify-between gap-3">
+        <div className="flex flex-col items-start gap-3 sm:flex-row sm:items-start sm:justify-between">
           <div className="space-y-3">
             <span className={`inline-flex rounded-full border px-2.5 py-1 text-xs font-semibold uppercase tracking-wide ${statusClasses[status]}`}>
               {status}
             </span>
-            <h4 className="text-lg font-semibold tracking-tight text-neutral-950">
+            <h4 className="text-base font-semibold tracking-tight text-neutral-950 sm:text-lg">
               {project.name}
             </h4>
           </div>

@@ -1,6 +1,7 @@
 'use client'
 
 import { DirectoryStatusTabs, SearchBar } from '@/components/shared'
+import ProjectsDirectorySidebar from './ProjectsDirectorySidebar'
 import SIGSection from './SIGSection'
 import { useProjectsDirectory } from './useProjectsDirectory'
 
@@ -25,8 +26,8 @@ const ProjectsClient = ({ sigs, bannerImages }: ProjectsClientProps) => {
   return (
     <>
       <header className="pb-4">
-        <h1 className="text-4xl font-semibold tracking-tight">SIGs & Projects</h1>
-        <p className="mt-1 max-w-3xl text-lg text-gray-600">
+        <h1 className="text-3xl font-semibold tracking-tight sm:text-4xl">SIGs & Projects</h1>
+        <p className="mt-1 max-w-3xl text-base text-gray-600 sm:text-lg">
           Browse DTR Special Interest Groups, understand the work each SIG is exploring,
           and jump directly into the projects behind that work.
         </p>
@@ -37,7 +38,7 @@ const ProjectsClient = ({ sigs, bannerImages }: ProjectsClientProps) => {
             onChange={setQuery}
             onClear={reset}
             placeholder={`Search ${status.toLowerCase()} SIGs and projects…`}
-            className="mx-auto max-w-xl"
+            className="w-full sm:mx-auto sm:max-w-xl"
           />
           {debouncedQuery && (
             <p className="mt-2 text-center text-sm text-gray-600">
@@ -70,50 +71,60 @@ const ProjectsClient = ({ sigs, bannerImages }: ProjectsClientProps) => {
         />
       </header>
 
-      <section
-        id="projects-results"
-        aria-live="polite"
-        className="space-y-6 pb-10"
-      >
-        {filteredSigs.length === 0
-          ? (
-              <div className="rounded-[28px] border border-dashed border-gray-300 bg-white p-8 text-center text-gray-600">
-                {debouncedQuery
-                  ? (
-                      <>
-                        No matches for
-                        {' '}
-                        <span className="font-semibold">{debouncedQuery}</span>
-                        {' '}
-                        in
-                        {' '}
-                        {status.toLowerCase()}
-                        {' '}
-                        SIGs.
-                      </>
-                    )
-                  : (
-                      <>
-                        No
-                        {' '}
-                        {status.toLowerCase()}
-                        {' '}
-                        SIGs to show right now.
-                      </>
-                    )}
-              </div>
-            )
-          : (
-              filteredSigs.map(sig => (
-                <SIGSection
-                  key={sig.id}
-                  sig={sig}
-                  currentStatus={status}
-                  bannerImages={bannerImages}
-                />
-              ))
-            )}
-      </section>
+      <div className="xl:grid xl:grid-cols-[minmax(0,1fr)_18rem] xl:items-start xl:gap-8">
+        <section
+          id="projects-results"
+          aria-live="polite"
+          className="space-y-6 pb-10"
+        >
+          {filteredSigs.length === 0
+            ? (
+                <div className="rounded-[28px] border border-dashed border-gray-300 bg-white p-8 text-center text-gray-600">
+                  {debouncedQuery
+                    ? (
+                        <>
+                          No matches for
+                          {' '}
+                          <span className="font-semibold">{debouncedQuery}</span>
+                          {' '}
+                          in
+                          {' '}
+                          {status.toLowerCase()}
+                          {' '}
+                          SIGs.
+                        </>
+                      )
+                    : (
+                        <>
+                          No
+                          {' '}
+                          {status.toLowerCase()}
+                          {' '}
+                          SIGs to show right now.
+                        </>
+                      )}
+                </div>
+              )
+            : (
+                filteredSigs.map(sig => (
+                  <SIGSection
+                    key={sig.id}
+                    sig={sig}
+                    currentStatus={status}
+                    bannerImages={bannerImages}
+                  />
+                ))
+              )}
+        </section>
+
+        {filteredSigs.length > 0 && (
+          <ProjectsDirectorySidebar
+            status={status}
+            sigs={filteredSigs}
+            visibleProjectCount={visibleProjectCount}
+          />
+        )}
+      </div>
     </>
   )
 }

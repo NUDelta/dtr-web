@@ -118,7 +118,7 @@ export default function Loading() {
       </header>
 
       <div className="xl:grid xl:grid-cols-[minmax(0,1fr)_18rem] xl:items-start xl:gap-8">
-        <div className="space-y-6">
+        <div className="space-y-6 pb-28 xl:pb-10">
           {[true, false, true].map((withBanner, i) => (
             <SigSectionSkeleton key={`sig-${i}`} withBanner={withBanner} />
           ))}
@@ -150,6 +150,10 @@ export default function Loading() {
             </div>
           </div>
         </aside>
+      </div>
+
+      <div className="fixed inset-x-4 bottom-4 z-30 xl:hidden">
+        <div className="h-12 rounded-full border border-neutral-200 bg-white/95 shadow-lg backdrop-blur" />
       </div>
     </div>
   )

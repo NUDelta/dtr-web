@@ -75,7 +75,7 @@ const ProjectsClient = ({ sigs, bannerImages }: ProjectsClientProps) => {
         <section
           id="projects-results"
           aria-live="polite"
-          className="space-y-6 pb-10"
+          className="space-y-6 pb-28 xl:pb-10"
         >
           {filteredSigs.length === 0
             ? (

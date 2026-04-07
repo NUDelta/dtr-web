@@ -25,7 +25,7 @@ const ProjectsClient = ({ sigs, bannerImages }: ProjectsClientProps) => {
 
   return (
     <>
-      <header className="pb-4">
+      <header className="pb-4 xl:mx-auto xl:max-w-[60rem]">
         <h1 className="text-3xl font-semibold tracking-tight sm:text-4xl">SIGs & Projects</h1>
         <p className="mt-1 max-w-3xl text-base text-gray-600 sm:text-lg">
           Browse DTR Special Interest Groups, understand the work each SIG is exploring,
@@ -71,7 +71,7 @@ const ProjectsClient = ({ sigs, bannerImages }: ProjectsClientProps) => {
         />
       </header>
 
-      <div className="xl:grid xl:grid-cols-[minmax(0,1fr)_18rem] xl:items-start xl:gap-8">
+      <div className="xl:mx-auto xl:max-w-[60rem]">
         <section
           id="projects-results"
           aria-live="polite"
@@ -121,7 +121,6 @@ const ProjectsClient = ({ sigs, bannerImages }: ProjectsClientProps) => {
           <ProjectsDirectorySidebar
             status={status}
             sigs={filteredSigs}
-            visibleProjectCount={visibleProjectCount}
           />
         )}
       </div>

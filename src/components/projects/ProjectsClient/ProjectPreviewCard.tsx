@@ -32,7 +32,7 @@ const ProjectPreviewCard = ({ project }: ProjectPreviewCardProps) => {
             </h4>
           </div>
 
-          <span className="inline-flex items-center gap-1 rounded-full border border-neutral-200 px-3 py-1.5 text-sm font-medium text-neutral-700 transition group-hover:border-yellow-300 group-hover:text-neutral-950">
+          <span className="inline-flex items-center gap-1 whitespace-nowrap rounded-full border border-neutral-200 px-3 py-1.5 text-sm font-medium text-neutral-700 transition group-hover:border-yellow-300 group-hover:text-neutral-950">
             View project
             <ArrowUpRight
               size={16}

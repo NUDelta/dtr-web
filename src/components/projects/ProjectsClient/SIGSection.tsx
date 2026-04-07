@@ -3,7 +3,6 @@ import { AnimatePresence, motion } from 'framer-motion'
 import { ChevronDown, FolderKanban, Users } from 'lucide-react'
 import { useState } from 'react'
 import TeamMembers from '@/components/projects/TeamMembers'
-import { groupMembersByRole } from '@/components/projects/TeamMembers/utils'
 import { AdaptiveImage, MarkdownContents } from '@/components/shared'
 import ProjectPreviewCard from './ProjectPreviewCard'
 
@@ -27,17 +26,7 @@ const SIGSection = ({
   const primaryProjects = currentStatus === 'Active' ? sig.activeProjects : sig.inactiveProjects
   const hasInactiveProjects = currentStatus === 'Active' && sig.inactiveProjects.length > 0
   const [inactiveProjectsOverride, setInactiveProjectsOverride] = useState<boolean | null>(null)
-  const [showTeam, setShowTeam] = useState(false)
   const showInactiveProjects = inactiveProjectsOverride ?? sig.shouldAutoExpandInactive
-  const groupedMembers = groupMembersByRole(sig.members)
-  const activeStudentCount = groupedMembers.Students.filter(member => member.status !== 'Alumni').length
-  const alumniStudentCount = groupedMembers.Students.filter(member => member.status === 'Alumni').length
-  const memberSummary = [
-    { label: 'Faculty', count: groupedMembers.Faculty.length },
-    { label: 'Active students', count: activeStudentCount },
-    { label: 'Student alumni', count: alumniStudentCount },
-    { label: 'Affiliates', count: groupedMembers['Affiliates & Others'].length },
-  ].filter(item => item.count > 0)
 
   return (
     <article id={`sig-${sig.id}`} className="scroll-mt-24 overflow-hidden rounded-[28px] border border-neutral-200 bg-white shadow-sm">
@@ -102,7 +91,7 @@ const SIGSection = ({
                 shown
               </p>
             </div>
-            <div className="grid grid-cols-1 gap-4 md:grid-cols-2 xl:grid-cols-3">
+            <div className="grid grid-cols-1 gap-4 md:grid-cols-2">
               {primaryProjects.map(project => (
                 <ProjectPreviewCard key={project.id} project={project} />
               ))}
@@ -150,7 +139,7 @@ const SIGSection = ({
                   transition={revealTransition}
                   className="overflow-hidden"
                 >
-                  <div className="grid grid-cols-1 gap-4 pt-1 md:grid-cols-2 xl:grid-cols-3">
+                  <div className="grid grid-cols-1 gap-4 pt-1 md:grid-cols-2">
                     {sig.inactiveProjects.map(project => (
                       <ProjectPreviewCard key={project.id} project={project} />
                     ))}
@@ -162,62 +151,18 @@ const SIGSection = ({
         )}
 
         <section className="border-t border-neutral-200 pt-6" aria-labelledby={`sig-team-summary-${sig.id}`}>
-          <div className="flex flex-col gap-4 lg:flex-row lg:items-start lg:justify-between">
-            <div className="space-y-3">
-              <div className="flex items-center gap-2">
-                <h3 id={`sig-team-summary-${sig.id}`} className="text-lg font-semibold text-neutral-950">
-                  Team
-                </h3>
-                <span className="rounded-full bg-neutral-100 px-2 py-0.5 text-sm text-neutral-600">
-                  {sig.memberCount}
-                </span>
-              </div>
-              <div className="flex flex-wrap gap-2">
-                {memberSummary.map(({ label, count }) => (
-                  <span
-                    key={label}
-                    className="inline-flex rounded-full border border-neutral-200 bg-neutral-50 px-2.5 py-1 text-xs font-medium text-neutral-700"
-                  >
-                    {count}
-                    {' '}
-                    {label}
-                  </span>
-                ))}
-              </div>
-            </div>
-
-            <button
-              type="button"
-              aria-expanded={showTeam}
-              aria-controls={`sig-team-details-${sig.id}`}
-              onClick={() => setShowTeam(value => !value)}
-              className="inline-flex w-full items-center justify-center gap-2 rounded-full border border-neutral-200 bg-white px-3 py-1.5 text-sm font-medium text-neutral-700 transition hover:border-yellow-300 hover:text-neutral-950 focus:outline-none focus-visible:ring-2 focus-visible:ring-yellow-300 sm:w-auto"
-            >
-              {showTeam ? 'Hide team' : 'Show team'}
-              <ChevronDown
-                size={16}
-                aria-hidden="true"
-                className={`transition-transform duration-200 ${showTeam ? 'rotate-180' : ''}`}
-              />
-            </button>
+          <div className="flex items-center gap-2">
+            <h3 id={`sig-team-summary-${sig.id}`} className="text-lg font-semibold text-neutral-950">
+              Team
+            </h3>
+            <span className="rounded-full bg-neutral-100 px-2 py-0.5 text-sm text-neutral-600">
+              {sig.memberCount}
+            </span>
           </div>
 
-          <AnimatePresence initial={false}>
-            {showTeam && (
-              <motion.div
-                id={`sig-team-details-${sig.id}`}
-                initial={{ opacity: 0, height: 0 }}
-                animate={{ opacity: 1, height: 'auto' }}
-                exit={{ opacity: 0, height: 0 }}
-                transition={revealTransition}
-                className="overflow-hidden"
-              >
-                <div className="mt-5">
-                  <TeamMembers groupId={sig.id} members={sig.members} />
-                </div>
-              </motion.div>
-            )}
-          </AnimatePresence>
+          <div className="mt-5">
+            <TeamMembers groupId={sig.id} members={sig.members} showHeading={false} />
+          </div>
         </section>
       </div>
     </article>

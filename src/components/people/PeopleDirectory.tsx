@@ -3,12 +3,11 @@
 import { AnimatePresence, motion } from 'framer-motion'
 import dynamic from 'next/dynamic'
 import { Suspense, useMemo } from 'react'
-import { SearchBar } from '@/components/shared'
+import { DirectoryStatusTabs, SearchBar } from '@/components/shared'
 import { usePeopleDirectory } from '@/hooks/usePeopleDirectory'
 import { useSearchQuery } from '@/hooks/useSearch'
 import AlumniMapSkeleton from './AlumniMapSkeleton'
 import RoleBlock from './RoleBlock'
-import ViewControl from './ViewControl'
 
 const AlumniMap = dynamic(async () => import('./AlumniMap'), { ssr: false })
 
@@ -71,10 +70,15 @@ const PeopleDirectory = ({ initialPeople }: PeopleDirectoryProps) => {
           )}
         </div>
 
-        <ViewControl
-          status={status}
-          setStatus={setStatus}
-          countsByStatus={countsByStatus}
+        <DirectoryStatusTabs
+          tabs={['Active', 'Alumni']}
+          value={status}
+          onChange={setStatus}
+          counts={countsByStatus}
+          ariaLabel="Filter people by status"
+          helperText={status === 'Active'
+            ? 'Showing current faculty and students'
+            : 'Showing alumni and their locations'}
         />
       </header>
 

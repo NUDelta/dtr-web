@@ -1,7 +1,6 @@
 const ROLE_GROUPS = [
   'Faculty',
-  'Ph.D. Students',
-  'Masters and Undergraduate Students',
+  'Students',
   'Affiliates & Others',
 ] as const
 
@@ -9,8 +8,9 @@ export type RoleGroups = (typeof ROLE_GROUPS)[number]
 
 const roleMappingForFilter: Record<RoleGroups, string[]> = {
   'Faculty': ['Faculty'],
-  'Ph.D. Students': ['Ph.D. Student', 'Ph.D. Candidate'],
-  'Masters and Undergraduate Students': [
+  'Students': [
+    'Ph.D. Student',
+    'Ph.D. Candidate',
     'Masters Student Researcher',
     'Undergraduate Student Researcher',
   ],
@@ -24,6 +24,20 @@ export const bucketForRole = (role: string): RoleGroups => {
     }
   }
   return 'Affiliates & Others'
+}
+
+export const groupMembersByRole = (members: PartialPerson[]): Record<RoleGroups, PartialPerson[]> => {
+  const grouped: Record<RoleGroups, PartialPerson[]> = {
+    'Faculty': [],
+    'Students': [],
+    'Affiliates & Others': [],
+  }
+
+  for (const member of members) {
+    grouped[bucketForRole(member.role)].push(member)
+  }
+
+  return grouped
 }
 
 export const sortPeople = (a: PartialPerson, b: PartialPerson) => {

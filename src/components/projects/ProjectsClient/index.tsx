@@ -1,11 +1,9 @@
 'use client'
 
-import { AnimatePresence, MotionConfig } from 'framer-motion'
-import { useEffect, useMemo, useState } from 'react'
-import { SearchBar } from '@/components/shared'
-import { useSearchQuery } from '@/hooks/useSearch'
-import SIGCard from './SIGCard'
-import { balanceTwoColumns, estimateCollapsedHeight } from './utils'
+import { DirectoryStatusTabs, SearchBar } from '@/components/shared'
+import ProjectsDirectorySidebar from './ProjectsDirectorySidebar'
+import SIGSection from './SIGSection'
+import { useProjectsDirectory } from './useProjectsDirectory'
 
 interface ProjectsClientProps {
   sigs: SIG[]
@@ -13,98 +11,120 @@ interface ProjectsClientProps {
 }
 
 const ProjectsClient = ({ sigs, bannerImages }: ProjectsClientProps) => {
-  // auto-collapse all on mount
-  const [collapsed, setCollapsed] = useState<Record<string, boolean>>({})
-  useEffect(() => {
-    // eslint-disable-next-line react-hooks-extra/no-direct-set-state-in-use-effect
-    setCollapsed(Object.fromEntries(sigs.map(s => [s.id, true])))
-  }, [sigs])
-
-  // reusable search state (with debounced query)
-  const { query, setQuery, debouncedQuery, reset } = useSearchQuery('', 300)
-
-  const filtered = useMemo(() => {
-    const q = debouncedQuery.trim().toLowerCase()
-    if (!q) {
-      return sigs
-    }
-    return sigs
-      .map((sig) => {
-        const projects = (sig.projects ?? []).filter((p) => {
-          const hay = `${p.name} ${p.description ?? ''}`.toLowerCase()
-          return hay.includes(q)
-        })
-        const sigMatches
-          = sig.name.toLowerCase().includes(q)
-            || (sig.description ?? '').toLowerCase().includes(q)
-        return sigMatches ? sig : { ...sig, projects }
-      })
-      .filter(
-        sig =>
-          sig.name.toLowerCase().includes(q)
-          || (sig.description ?? '').toLowerCase().includes(q)
-          || (sig.projects?.length ?? 0) > 0,
-      )
-  }, [sigs, debouncedQuery])
-
-  // Rebalance ONLY when `filtered` changes
-  const [leftCol, rightCol] = useMemo(() => {
-    const getH = (sig: SIG) => {
-      const hasBanner = !!bannerImages[sig.name]
-      return estimateCollapsedHeight(sig, hasBanner, sig.description ?? '')
-    }
-    return balanceTwoColumns(filtered, getH)
-  }, [filtered, bannerImages])
-
-  const toggle = (id: string) =>
-    setCollapsed(prev => ({ ...prev, [id]: !prev[id] }))
+  const {
+    status,
+    setStatus,
+    countsByStatus,
+    filteredSigs,
+    visibleProjectCount,
+    query,
+    setQuery,
+    debouncedQuery,
+    reset,
+  } = useProjectsDirectory(sigs)
 
   return (
-    <MotionConfig reducedMotion="user">
-      <section aria-labelledby="projects-controls">
-        <h2 id="projects-controls" className="sr-only">
-          Project controls
-        </h2>
+    <>
+      <header className="pb-4 xl:mx-auto xl:max-w-240">
+        <h1 className="text-3xl font-semibold tracking-tight sm:text-4xl">SIGs & Projects</h1>
+        <p className="mt-1 max-w-3xl text-base text-gray-600 sm:text-lg">
+          Browse DTR Special Interest Groups, understand the work each SIG is exploring,
+          and jump directly into the projects behind that work.
+        </p>
 
-        {/* Search */}
-        <div className="mb-6 mx-auto max-w-xl">
+        <div className="mt-6">
           <SearchBar
             value={query}
             onChange={setQuery}
             onClear={reset}
-            placeholder="Search SIGs & projects…"
-            className="w-full"
+            placeholder={`Search ${status.toLowerCase()} SIGs and projects…`}
+            className="w-full sm:mx-auto sm:max-w-xl"
           />
+          {debouncedQuery && (
+            <p className="mt-2 text-center text-sm text-gray-600">
+              {filteredSigs.length}
+              {' '}
+              SIG
+              {filteredSigs.length === 1 ? '' : 's'}
+              {' '}
+              and
+              {' '}
+              {visibleProjectCount}
+              {' '}
+              project
+              {visibleProjectCount === 1 ? '' : 's'}
+              {' '}
+              shown
+            </p>
+          )}
         </div>
 
-        {/* Two independently stacked columns */}
-        <div className="grid grid-cols-1 gap-6 md:grid-cols-2">
-          {[leftCol, rightCol].map((col, i) => (
-            <div
-              key={i === 0 ? 'left-column' : 'right-column'}
-              className="flex flex-col gap-6"
-              role="list"
-              aria-label={i === 0 ? 'SIG list (left column)' : 'SIG list (right column)'}
-            >
-              <AnimatePresence initial={false}>
-                {col.map((sig) => {
-                  const isCollapsed = collapsed[sig.id] ?? true
-                  return (
-                    <SIGCard
-                      key={sig.id}
-                      sig={sig}
-                      isCollapsed={isCollapsed}
-                      toggle={toggle}
-                      bannerImages={bannerImages}
-                    />
-                  )
-                })}
-              </AnimatePresence>
-            </div>
-          ))}
-        </div>
-      </section>
-    </MotionConfig>
+        <DirectoryStatusTabs
+          tabs={['Active', 'Inactive']}
+          value={status}
+          onChange={setStatus}
+          counts={countsByStatus}
+          ariaLabel="Filter SIGs by activity"
+          helperText={status === 'Active'
+            ? 'Showing SIGs that currently have active work.'
+            : 'Showing SIGs whose linked projects are all inactive.'}
+        />
+      </header>
+
+      <div className="xl:mx-auto xl:max-w-240">
+        <section
+          id="projects-results"
+          aria-live="polite"
+          className="space-y-6 pb-28 xl:pb-10"
+        >
+          {filteredSigs.length === 0
+            ? (
+                <div className="rounded-[28px] border border-dashed border-gray-300 bg-white p-8 text-center text-gray-600">
+                  {debouncedQuery
+                    ? (
+                        <>
+                          No matches for
+                          {' '}
+                          <span className="font-semibold">{debouncedQuery}</span>
+                          {' '}
+                          in
+                          {' '}
+                          {status.toLowerCase()}
+                          {' '}
+                          SIGs.
+                        </>
+                      )
+                    : (
+                        <>
+                          No
+                          {' '}
+                          {status.toLowerCase()}
+                          {' '}
+                          SIGs to show right now.
+                        </>
+                      )}
+                </div>
+              )
+            : (
+                filteredSigs.map(sig => (
+                  <SIGSection
+                    key={sig.id}
+                    sig={sig}
+                    currentStatus={status}
+                    bannerImages={bannerImages}
+                  />
+                ))
+              )}
+        </section>
+
+        {filteredSigs.length > 0 && (
+          <ProjectsDirectorySidebar
+            status={status}
+            sigs={filteredSigs}
+          />
+        )}
+      </div>
+    </>
   )
 }
 

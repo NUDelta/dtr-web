@@ -33,15 +33,9 @@ export default function Loading() {
           </div>
         </div>
 
-        {/* View controls row (status + view mode) */}
-        <div className="mt-4 flex flex-wrap items-center gap-3">
-          {/* Status segmented control skeleton */}
+        {/* Status segmented control */}
+        <div className="mt-4">
           <SegmentedSkeleton labels={['Active', 'Alumni']} />
-
-          {/* View toggle skeleton (Card/List), pushed right on larger screens */}
-          <div className="ml-auto">
-            <SegmentedSkeleton labels={['Card', 'List']} />
-          </div>
         </div>
       </header>
 

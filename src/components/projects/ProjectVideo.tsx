@@ -8,14 +8,22 @@ interface ProjectVideoProps {
   url: string
 }
 
+const WHITESPACE_PATTERN = /\s+/g
+
+function getVideoHeadingId(title: string) {
+  return `video-${title.replace(WHITESPACE_PATTERN, '-').toLowerCase()}`
+}
+
 const ProjectVideo = ({ title, url }: ProjectVideoProps) => {
+  const headingId = getVideoHeadingId(title)
+
   return (
     <section
-      aria-labelledby={`video-${title.replace(/\s+/g, '-').toLowerCase()}`}
+      aria-labelledby={headingId}
       className="mb-10 w-full"
     >
       <h2
-        id={`video-${title.replace(/\s+/g, '-').toLowerCase()}`}
+        id={headingId}
         className="mb-2 text-2xl font-bold"
       >
         <span className="inline-flex items-center gap-2">

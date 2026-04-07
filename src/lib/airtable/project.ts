@@ -71,8 +71,7 @@ export async function getProjects(
         if (projectRecord.fields.banner_image !== undefined
           && projectRecord.fields.banner_image !== null
           && Array.isArray(projectRecord.fields.banner_image)
-          && projectRecord.fields.banner_image.length > 0
-        ) {
+          && projectRecord.fields.banner_image.length > 0) {
           bannerImage = await getImgUrlFromAttachmentObj(projectRecord.fields.banner_image)
         }
 

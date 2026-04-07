@@ -67,13 +67,13 @@ const CityDetailsPortal = ({
       flipY = false
     }
 
-    // eslint-disable-next-line react-hooks-extra/no-direct-set-state-in-use-effect
+    // eslint-disable-next-line react/set-state-in-effect
     setPos({ left, top, flipX, flipY })
   }, [containerRef, markerRef, zoom])
   // Set portal container and recompute placement on mount, zoom, resize
   useLayoutEffect(() => {
     if (containerRef.current) {
-      // eslint-disable-next-line react-hooks-extra/no-direct-set-state-in-use-effect
+      // eslint-disable-next-line react/set-state-in-effect
       setPortalContainer(containerRef.current)
     }
     compute()

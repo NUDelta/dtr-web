@@ -1,6 +1,5 @@
 import type { StaticImageData } from 'next/image'
 import type { ImgHTMLAttributes } from 'react'
-import React from 'react'
 
 export interface AdaptiveImageProps
   extends Omit<ImgHTMLAttributes<HTMLImageElement>, 'src'> {

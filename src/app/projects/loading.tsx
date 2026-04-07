@@ -7,62 +7,89 @@ const Line = ({ w = 'w-full' }: { w?: string }) => (
   <div className={`h-3 ${w} rounded bg-neutral-200`} />
 )
 
-/**
- * Card skeleton with yellow accents.
- * Matches Projects page structure: banner (optional), header, description,
- * and a collapsed section placeholder.
- */
-const SigCardSkeleton = ({ withBanner = true }: { withBanner?: boolean }) => (
+const ProjectPreviewSkeleton = () => (
+  <div className="rounded-2xl border border-neutral-200 bg-white p-4">
+    <div className="flex items-start justify-between gap-3">
+      <div className="space-y-3">
+        <div className="h-6 w-20 rounded-full bg-neutral-200" />
+        <div className="h-5 w-40 rounded bg-neutral-200" />
+      </div>
+      <div className="h-8 w-28 rounded-full border border-neutral-200 bg-neutral-100" />
+    </div>
+    <div className="mt-4 space-y-2">
+      <Line w="w-11/12" />
+      <Line w="w-10/12" />
+      <Line w="w-8/12" />
+    </div>
+  </div>
+)
+
+const SigSectionSkeleton = ({ withBanner = true }: { withBanner?: boolean }) => (
   <article
     aria-hidden="true"
-    className="overflow-hidden rounded-xl border border-neutral-200 bg-neutral-50 shadow-sm"
+    className="overflow-hidden rounded-[28px] border border-neutral-200 bg-white shadow-sm"
   >
-    {/* Yellow accent top bar */}
-    <div className="h-1.5 w-full bg-yellow-400" />
-
-    {/* Banner */}
     {withBanner
       ? (
-          <div className="relative aspect-16/7 w-full bg-neutral-200" />
+          <div className="relative aspect-16/6 w-full bg-neutral-200" />
         )
-      : (
-          <div className="h-2" />
-        )}
+      : null}
 
-    {/* Header */}
-    <div className="flex items-start justify-between gap-3 p-5">
-      <div className="flex-1 space-y-2">
-        <div className="h-6 w-2/3 rounded bg-neutral-200" />
-        <div className="h-1 w-10 rounded-full bg-yellow-300" />
+    <div className="space-y-5 p-4 sm:p-6">
+      <div className="flex flex-wrap gap-2">
+        <div className="h-6 w-24 rounded-full bg-yellow-100" />
+        <div className="h-6 w-24 rounded-full bg-neutral-100" />
+        <div className="h-6 w-28 rounded-full bg-neutral-100" />
       </div>
-      <div className="h-8 w-24 rounded-md border border-neutral-200 bg-white" />
-    </div>
-
-    {/* Description */}
-    <div className="px-5 pb-5">
       <div className="space-y-2">
+        <div className="h-7 max-w-full rounded bg-neutral-200 sm:w-80" />
         <Line w="w-11/12" />
         <Line w="w-10/12" />
         <Line w="w-9/12" />
       </div>
-    </div>
 
-    {/* Collapsible area placeholder */}
-    <div className="border-t border-neutral-200 p-5">
-      <div className="mb-3 h-5 w-24 rounded bg-neutral-200" />
-      <div className="grid grid-cols-1 gap-4 md:grid-cols-2">
-        <div className="rounded-lg border border-neutral-200 bg-white p-4">
-          <div className="mb-2 h-4 w-3/4 rounded bg-neutral-200" />
-          <div className="space-y-2">
-            <Line w="w-10/12" />
-            <Line w="w-8/12" />
-          </div>
+      <div className="space-y-4">
+        <div className="flex items-center justify-between gap-3">
+          <div className="h-6 w-36 rounded bg-neutral-200" />
+          <div className="h-4 w-14 rounded bg-neutral-200" />
         </div>
-        <div className="rounded-lg border border-neutral-200 bg-white p-4">
-          <div className="mb-2 h-4 w-2/3 rounded bg-neutral-200" />
-          <div className="space-y-2">
-            <Line w="w-9/12" />
-            <Line w="w-7/12" />
+        <div className="grid grid-cols-1 gap-4 md:grid-cols-2">
+          <ProjectPreviewSkeleton />
+          <ProjectPreviewSkeleton />
+          <ProjectPreviewSkeleton />
+        </div>
+      </div>
+
+      <div className="border-t border-neutral-200 pt-5">
+        <div className="flex items-center gap-2">
+          <div className="h-7 w-20 rounded bg-neutral-200" />
+          <div className="h-6 w-10 rounded-full bg-neutral-100" />
+        </div>
+        <div className="mt-5 grid grid-cols-1 gap-6 md:grid-cols-2">
+          <div className="space-y-5">
+            <div>
+              <div className="mb-2 h-4 w-24 rounded bg-neutral-200" />
+              <div className="grid grid-cols-[repeat(auto-fit,minmax(12rem,1fr))] gap-2">
+                <div className="h-4 rounded bg-neutral-200" />
+                <div className="h-4 rounded bg-neutral-200" />
+              </div>
+            </div>
+            <div>
+              <div className="mb-2 h-4 w-32 rounded bg-neutral-200" />
+              <div className="grid grid-cols-[repeat(auto-fit,minmax(12rem,1fr))] gap-2">
+                <div className="h-4 rounded bg-neutral-200" />
+              </div>
+            </div>
+          </div>
+          <div className="space-y-5">
+            <div>
+              <div className="mb-2 h-4 w-24 rounded bg-neutral-200" />
+              <div className="grid grid-cols-[repeat(auto-fit,minmax(9.5rem,1fr))] gap-2">
+                <div className="h-4 rounded bg-neutral-200" />
+                <div className="h-4 rounded bg-neutral-200" />
+                <div className="h-4 rounded bg-neutral-200" />
+              </div>
+            </div>
           </div>
         </div>
       </div>
@@ -79,45 +106,44 @@ export default function Loading() {
     return () => stableStopProgress()
   }, [stableStartProgress, stableStopProgress])
 
-  // Keep column balance similar to the page (two stacks)
-  // Vary banners to mimic different card heights.
-  const left = [true, false, true]
-  const right = [true, true, false]
-
   return (
     <div
-      className="mx-auto max-w-6xl px-4 py-10 animate-pulse"
+      className="mx-auto max-w-7xl animate-pulse px-4 py-10"
       aria-busy="true"
       aria-live="polite"
       aria-label="Loading projects"
     >
-      {/* Header */}
-      <header className="mb-8">
-        <div className="h-8 w-64 rounded bg-neutral-200" />
-        <div className="mt-3 h-4 w-96 max-w-full rounded bg-neutral-200" />
+      <header className="pb-4 xl:mx-auto xl:max-w-240">
+        <div className="h-9 w-64 rounded bg-neutral-200" />
+        <div className="mt-3 h-5 max-w-full rounded bg-neutral-200 sm:w-152" />
+
+        <div className="mt-6">
+          <div className="relative mx-auto max-w-xl">
+            <div className="pointer-events-none absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 rounded bg-yellow-300" />
+            <div className="h-10 w-full rounded-full border border-neutral-200 bg-white" />
+            <div className="absolute right-2 top-1/2 h-6 w-6 -translate-y-1/2 rounded-full border border-neutral-200 bg-white" />
+          </div>
+        </div>
+
+        <div className="mt-6 flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
+          <div className="mt-2 inline-flex w-full max-w-md rounded-2xl border border-neutral-200 bg-neutral-50 p-1 shadow-sm">
+            <div className="h-10 flex-1 rounded-xl bg-neutral-900" />
+            <div className="h-10 flex-1 rounded-xl bg-transparent" />
+          </div>
+          <div className="h-4 w-56 rounded bg-neutral-200" />
+        </div>
       </header>
 
-      {/* Search skeleton */}
-      <div className="mb-6">
-        <div className="relative mx-auto max-w-xl">
-          <div className="pointer-events-none absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 rounded bg-yellow-300" />
-          <div className="h-10 w-full rounded-full border border-neutral-200 bg-white" />
-          <div className="absolute right-2 top-1/2 -translate-y-1/2 h-6 w-6 rounded-full border border-neutral-200 bg-white" />
+      <div className="xl:mx-auto xl:max-w-240">
+        <div className="space-y-6 pb-28 xl:pb-10">
+          {[true, false, true].map((withBanner, i) => (
+            <SigSectionSkeleton key={`sig-${i}`} withBanner={withBanner} />
+          ))}
         </div>
       </div>
 
-      {/* Two independent columns */}
-      <div className="grid grid-cols-1 gap-6 md:grid-cols-2">
-        <div className="flex flex-col gap-6">
-          {left.map((withBanner, i) => (
-            <SigCardSkeleton key={`l-${i}`} withBanner={withBanner} />
-          ))}
-        </div>
-        <div className="flex flex-col gap-6">
-          {right.map((withBanner, i) => (
-            <SigCardSkeleton key={`r-${i}`} withBanner={withBanner} />
-          ))}
-        </div>
+      <div className="fixed right-4 bottom-4 z-30 2xl:hidden">
+        <div className="h-12 w-52 rounded-full border border-neutral-200 bg-white/95 shadow-lg backdrop-blur" />
       </div>
     </div>
   )

@@ -86,8 +86,8 @@ export async function GET(
       }
       else {
         // 3) Fallback to a default image
-        chosenKey = `images/default-pic.${preferredFormat ?? 'webp'}`
-        chosenFormat = preferredFormat ?? 'webp'
+        chosenKey = 'images/default-pic.webp'
+        chosenFormat = 'webp'
 
         console.warn(`[images] Cache miss for attId=${attId}, filename=${filename}. Serving default image.`)
       }
@@ -124,7 +124,7 @@ export async function GET(
   }
   catch (err) {
     console.error('[images] error:', err)
-    return NextResponse.json({ error: 'Internal server error' }, { status: 500 })
+    return NextResponse.json({ error: 'Internal server error', message: err }, { status: 500 })
   }
 }
 

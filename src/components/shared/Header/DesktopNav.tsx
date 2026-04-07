@@ -24,12 +24,12 @@ const DesktopNav = ({
     = 'px-3 py-2 rounded-md transition-colors focus:outline-none focus-visible:ring-2 focus-visible:ring-yellow hover:bg-yellow hover:text-black motion-reduce:transition-none'
 
   // --- Consistent, global dropdown alignment ---
-  const triggerRefs = useRef(new Map<string, HTMLButtonElement>())
+  const triggerMapRef = useRef(new Map<string, HTMLButtonElement>())
   const [menuGlobalAlign, setMenuGlobalAlign] = useState<'left' | 'right'>('left')
 
   useEffect(() => {
     const compute = () => {
-      const triggers = Array.from(triggerRefs.current.values())
+      const triggers = Array.from(triggerMapRef.current.values())
       if (!triggers.length) {
         return
       }
@@ -42,7 +42,7 @@ const DesktopNav = ({
       const viewportW = window.innerWidth
       const padding = 8
       const wouldOverflowRight = rect.left + fallbackWidth > viewportW - padding
-      // eslint-disable-next-line react-hooks-extra/no-direct-set-state-in-use-effect
+      // eslint-disable-next-line react/set-state-in-effect
       setMenuGlobalAlign(wouldOverflowRight ? 'right' : 'left')
     }
 
@@ -85,7 +85,7 @@ const DesktopNav = ({
               <button
                 ref={(el) => {
                   if (el) {
-                    triggerRefs.current.set(group.id, el)
+                    triggerMapRef.current.set(group.id, el)
                   }
                 }}
                 type="button"

@@ -3,16 +3,24 @@ import { sortPeople } from './utils'
 
 interface MembersForRoleProps {
   members: PartialPerson[]
+  compactColumns?: boolean
 }
 
-const MembersForRole = ({ members }: MembersForRoleProps) => {
-  if (members === undefined || members.length === 0) {
+const MembersForRole = ({
+  members,
+  compactColumns = false,
+}: MembersForRoleProps) => {
+  if (members.length === 0) {
     return <p className="italic text-neutral-600">None</p>
   }
   return (
     <ul
       role="list"
-      className="grid grid-cols-[repeat(auto-fit,minmax(12rem,1fr))] gap-x-4 gap-y-1 md:gap-y-1.5"
+      className={`grid gap-x-4 gap-y-1 md:gap-y-1.5 ${
+        compactColumns
+          ? 'grid-cols-[repeat(auto-fit,minmax(9.5rem,1fr))]'
+          : 'grid-cols-[repeat(auto-fit,minmax(12rem,1fr))]'
+      }`}
     >
       {members.sort(sortPeople).map(m => (
         <li key={m.id} className="text-sm font-medium text-neutral-900">

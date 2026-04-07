@@ -31,7 +31,7 @@ const Modal = ({
   children,
 }: ModalProps) => {
   const dialogRef = useRef<HTMLDivElement | null>(null)
-  const previouslyFocused = useRef<HTMLElement | null>(null)
+  const previouslyFocusedRef = useRef<HTMLElement | null>(null)
 
   const titleId = useId()
   const descriptionId = useId()
@@ -62,7 +62,7 @@ const Modal = ({
       return
     }
 
-    previouslyFocused.current = document.activeElement as HTMLElement | null
+    previouslyFocusedRef.current = document.activeElement as HTMLElement | null
 
     // Initial focus: try to find the first focusable element, otherwise focus the dialog
     const focusable = dialogEl.querySelectorAll<HTMLElement>(
@@ -110,7 +110,7 @@ const Modal = ({
 
     return () => {
       document.removeEventListener('keydown', handleKeyDown)
-      previouslyFocused.current?.focus?.()
+      previouslyFocusedRef.current?.focus?.()
     }
   }, [open, onClose])
 

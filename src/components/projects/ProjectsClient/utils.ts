@@ -1,62 +1,118 @@
-export const collapseVariants = {
-  open: { height: 'auto', opacity: 1, transition: { duration: 0.22 } },
-  collapsed: { height: 0, opacity: 0, transition: { duration: 0.20 } },
-}
+import type { DirectoryStatus, SIGDirectoryItem } from './types'
 
-export const cardAppear = {
-  initial: { opacity: 0, y: 6 },
-  animate: { opacity: 1, y: 0, transition: { duration: 0.34 } },
-  exit: { opacity: 0, y: 10, transition: { duration: 0.30 } },
-}
+const INACTIVE_PROJECT_STATUS_KEYWORDS = [
+  'inactive',
+  'archived',
+  'complete',
+  'completed',
+  'former',
+  'past',
+]
 
-/**
- * Estimate collapsed card height (px) for balancing columns.
- * Collapsed = Banner (if any) + Header + Description + paddings.
- * These constants are calibrated for a ~2-col layout.
- */
-export const estimateCollapsedHeight = (sig: SIG, hasBanner: boolean, desc: string): number => {
-  const HEADER = 84 // title + toggle row + paddings
-  const BANNER = hasBanner ? 140 : 0 // approx banner height at md two-column width
-  const DESC_LINE_H = 22 // line-height in px for prose body
-  const CHARS_PER_LINE = 80 // conservative wrap length (depends on your font/width)
-  const MARGINS = 24 + 16 // spacing above/below description + card spacing
+const matchesQuery = (value: string, query: string) =>
+  value.toLowerCase().includes(query)
 
-  const textLen = (desc ?? '').trim().length
-  const lines = Math.ceil(textLen / CHARS_PER_LINE) || 1
-  const descHeight = lines * DESC_LINE_H
+const sortProjectsByName = (a: PartialProject, b: PartialProject) =>
+  a.name.localeCompare(b.name, undefined, { sensitivity: 'base' })
 
-  return HEADER + BANNER + descHeight + MARGINS
-}
+export function normalizeProjectDirectoryStatus(status?: string | null): DirectoryStatus {
+  const normalized = status?.trim().toLowerCase() ?? ''
 
-/** Greedy bin-packing into 2 columns by estimated collapsed height. */
-export const balanceTwoColumns = <T extends SIG>(
-  items: T[],
-  getHeight: (item: T) => number,
-): [T[], T[]] => {
-  // Sort big->small for better packing (descending by estimate)
-  const sorted = [...items].sort((a, b) => getHeight(b) - getHeight(a))
-  const left: T[] = []
-  const right: T[] = []
-  let leftH = 0
-  let rightH = 0
-
-  for (const it of sorted) {
-    const h = getHeight(it)
-    if (leftH <= rightH) {
-      left.push(it)
-      leftH += h
-    }
-    else {
-      right.push(it)
-      rightH += h
-    }
+  // Airtable status labels are free-form enough that we only classify
+  // obviously inactive values as inactive; everything else stays active.
+  if (INACTIVE_PROJECT_STATUS_KEYWORDS.some(keyword => normalized.includes(keyword))) {
+    return 'Inactive'
   }
 
-  // Keep relative order within each column as per original input for nicer perception
-  const indexMap = new Map(items.map((it, i) => [it.id, i]))
-  const byOriginal = (a: T, b: T) => (indexMap.get(a.id)! - indexMap.get(b.id)!)
-  left.sort(byOriginal)
-  right.sort(byOriginal)
+  return 'Active'
+}
 
-  return [left, right]
+export function deriveSIGDirectoryItems(sigs: SIG[]): SIGDirectoryItem[] {
+  return sigs.map((sig) => {
+    const activeProjects = (sig.projects ?? []).filter(
+      project => normalizeProjectDirectoryStatus(project.status) === 'Active',
+    ).sort(sortProjectsByName)
+    const inactiveProjects = (sig.projects ?? []).filter(
+      project => normalizeProjectDirectoryStatus(project.status) === 'Inactive',
+    ).sort(sortProjectsByName)
+    const status: DirectoryStatus = activeProjects.length > 0 ? 'Active' : 'Inactive'
+
+    return {
+      ...sig,
+      status,
+      activeProjects,
+      inactiveProjects,
+      shouldAutoExpandInactive: false,
+      projectCounts: {
+        active: activeProjects.length,
+        inactive: inactiveProjects.length,
+        total: (sig.projects ?? []).length,
+      },
+      memberCount: sig.members.length,
+    }
+  })
+}
+
+export function getSIGCountsByStatus(
+  sigs: SIGDirectoryItem[],
+): Record<DirectoryStatus, number> {
+  return {
+    Active: sigs.filter(sig => sig.status === 'Active').length,
+    Inactive: sigs.filter(sig => sig.status === 'Inactive').length,
+  }
+}
+
+export function filterSIGDirectoryItems(
+  sigs: SIGDirectoryItem[],
+  status: DirectoryStatus,
+  query: string,
+): SIGDirectoryItem[] {
+  const normalizedQuery = query.trim().toLowerCase()
+  const scoped = sigs.filter(sig => sig.status === status)
+
+  if (!normalizedQuery) {
+    return scoped
+  }
+
+  return scoped.flatMap((sig) => {
+    const sigMatches
+      = matchesQuery(sig.name, normalizedQuery)
+        || matchesQuery(sig.description ?? '', normalizedQuery)
+
+    // Search stays inside the selected status tab, but active SIGs can still
+    // surface inactive work in their secondary subsection when it matches.
+    const activeProjects = sig.activeProjects.filter(project =>
+      matchesQuery(`${project.name} ${project.description ?? ''}`, normalizedQuery),
+    )
+    const inactiveProjects = sig.inactiveProjects.filter(project =>
+      matchesQuery(`${project.name} ${project.description ?? ''}`, normalizedQuery),
+    )
+
+    if (sigMatches) {
+      return [sig]
+    }
+
+    if (activeProjects.length === 0 && inactiveProjects.length === 0) {
+      return []
+    }
+
+    return [{
+      ...sig,
+      activeProjects,
+      inactiveProjects,
+      shouldAutoExpandInactive: inactiveProjects.length > 0,
+    }]
+  })
+}
+
+export function getVisibleProjectCount(
+  sig: SIGDirectoryItem,
+  status: DirectoryStatus,
+): number {
+  if (status === 'Inactive') {
+    return sig.inactiveProjects.length
+  }
+
+  return sig.activeProjects.length
+    + (sig.shouldAutoExpandInactive ? sig.inactiveProjects.length : 0)
 }

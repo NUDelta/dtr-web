@@ -3,6 +3,8 @@ import { ABBR_TO_FULL, FULL_TO_ABBR } from './consts'
 export interface AlumniRow { name: string, company: string, city: string, state: string }
 export interface GazetteerRow { city: string, state: string, lat: number, lon: number }
 
+const TITLE_CASE_BOUNDARY_PATTERN = /\b\w/g
+
 export interface CityGroup {
   key: string
   city: string
@@ -12,7 +14,7 @@ export interface CityGroup {
 }
 
 export function titleCase(s: string) {
-  return s.toLowerCase().replace(/\b\w/g, m => m.toUpperCase())
+  return s.toLowerCase().replace(TITLE_CASE_BOUNDARY_PATTERN, m => m.toUpperCase())
 }
 
 export function normalizeStateName(s: string): string | null {

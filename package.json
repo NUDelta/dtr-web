@@ -2,7 +2,7 @@
   "name": "dtr-web",
   "version": "2.0.0",
   "private": true,
-  "packageManager": "pnpm@10.32.1",
+  "packageManager": "pnpm@10.33.0",
   "homepage": "https://github.com/NUDelta/dtr-web",
   "engines": {
     "node": ">=22.x"
@@ -17,15 +17,15 @@
     "postinstall": "husky || true"
   },
   "dependencies": {
-    "@aws-sdk/client-s3": "^3.1014.0",
-    "@next/third-parties": "16.2.1",
+    "@aws-sdk/client-s3": "^3.1025.0",
+    "@next/third-parties": "16.2.2",
     "@zl-asica/react": "^0.13.0",
     "cloudflare": "^5.2.0",
     "clsx": "^2.1.1",
     "d3-scale": "^4.0.2",
     "framer-motion": "^12.38.0",
-    "lucide-react": "^0.577.0",
-    "next": "16.2.1",
+    "lucide-react": "^1.7.0",
+    "next": "16.2.2",
     "next-nprogress-bar": "^2.4.7",
     "papaparse": "^5.5.3",
     "react": "19.2.4",
@@ -40,9 +40,10 @@
     "ts-airtable": "^0.3.1"
   },
   "devDependencies": {
-    "@antfu/eslint-config": "^7.7.3",
-    "@eslint-react/eslint-plugin": "^2.13.0",
-    "@smithy/types": "^4.13.1",
+    "@antfu/eslint-config": "^8.0.0",
+    "@eslint-react/eslint-plugin": "^3.0.0",
+    "@next/eslint-plugin-next": "^16.2.2",
+    "@smithy/types": "^4.14.0",
     "@tailwindcss/postcss": "^4.2.2",
     "@tailwindcss/typography": "^0.5.16",
     "@types/d3-scale": "^4.0.9",
@@ -52,8 +53,8 @@
     "@types/react-dom": "^19.2.3",
     "@types/react-simple-maps": "^3.0.6",
     "@types/rss": "^0.0.32",
-    "baseline-browser-mapping": "^2.10.10",
-    "eslint": "^10.1.0",
+    "baseline-browser-mapping": "^2.10.16",
+    "eslint": "^10.2.0",
     "eslint-plugin-format": "^2.0.1",
     "eslint-plugin-react-hooks": "^7",
     "eslint-plugin-react-refresh": "^0.5.2",
@@ -61,7 +62,7 @@
     "nano-staged": "^0.9.0",
     "postcss": "^8.5.8",
     "tailwindcss": "^4.2.2",
-    "typescript": "^5.8.3"
+    "typescript": "^6.0.2"
   },
   "nano-staged": {
     "src/**/*.{js,jsx,ts,tsx,json,md,mdx}": [

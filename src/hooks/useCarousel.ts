@@ -23,12 +23,30 @@ export const useCarousel = ({
   const pointerStartXRef = useRef<number | null>(null)
   const wasFocusedRef = useRef(false)
 
-  const prefersReducedMotion
-    = typeof window !== 'undefined'
+  const [prefersReducedMotion, setPrefersReducedMotion] = useState(
+    () =>
+      typeof window !== 'undefined'
       && window.matchMedia !== undefined
-      && window.matchMedia('(prefers-reduced-motion: reduce)').matches
-
+      && window.matchMedia('(prefers-reduced-motion: reduce)').matches,
+  )
   const effectiveAutoPlay = startAutoPlay && !prefersReducedMotion && !paused
+
+  useEffect(() => {
+    if (typeof window === 'undefined' || window.matchMedia === undefined) {
+      return
+    }
+
+    const mediaQuery = window.matchMedia('(prefers-reduced-motion: reduce)')
+    const handleChange = (event: MediaQueryListEvent) => {
+      setPrefersReducedMotion(event.matches)
+    }
+
+    mediaQuery.addEventListener('change', handleChange)
+
+    return () => {
+      mediaQuery.removeEventListener('change', handleChange)
+    }
+  }, [])
 
   // ---------- Navigation ----------
   const setSlide = useCallback(

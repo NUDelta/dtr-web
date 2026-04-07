@@ -46,7 +46,7 @@ const PopupAnnouncement = () => {
 
   // Compute "today" on the client after hydration
   useEffect(() => {
-    // eslint-disable-next-line react-hooks-extra/no-direct-set-state-in-use-effect
+    // eslint-disable-next-line react/set-state-in-effect
     setToday(fmtLocalDate(new Date()))
   }, [])
 
@@ -64,9 +64,9 @@ const PopupAnnouncement = () => {
     const valid = announcements.filter(a => a.expiryDate >= today)
 
     if (valid.length > 0) {
-      // eslint-disable-next-line react-hooks-extra/no-direct-set-state-in-use-effect
+      // eslint-disable-next-line react/set-state-in-effect
       setActiveAnnouncement(valid[0])
-      // eslint-disable-next-line react-hooks-extra/no-direct-set-state-in-use-effect
+      // eslint-disable-next-line react/set-state-in-effect
       setIsVisible(true)
       setLastViewedDate(today)
     }

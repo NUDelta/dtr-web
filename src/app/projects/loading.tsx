@@ -113,7 +113,7 @@ export default function Loading() {
       aria-live="polite"
       aria-label="Loading projects"
     >
-      <header className="pb-4 xl:mx-auto xl:max-w-[60rem]">
+      <header className="pb-4 xl:mx-auto xl:max-w-240">
         <div className="h-9 w-64 rounded bg-neutral-200" />
         <div className="mt-3 h-5 max-w-full rounded bg-neutral-200 sm:w-152" />
 
@@ -134,7 +134,7 @@ export default function Loading() {
         </div>
       </header>
 
-      <div className="xl:mx-auto xl:max-w-[60rem]">
+      <div className="xl:mx-auto xl:max-w-240">
         <div className="space-y-6 pb-28 xl:pb-10">
           {[true, false, true].map((withBanner, i) => (
             <SigSectionSkeleton key={`sig-${i}`} withBanner={withBanner} />

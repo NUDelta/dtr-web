@@ -1,6 +1,6 @@
 import { ArrowUpRight } from 'lucide-react'
 import Link from 'next/link'
-import { MarkdownContents } from '@/components/shared'
+import { getProjectPreviewText } from './projectPreviewText'
 import { normalizeProjectDirectoryStatus } from './utils'
 
 interface ProjectPreviewCardProps {
@@ -14,6 +14,9 @@ const statusClasses = {
 
 const ProjectPreviewCard = ({ project }: ProjectPreviewCardProps) => {
   const status = normalizeProjectDirectoryStatus(project.status)
+  const previewText = project.description
+    ? getProjectPreviewText(project.description)
+    : ''
 
   return (
     <Link
@@ -42,11 +45,11 @@ const ProjectPreviewCard = ({ project }: ProjectPreviewCardProps) => {
           </span>
         </div>
 
-        {project.description
+        {previewText
           ? (
-              <div className="prose prose-sm mt-3 max-w-none text-neutral-700 prose-p:my-0">
-                <MarkdownContents content={project.description} />
-              </div>
+              <p className="mt-3 text-sm text-neutral-700">
+                {previewText}
+              </p>
             )
           : (
               <p className="mt-3 text-sm text-neutral-600">

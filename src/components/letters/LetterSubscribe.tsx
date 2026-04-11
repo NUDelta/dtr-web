@@ -40,7 +40,9 @@ export default function LetterSubscribe() {
   }
 
   return (
-    <div className="flex items-center gap-2">
+    // On mobile: column layout so form stacks below the toggle
+    // On sm+: row layout with slide-out form
+    <div className="flex flex-col items-end sm:flex-row sm:items-center gap-y-2 sm:gap-2">
       <button
         onClick={toggle}
         className="flex items-center gap-1 text-sm text-slate-400 hover:text-yellow-600 transition-colors bg-transparent border-none cursor-pointer p-0"
@@ -54,16 +56,23 @@ export default function LetterSubscribe() {
                   <rect x="1" y="4" width="18" height="13" rx="2" stroke="currentColor" strokeWidth="1.8" />
                   <path d="M1 7l9 6 9-6" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" />
                 </svg>
-                subscribe to future letters
+                {/* Full label on sm+, short label on mobile */}
+                <span className="hidden sm:inline">subscribe to future letters</span>
+                <span className="sm:hidden">subscribe</span>
               </>
             )}
       </button>
 
+      {/* On mobile: visible block when open, hidden when closed */}
+      {/* On sm+: slide-out animation */}
       <form
         onSubmit={handleSubmit}
-        className={`flex items-center gap-2 overflow-hidden transition-all duration-300 ease-in-out ${
-          open ? 'max-w-xs opacity-100' : 'max-w-0 opacity-0'
-        }`}
+        className={`flex items-center gap-2 transition-all duration-300 ease-in-out
+          w-full sm:w-auto overflow-hidden
+          ${open
+      ? 'opacity-100 max-h-12 sm:max-w-xs pointer-events-auto'
+      : 'opacity-0 max-h-0 sm:max-w-0 pointer-events-none'
+    }`}
         aria-hidden={!open}
       >
         <input
@@ -71,7 +80,7 @@ export default function LetterSubscribe() {
           type="email"
           required
           placeholder="your@email.com"
-          className="text-sm px-2.5 py-1 border border-slate-300 rounded-md w-44 outline-none focus:border-yellow-400 focus:ring-2 focus:ring-yellow-300/40 transition-shadow"
+          className="text-sm px-2.5 py-1 border border-slate-300 rounded-md flex-1 sm:flex-none sm:w-44 outline-none focus:border-yellow-400 focus:ring-2 focus:ring-yellow-300/40 transition-shadow"
         />
         <button
           type="submit"
@@ -81,7 +90,7 @@ export default function LetterSubscribe() {
           {status === 'sending' ? 'Sending…' : 'Subscribe'}
         </button>
         {status === 'error' && (
-          <span className="text-xs text-red-500">Something went wrong, try again.</span>
+          <span className="text-xs text-red-500">Try again.</span>
         )}
       </form>
     </div>

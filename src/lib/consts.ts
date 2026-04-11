@@ -22,3 +22,5 @@ export const R2_BUCKET = process.env.R2_BUCKET ?? ''
 export const R2_CLEANUP_MAX_AGE_DAYS = Number.isNaN(Number(process.env.R2_CLEANUP_MAX_AGE_DAYS))
   ? 45 // Default to 45 days
   : Number(process.env.R2_CLEANUP_MAX_AGE_DAYS)
+
+export const LETTER_SUBSCRIBE_APPS_SCRIPT_URL = process.env.LETTER_SUBSCRIBE_APPS_SCRIPT_URL ?? ''

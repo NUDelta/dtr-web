@@ -14,7 +14,7 @@ export default function Letters() {
     <div className="prose mx-auto max-w-4xl">
       <h1>Annual Letters & Resources</h1>
       {/* Annual Letters */}
-      <div className="flex flex-wrap items-baseline justify-between border-b border-black mt-12 mb-4">
+      <div className="mt-12 mb-4 flex flex-col gap-3 border-b border-black sm:flex-row sm:items-start sm:justify-between">
         <h2 className="!border-none !mt-0 !mb-0 !pb-2">Annual Letters</h2>
         <LetterSubscribe />
       </div>

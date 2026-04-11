@@ -59,16 +59,11 @@ export default function LetterSubscribe() {
             )}
       </button>
 
-      {/* On mobile: visible block when open, hidden when closed */}
-      {/* On sm+: slide-out animation */}
       <form
         onSubmit={handleSubmit}
-        className={`flex items-center gap-2 transition-all duration-300 ease-in-out
-          w-full sm:w-auto overflow-hidden
-          ${open
-      ? 'opacity-100 max-h-12 sm:max-w-xs pointer-events-auto'
-      : 'opacity-0 max-h-0 sm:max-w-0 pointer-events-none'
-    }`}
+        className={`flex items-center gap-2 overflow-hidden transition-all duration-300 ease-in-out ${
+          open ? 'max-w-xs opacity-100' : 'max-w-0 opacity-0 pointer-events-none'
+        }`}
         aria-hidden={!open}
       >
         <input
@@ -76,7 +71,7 @@ export default function LetterSubscribe() {
           type="email"
           required
           placeholder="your@email.com"
-          className="text-sm px-2.5 py-1 border border-slate-300 rounded-md flex-1 sm:flex-none sm:w-44 outline-none focus:border-yellow-400 focus:ring-2 focus:ring-yellow-300/40 transition-shadow"
+          className="text-sm px-2.5 py-1 border border-slate-300 rounded-md w-44 outline-none focus:border-yellow-400 focus:ring-2 focus:ring-yellow-300/40 transition-shadow"
         />
         <button
           type="submit"

@@ -71,7 +71,7 @@ export default function LetterSubscribe() {
           type="email"
           required
           placeholder="your@email.com"
-          className="text-sm px-2.5 py-1 border border-slate-300 rounded-md w-44 outline-none focus:border-yellow-400 focus:ring-2 focus:ring-yellow-300/40 transition-shadow"
+          className="text-sm px-2.5 py-1 border border-slate-300 rounded-md w-40 outline-none focus:border-yellow-400 focus:ring-2 focus:ring-yellow-300/40 transition-shadow"
         />
         <button
           type="submit"

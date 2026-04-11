@@ -40,9 +40,7 @@ export default function LetterSubscribe() {
   }
 
   return (
-    // On mobile: column layout so form stacks below the toggle
-    // On sm+: row layout with slide-out form
-    <div className="flex flex-col items-end sm:flex-row sm:items-center gap-y-2 sm:gap-2">
+    <div className="flex items-center gap-2">
       <button
         onClick={toggle}
         className="flex items-center gap-1 text-sm text-slate-400 hover:text-yellow-600 transition-colors bg-transparent border-none cursor-pointer p-0"
@@ -56,9 +54,7 @@ export default function LetterSubscribe() {
                   <rect x="1" y="4" width="18" height="13" rx="2" stroke="currentColor" strokeWidth="1.8" />
                   <path d="M1 7l9 6 9-6" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" />
                 </svg>
-                {/* Full label on sm+, short label on mobile */}
-                <span className="hidden sm:inline">subscribe to future letters</span>
-                <span className="sm:hidden">subscribe</span>
+                subscribe
               </>
             )}
       </button>

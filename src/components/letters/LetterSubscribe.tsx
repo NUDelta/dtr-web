@@ -72,7 +72,7 @@ export default function LetterSubscribe() {
         aria-hidden={!open}
         className={[
           'items-center gap-2 overflow-hidden',
-          'sm:flex sm:transition-all sm:duration-300 sm:ease-in-out',
+          'sm:flex sm:transition-opacity sm:duration-300 sm:ease-in-out',
           open
             ? 'flex flex-1 sm:flex-none sm:max-w-xs sm:opacity-100 pointer-events-auto'
             : 'hidden sm:max-w-0 sm:opacity-0 pointer-events-none',

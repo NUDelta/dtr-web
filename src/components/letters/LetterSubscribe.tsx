@@ -41,7 +41,7 @@ export default function LetterSubscribe() {
   return (
     // On mobile when open: w-full so it wraps to its own row below the heading
     // On sm+: auto width, stays inline
-    <div className="flex items-center gap-2">
+    <div className={`flex items-center gap-2 ${open ? 'w-full sm:w-auto' : ''}`}>
 
       {/* Toggle button
           Mobile: visible when closed, hidden when open (✕ lives inside the form instead)

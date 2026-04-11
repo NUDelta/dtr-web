@@ -41,7 +41,7 @@ export default function LetterSubscribe() {
   return (
     // On mobile when open: w-full so it wraps to its own row below the heading
     // On sm+: auto width, stays inline
-    <div className={`flex items-center gap-2 ${open ? 'w-full sm:w-auto' : ''}`}>
+    <div className="flex items-center gap-2">
 
       {/* Toggle button
           Mobile: visible when closed, hidden when open (✕ lives inside the form instead)
@@ -78,13 +78,6 @@ export default function LetterSubscribe() {
             : 'hidden sm:max-w-0 sm:opacity-0 pointer-events-none',
         ].join(' ')}
       >
-        <input
-          ref={inputRef}
-          type="email"
-          required
-          placeholder="your@email.com"
-          className="flex-1 sm:flex-none sm:w-44 text-sm px-2.5 py-1 border border-slate-300 rounded-md outline-none focus:border-yellow-400 focus:ring-2 focus:ring-yellow-300/40 transition-shadow"
-        />
         {/* Cancel button inside form — mobile only */}
         <button
           type="button"
@@ -93,6 +86,13 @@ export default function LetterSubscribe() {
         >
           ✕
         </button>
+        <input
+          ref={inputRef}
+          type="email"
+          required
+          placeholder="your@email.com"
+          className="w-44 text-sm px-2.5 py-1 border border-slate-300 rounded-md outline-none focus:border-yellow-400 focus:ring-2 focus:ring-yellow-300/40 transition-shadow"
+        />
         <button
           type="submit"
           disabled={status === 'sending'}

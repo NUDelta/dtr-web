@@ -78,14 +78,6 @@ export default function LetterSubscribe() {
             : 'hidden sm:max-w-0 sm:opacity-0 pointer-events-none',
         ].join(' ')}
       >
-        {/* Cancel button inside form — mobile only */}
-        <button
-          type="button"
-          onClick={toggle}
-          className="sm:hidden text-sm text-slate-400 hover:text-slate-600 bg-transparent border-none cursor-pointer px-1 p-0"
-        >
-          ✕
-        </button>
         <input
           ref={inputRef}
           type="email"
@@ -99,6 +91,14 @@ export default function LetterSubscribe() {
           className="text-sm px-3 py-1 bg-yellow-400 hover:bg-yellow-500 text-slate-900 font-semibold rounded-md whitespace-nowrap transition-colors disabled:opacity-60 cursor-pointer border-none"
         >
           {status === 'sending' ? 'Sending…' : 'Subscribe'}
+        </button>
+        {/* Cancel button inside form — mobile only, sits at the right end */}
+        <button
+          type="button"
+          onClick={toggle}
+          className="sm:hidden text-sm text-slate-500 hover:text-yellow-600 active:text-yellow-600 transition-colors bg-transparent border-none cursor-pointer px-1 p-0"
+        >
+          ✕
         </button>
         {status === 'error' && (
           <span className="text-xs text-red-500">Try again.</span>

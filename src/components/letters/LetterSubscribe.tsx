@@ -2,8 +2,8 @@
 
 import { useRef, useState } from 'react'
 
-const APPS_SCRIPT_URL =
-  'https://script.google.com/macros/s/AKfycbxevdtm_cTmBNb-v0hUFQTMPCuHaTz4WSpN9sAATfVfGTsJxavToynppDv4Qs8KO3ffeQ/exec'
+const APPS_SCRIPT_URL
+  = 'https://script.google.com/macros/s/AKfycbxevdtm_cTmBNb-v0hUFQTMPCuHaTz4WSpN9sAATfVfGTsJxavToynppDv4Qs8KO3ffeQ/exec'
 
 export default function LetterSubscribe() {
   const [open, setOpen] = useState(false)
@@ -11,28 +11,28 @@ export default function LetterSubscribe() {
   const inputRef = useRef<HTMLInputElement>(null)
 
   function toggle() {
-    setOpen(prev => {
-      if (!prev) setTimeout(() => inputRef.current?.focus(), 50)
+    setOpen((prev) => {
+      if (!prev) {
+        setTimeout(() => inputRef.current?.focus(), 50)
+      }
       return !prev
     })
   }
 
-  async function handleSubmit(e: React.FormEvent) {
+  function handleSubmit(e: React.FormEvent) {
     e.preventDefault()
-    const email = inputRef.current?.value?.trim()
-    if (!email) return
+    const email = inputRef.current?.value?.trim() ?? ''
+    if (!email) {
+      return
+    }
 
     setStatus('sending')
-    try {
-      await fetch(APPS_SCRIPT_URL, {
-        method: 'POST',
-        body: new URLSearchParams({ email }),
-      })
-      setStatus('done')
-    }
-    catch {
-      setStatus('error')
-    }
+    fetch(APPS_SCRIPT_URL, {
+      method: 'POST',
+      body: new URLSearchParams({ email }),
+    })
+      .then(() => { setStatus('done') })
+      .catch(() => { setStatus('error') })
   }
 
   if (status === 'done') {

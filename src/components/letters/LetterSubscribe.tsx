@@ -96,7 +96,7 @@ export default function LetterSubscribe() {
         <button
           type="button"
           onClick={toggle}
-          className="sm:hidden text-sm text-slate-500 hover:text-yellow-600 active:text-yellow-600 transition-colors bg-transparent border-none cursor-pointer px-1 p-0"
+          className="sm:hidden text-sm text-slate-400 bg-transparent border-none cursor-pointer px-1 p-0"
         >
           ✕
         </button>

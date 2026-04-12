@@ -1,5 +1,6 @@
 import type { Metadata } from 'next'
 import Link from 'next/link'
+import LetterSubscribe from '@/components/letters/LetterSubscribe'
 import annualLetters from '@/lib/annual-letters'
 
 export const metadata: Metadata = {
@@ -12,8 +13,11 @@ export default function Letters() {
   return (
     <div className="prose mx-auto max-w-4xl">
       <h1>Annual Letters & Resources</h1>
-      {/* Annual Letters Placeholder */}
-      <h2>Annual Letters</h2>
+      {/* Annual Letters */}
+      <div className="mt-12 mb-4 flex flex-wrap items-baseline justify-between border-b border-black">
+        <h2 className="!border-none !mt-0 !mb-0 !pb-2">Annual Letters</h2>
+        <LetterSubscribe />
+      </div>
       <p>
         The DTR annual letter shares Haoqi’s reflections on mentoring and
         learning, and on DTR’s evolving culture and practice. It’s a personal

@@ -2,7 +2,7 @@
   "name": "dtr-web",
   "version": "2.0.0",
   "private": true,
-  "packageManager": "pnpm@10.33.0",
+  "packageManager": "pnpm@11.5.0",
   "homepage": "https://github.com/NUDelta/dtr-web",
   "engines": {
     "node": ">=22.x"
@@ -21,7 +21,7 @@
     "@next/third-parties": "16.2.6",
     "@tanstack/react-form-nextjs": "^1.33.0",
     "@zl-asica/react": "^0.13.0",
-    "cloudflare": "^5.2.0",
+    "cloudflare": "^6.3.0",
     "clsx": "^2.1.1",
     "d3-scale": "^4.0.2",
     "framer-motion": "^12.40.0",
@@ -43,8 +43,8 @@
     "zod": "^4.4.3"
   },
   "devDependencies": {
-    "@antfu/eslint-config": "^8.1.1",
-    "@eslint-react/eslint-plugin": "^3.0.0",
+    "@antfu/eslint-config": "^9.0.0",
+    "@eslint-react/eslint-plugin": "^5.8.7",
     "@next/eslint-plugin-next": "^16.2.6",
     "@smithy/types": "^4.14.2",
     "@tailwindcss/postcss": "^4.3.0",

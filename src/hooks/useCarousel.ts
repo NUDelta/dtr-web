@@ -85,7 +85,7 @@ export const useCarousel = ({
     }
     timerRef.current = window.setInterval(() => {
       goNext()
-    }, intervalMs) as unknown as number
+    }, intervalMs)
   }, [clearTimer, goNext, effectiveAutoPlay, intervalMs])
 
   useEffect(() => {

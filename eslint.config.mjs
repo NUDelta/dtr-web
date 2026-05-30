@@ -21,6 +21,7 @@ export default antfu({
 }, {
   files: ['src/app/**/page.tsx'],
   rules: {
+    'react/dom-no-dangerously-set-innerhtml': 'off',
     'react-dom/no-dangerously-set-innerhtml': 'off',
   },
 })

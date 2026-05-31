@@ -16,3 +16,7 @@ export const AIRTABLE_REFRESH_TABLES = [
 export function getAirtableListCachePrefix(tableName: string): string {
   return `records:list:${AIRTABLE_BASE_ID}:${encodeURIComponent(tableName)}:`
 }
+
+export function getAirtableAllRecordsCacheKey(tableName: string): string {
+  return `records:all:${AIRTABLE_BASE_ID}:${encodeURIComponent(tableName)}:{}`
+}

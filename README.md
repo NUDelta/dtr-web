@@ -45,3 +45,12 @@ The website implements a two-tier caching system to minimize Airtable API usage:
 
 1. **Data Caching**: Airtable table data is cached using [Airtable TS](https://airtable.zla.app)'s built-in caching interface and an injected Cloudflare KV Cache Store. A scheduled GitHub Action refreshes the cache every 12 hours, while stale KV data remains available as a fallback during Airtable/API failures.
 2. **Image Caching**: Images are downloaded once from Airtable, transformed into modern optimized formats (e.g., WebP, AVIF), and cached in Cloudflare R2 Bucket with hash-based invalidation and long-term caching headers.
+
+The Airtable refresh endpoint requires `AIRTABLE_REFRESH_SECRET` in production.
+If it is not set, the endpoint falls back to `R2_CRON_SECRET`.
+
+## Production Environment
+
+DigitalOcean runtime env must include Airtable credentials, Cloudflare KV credentials, R2 credentials, and `AIRTABLE_REFRESH_SECRET` or `R2_CRON_SECRET` for cron endpoints.
+
+GitHub repository secrets must include `AIRTABLE_REFRESH_SECRET` for the Airtable refresh workflow and `R2_CRON_SECRET` for the R2 cleanup workflow. If `AIRTABLE_REFRESH_SECRET` is omitted, the Airtable workflow can fall back to `R2_CRON_SECRET`, but using separate secrets is preferred.

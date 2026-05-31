@@ -3,6 +3,9 @@ import { getCachedRecords } from '@/lib/airtable/airtable'
 
 const BASE_URL = 'https://dtr.northwestern.edu'
 
+// Revalidate every hour; Airtable fetches are controlled by the 12h KV refresh.
+export const revalidate = 3_600
+
 export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
   // Fetch dynamic project slugs from Airtable
   const projects = await getCachedRecords<AirtableProject>('Projects')

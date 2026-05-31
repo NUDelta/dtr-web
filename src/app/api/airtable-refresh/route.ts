@@ -9,7 +9,13 @@ interface AirtableRefreshRequestBody {
 }
 
 function getRefreshSecret(): string | undefined {
-  return process.env.AIRTABLE_REFRESH_SECRET ?? process.env.R2_CRON_SECRET
+  const refreshSecret = process.env.AIRTABLE_REFRESH_SECRET
+  if (refreshSecret !== undefined && refreshSecret.length > 0) {
+    return refreshSecret
+  }
+
+  const r2Secret = process.env.R2_CRON_SECRET
+  return r2Secret !== undefined && r2Secret.length > 0 ? r2Secret : undefined
 }
 
 function parsePositiveNumber(value: unknown): number | undefined {
@@ -22,15 +28,13 @@ function parsePositiveNumber(value: unknown): number | undefined {
 
 export async function POST(req: Request) {
   const tokenFromHeader = req.headers.get('x-cron-token') ?? ''
-  const tokenFromQuery = new URL(req.url).searchParams.get('token') ?? ''
-  const token = tokenFromHeader || tokenFromQuery
   const secret = getRefreshSecret()
 
   if (secret === undefined || secret.length === 0) {
     return NextResponse.json({ ok: false, error: 'refresh secret is not configured' }, { status: 500 })
   }
 
-  if (token !== secret) {
+  if (tokenFromHeader !== secret) {
     return NextResponse.json({ ok: false, error: 'unauthorized' }, { status: 401 })
   }
 

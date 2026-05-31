@@ -1,3 +1,4 @@
+import { randomUUID } from 'node:crypto'
 import { CloudflareClient } from '@/lib/cloudflare'
 import {
   CLOUDFLARE_ACCOUNT_ID,
@@ -9,13 +10,15 @@ import { AIRTABLE_REFRESH_TABLES } from './config'
 const REFRESH_STATE_KEY = 'airtable-refresh:state'
 const REFRESH_LOCK_KEY = 'airtable-refresh:lock'
 const DEFAULT_MIN_INTERVAL_HOURS = 12
+const REFRESH_INTERVAL_BUFFER_MS = 10 * 60 * 1000
 const REFRESH_LOCK_TTL_SECONDS = 15 * 60
 
 type AirtableRefreshTable = typeof AIRTABLE_REFRESH_TABLES[number]
 
 interface AirtableRefreshState {
-  lastSuccessAt: number
-  tables: string[]
+  lastSuccessAt?: number
+  tables?: string[]
+  lastSuccessAtByTable: Partial<Record<AirtableRefreshTable, number>>
 }
 
 interface AirtableRefreshOptions {
@@ -89,15 +92,36 @@ async function readRefreshState(): Promise<AirtableRefreshState | undefined> {
 
   try {
     const state = JSON.parse(text) as Partial<AirtableRefreshState>
-    if (
-      typeof state.lastSuccessAt === 'number'
-      && Number.isFinite(state.lastSuccessAt)
-      && Array.isArray(state.tables)
-    ) {
-      return {
-        lastSuccessAt: state.lastSuccessAt,
-        tables: state.tables.filter(table => typeof table === 'string'),
+    const lastSuccessAtByTable: Partial<Record<AirtableRefreshTable, number>> = {}
+
+    if (state.lastSuccessAtByTable !== undefined) {
+      for (const [table, timestamp] of Object.entries(state.lastSuccessAtByTable)) {
+        if (
+          isRefreshTable(table)
+          && typeof timestamp === 'number'
+          && Number.isFinite(timestamp)
+        ) {
+          lastSuccessAtByTable[table] = timestamp
+        }
       }
+    }
+
+    if (
+      Object.keys(lastSuccessAtByTable).length === 0
+      && typeof state.lastSuccessAt === 'number'
+      && Number.isFinite(state.lastSuccessAt)
+    ) {
+      const legacyTables = Array.isArray(state.tables)
+        ? state.tables.filter(isRefreshTable)
+        : [...AIRTABLE_REFRESH_TABLES]
+
+      for (const table of legacyTables) {
+        lastSuccessAtByTable[table] = state.lastSuccessAt
+      }
+    }
+
+    if (Object.keys(lastSuccessAtByTable).length > 0) {
+      return { lastSuccessAt: state.lastSuccessAt, tables: state.tables, lastSuccessAtByTable }
     }
   }
   catch {
@@ -107,38 +131,75 @@ async function readRefreshState(): Promise<AirtableRefreshState | undefined> {
   return undefined
 }
 
-function shouldSkipForInterval(
+function getDueTables(
+  tables: AirtableRefreshTable[],
   state: AirtableRefreshState | undefined,
   minIntervalHours: number,
-): { skipped: true, reason: string } | undefined {
+): AirtableRefreshTable[] {
   if (state === undefined) {
+    return tables
+  }
+
+  const now = Date.now()
+  const minIntervalMs = Math.max(
+    0,
+    minIntervalHours * 60 * 60 * 1000 - REFRESH_INTERVAL_BUFFER_MS,
+  )
+
+  return tables.filter((table) => {
+    const lastSuccessAt = state.lastSuccessAtByTable[table]
+    return lastSuccessAt === undefined || now - lastSuccessAt >= minIntervalMs
+  })
+}
+
+function getMostRecentRefreshAgeHours(
+  tables: AirtableRefreshTable[],
+  state: AirtableRefreshState,
+): string {
+  const timestamps = tables
+    .map(table => state.lastSuccessAtByTable[table])
+    .filter((timestamp): timestamp is number => timestamp !== undefined)
+
+  const mostRecent = Math.max(...timestamps)
+  return ((Date.now() - mostRecent) / (60 * 60 * 1000)).toFixed(1)
+}
+
+async function acquireRefreshLock(): Promise<string | undefined> {
+  const existingLock = await readKvText(REFRESH_LOCK_KEY)
+  if (existingLock !== undefined) {
     return undefined
   }
 
-  const ageMs = Date.now() - state.lastSuccessAt
-  const minIntervalMs = minIntervalHours * 60 * 60 * 1000
-  if (ageMs < minIntervalMs) {
-    return {
-      skipped: true,
-      reason: `last successful refresh ${(ageMs / (60 * 60 * 1000)).toFixed(1)}h ago`,
-    }
-  }
-
-  return undefined
-}
-
-async function acquireRefreshLock(): Promise<boolean> {
-  const existingLock = await readKvText(REFRESH_LOCK_KEY)
-  if (existingLock !== undefined) {
-    return false
-  }
-
+  const owner = randomUUID()
   await writeKvJson(
     REFRESH_LOCK_KEY,
-    { lockedAt: Date.now() },
+    { lockedAt: Date.now(), owner },
     REFRESH_LOCK_TTL_SECONDS,
   )
-  return true
+  return owner
+}
+
+async function releaseRefreshLock(owner: string): Promise<void> {
+  const text = await readKvText(REFRESH_LOCK_KEY)
+  if (text === undefined) {
+    return
+  }
+
+  try {
+    const lock = JSON.parse(text) as { owner?: unknown }
+    if (lock.owner !== owner) {
+      return
+    }
+  }
+  catch {
+    return
+  }
+
+  await CloudflareClient.kv.namespaces.values.delete(
+    CLOUDFLARE_KV_NAMESPACE_ID,
+    REFRESH_LOCK_KEY,
+    { account_id: CLOUDFLARE_ACCOUNT_ID },
+  )
 }
 
 async function sleep(ms: number): Promise<void> {
@@ -158,17 +219,21 @@ export async function refreshAirtableRecordsCache(options: AirtableRefreshOption
   }
 
   if (options.force !== true) {
-    const intervalSkip = shouldSkipForInterval(await readRefreshState(), minIntervalHours)
-    if (intervalSkip !== undefined) {
+    const state = await readRefreshState()
+    const dueTables = getDueTables(tables, state, minIntervalHours)
+    if (dueTables.length === 0) {
       return {
-        ...intervalSkip,
+        skipped: true,
+        reason: state !== undefined
+          ? `last successful refresh ${getMostRecentRefreshAgeHours(tables, state)}h ago`
+          : 'all requested tables are fresh',
         tables,
       }
     }
   }
 
-  const locked = await acquireRefreshLock()
-  if (!locked) {
+  const lockOwner = await acquireRefreshLock()
+  if (lockOwner === undefined) {
     return {
       skipped: true,
       reason: 'refresh already in progress',
@@ -176,32 +241,52 @@ export async function refreshAirtableRecordsCache(options: AirtableRefreshOption
     }
   }
 
-  if (options.force !== true) {
-    const intervalSkip = shouldSkipForInterval(await readRefreshState(), minIntervalHours)
-    if (intervalSkip !== undefined) {
-      return {
-        ...intervalSkip,
-        tables,
+  try {
+    const state = await readRefreshState()
+    const dueTables = options.force === true
+      ? tables
+      : getDueTables(tables, state, minIntervalHours)
+    if (dueTables.length === 0) {
+      if (options.force !== true) {
+        return {
+          skipped: true,
+          reason: state !== undefined
+            ? `last successful refresh ${getMostRecentRefreshAgeHours(tables, state)}h ago`
+            : 'all requested tables are fresh',
+          tables,
+        }
       }
     }
+
+    const refreshed = []
+    for (const table of dueTables) {
+      const records = await refreshCachedRecords(table)
+      refreshed.push({ table, records: records.length })
+      await sleep(250)
+    }
+
+    const lastSuccessAt = Date.now()
+    const lastSuccessAtByTable = {
+      ...(state?.lastSuccessAtByTable ?? {}),
+    }
+    for (const table of dueTables) {
+      lastSuccessAtByTable[table] = lastSuccessAt
+    }
+
+    await writeKvJson(REFRESH_STATE_KEY, {
+      lastSuccessAt,
+      tables: dueTables,
+      lastSuccessAtByTable,
+    })
+
+    return {
+      skipped: false,
+      refreshed,
+      requestedTables: tables,
+      lastSuccessAt,
+    }
   }
-
-  const refreshed = []
-  for (const table of tables) {
-    const records = await refreshCachedRecords(table)
-    refreshed.push({ table, records: records.length })
-    await sleep(250)
-  }
-
-  const lastSuccessAt = Date.now()
-  await writeKvJson(REFRESH_STATE_KEY, {
-    lastSuccessAt,
-    tables,
-  })
-
-  return {
-    skipped: false,
-    refreshed,
-    lastSuccessAt,
+  finally {
+    await releaseRefreshLock(lockOwner).catch(() => {})
   }
 }

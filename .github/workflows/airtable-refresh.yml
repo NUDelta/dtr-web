@@ -13,7 +13,7 @@ jobs:
           curl --fail-with-body -sS -X POST \
             -H "x-cron-token: $AIRTABLE_REFRESH_SECRET" \
             -H "content-type: application/json" \
-            -d '{"minIntervalHours":12}' \
+            -d '{"minIntervalHours":11}' \
             "https://dtr.northwestern.edu/api/airtable-refresh"
         env:
           AIRTABLE_REFRESH_SECRET: ${{ secrets.AIRTABLE_REFRESH_SECRET || secrets.R2_CRON_SECRET }}

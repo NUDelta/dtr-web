@@ -70,6 +70,52 @@ function isCloudflareErrorWithStatus(
   )
 }
 
+async function extendLegacyEnvelopeTtl<T>(
+  options: {
+    client: CloudflareApiKvCacheStoreOptions['client']
+    accountId: string
+    namespaceId: string
+    fullKey: string
+    envelope: KvEnvelope<T>
+    staleUntil: number
+    expirationTtl: number
+    logger?: CacheLogger
+  },
+): Promise<void> {
+  const {
+    client,
+    accountId,
+    namespaceId,
+    fullKey,
+    envelope,
+    staleUntil,
+    expirationTtl,
+    logger,
+  } = options
+
+  const upgradedEnvelope: KvEnvelope<T> = {
+    ...envelope,
+    freshUntil: envelope.freshUntil ?? envelope.expiresAt,
+    staleUntil,
+  }
+
+  await client.kv.namespaces.values.update(namespaceId, fullKey, {
+    account_id: accountId,
+    value: JSON.stringify(upgradedEnvelope),
+    expiration_ttl: expirationTtl,
+  })
+
+  safeLog(logger, {
+    kind: 'set',
+    fullKey,
+    timestamp: Date.now(),
+    ttlMs: expirationTtl * 1000,
+    expiresAt: upgradedEnvelope.freshUntil,
+    freshUntil: upgradedEnvelope.freshUntil,
+    staleUntil,
+  })
+}
+
 /**
  * Create an AirtableCacheStore backed by Cloudflare KV via the public API.
  *
@@ -143,6 +189,29 @@ export function createCloudflareApiKvCacheStore(
         // Optionally, we could fire-and-forget a delete here:
         // void client.kv.namespaces.values.delete(namespaceId, fullKey, { account_id: accountId })
         return undefined
+      }
+
+      if (
+        envelope.staleUntil === undefined
+        && staleUntil !== undefined
+        && staleTtlMs > 0
+      ) {
+        const expirationTtl = Math.max(
+          Math.round((staleUntil - Date.now()) / 1000),
+          minCloudflareTtlSeconds,
+        )
+        if (expirationTtl > 0) {
+          await extendLegacyEnvelopeTtl({
+            client,
+            accountId,
+            namespaceId,
+            fullKey,
+            envelope,
+            staleUntil,
+            expirationTtl,
+            logger,
+          })
+        }
       }
 
       return envelope.value

@@ -17,6 +17,7 @@ import {
 import {
   AIRTABLE_RECORDS_FRESH_TTL_MS,
   AIRTABLE_RECORDS_STALE_TTL_MS,
+  getAirtableAllRecordsCacheKey,
   getAirtableListCachePrefix,
 } from './config'
 
@@ -38,6 +39,14 @@ const store = createCloudflareApiKvCacheStore({
   logger,
 })
 
+async function getFromRecordsCache<T>(key: string): Promise<T | undefined> {
+  return store.get<T>(key)
+}
+
+async function setRecordsCache<T>(key: string, value: T, ttlMs: number): Promise<void> {
+  await store.set(key, value, ttlMs)
+}
+
 /** Configure Airtable SDK (server-only). */
 Airtable.configure({
   endpointUrl: 'https://api.airtable.com',
@@ -46,9 +55,9 @@ Airtable.configure({
     store,
     defaultTtlMs: AIRTABLE_RECORDS_FRESH_TTL_MS,
     methods: {
-      listRecords: true,
-      listAllRecords: true,
-      getRecord: true,
+      listRecords: false,
+      listAllRecords: false,
+      getRecord: false,
     },
     onError: (err, context) => {
       safeLog(logger, {
@@ -82,20 +91,52 @@ interface Row<TFields = Record<string, unknown>> {
 export async function getCachedRecords<TFields = Record<string, unknown>>(
   tableName: string,
 ): Promise<Row<TFields>[]> {
+  const cacheKey = getAirtableAllRecordsCacheKey(tableName)
+  const cached = await getFromRecordsCache<Row<TFields>[]>(cacheKey).catch((error: unknown) => {
+    safeLog(logger, {
+      kind: 'get',
+      key: cacheKey,
+      fullKey: `airtable-cache:${cacheKey}`,
+      timestamp: Date.now(),
+      error,
+    })
+    return undefined
+  })
+
+  if (cached !== undefined) {
+    return cached
+  }
+
   const records = await base(tableName).select().all()
 
   // !NOTE: We trust the Airtable schema matches the TFields provided by caller.
-  return records.map(r => ({
+  const rows = records.map(r => ({
     id: r.id,
     fields: r.fields as TFields,
   }))
+
+  await setRecordsCache(cacheKey, rows, AIRTABLE_RECORDS_FRESH_TTL_MS).catch((error: unknown) => {
+    safeLog(logger, {
+      kind: 'set',
+      key: cacheKey,
+      fullKey: `airtable-cache:${cacheKey}`,
+      timestamp: Date.now(),
+      ttlMs: AIRTABLE_RECORDS_FRESH_TTL_MS,
+      error,
+    })
+  })
+
+  return rows
 }
 
 export async function refreshCachedRecords<TFields = Record<string, unknown>>(
   tableName: string,
 ): Promise<Row<TFields>[]> {
   return runWithAirtableCacheBypass(
-    [getAirtableListCachePrefix(tableName)],
+    [
+      getAirtableAllRecordsCacheKey(tableName),
+      getAirtableListCachePrefix(tableName),
+    ],
     async () => getCachedRecords<TFields>(tableName),
   )
 }

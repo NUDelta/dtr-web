@@ -205,7 +205,7 @@ export function createCloudflareApiKvCacheStore(
           totalDeleted += keyNames.length
         }
 
-        const nextCursor = page.result_info?.cursors?.after
+        const nextCursor = page.result_info?.cursor
         if (typeof nextCursor !== 'string' || nextCursor.length === 0) {
           break
         }

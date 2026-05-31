@@ -162,7 +162,7 @@ const AlumniMap = ({
                   <Marker
                     key={g.key}
                     data-marker
-                    coordinates={g.lonLat as [number, number]}
+                    coordinates={g.lonLat}
                     onMouseEnter={() => setHoverKey(g.key)}
                     onMouseLeave={() => setHoverKey(null)}
                     onClick={(e) => {

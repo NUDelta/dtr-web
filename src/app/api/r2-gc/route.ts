@@ -7,7 +7,7 @@ export async function POST(req: Request) {
   const h = await headers()
   const tokenFromHeader = h.get('x-cron-token') ?? ''
   const tokenFromQuery = new URL(req.url).searchParams.get('token')
-  const token = tokenFromHeader ?? tokenFromQuery
+  const token = tokenFromHeader || tokenFromQuery
   if (process.env.R2_CRON_SECRET !== undefined && token !== process.env.R2_CRON_SECRET) {
     return NextResponse.json({ ok: false, error: 'unauthorized' }, { status: 401 })
   }

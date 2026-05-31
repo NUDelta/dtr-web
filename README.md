@@ -43,5 +43,5 @@ We use [DigitalOcean's App Platform](https://www.digitalocean.com/products/app-p
 
 The website implements a two-tier caching system to minimize Airtable API usage:
 
-1. **Data Caching**: Airtable table data is cached using [Airtable TS](https://airtable.zla.app)'s built-in caching interface and injected Cloudflare KV Cache Store, with logging.
+1. **Data Caching**: Airtable table data is cached using [Airtable TS](https://airtable.zla.app)'s built-in caching interface and an injected Cloudflare KV Cache Store. A scheduled GitHub Action refreshes the cache every 12 hours, while stale KV data remains available as a fallback during Airtable/API failures.
 2. **Image Caching**: Images are downloaded once from Airtable, transformed into modern optimized formats (e.g., WebP, AVIF), and cached in Cloudflare R2 Bucket with hash-based invalidation and long-term caching headers.

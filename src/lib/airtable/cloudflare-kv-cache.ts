@@ -1,6 +1,21 @@
 import type { AirtableCacheStore, Attachment } from 'ts-airtable'
+import { AsyncLocalStorage } from 'node:async_hooks'
 import { ensureImageInR2 } from '../image-cache'
 import { safeLog } from '../logger'
+
+const cacheBypassStorage = new AsyncLocalStorage<{ prefixes: string[] }>()
+
+export async function runWithAirtableCacheBypass<T>(
+  prefixes: string[],
+  callback: () => Promise<T>,
+): Promise<T> {
+  return cacheBypassStorage.run({ prefixes }, callback)
+}
+
+function shouldBypassCacheRead(key: string): boolean {
+  const context = cacheBypassStorage.getStore()
+  return context?.prefixes.some(prefix => key.startsWith(prefix)) ?? false
+}
 
 /**
  * Adds an optional prefix in front of a logical cache key.
@@ -11,23 +26,32 @@ function withOptionalPrefix(prefix: string | undefined, key: string): string {
 
 /**
  * Converts an optional TTL in milliseconds into:
- * - an absolute `expiresAt` timestamp in ms, and
- * - a Cloudflare-compatible `expiration_ttl` in seconds.
+ * - fresh/stale application timestamps in ms, and
+ * - a Cloudflare-compatible physical `expiration_ttl` in seconds.
  */
-function toCloudflareTtlSeconds(
+function toCacheTiming(
   ttlMs: number | undefined,
   minSeconds: number,
-): { expiresAt?: number, expiration_ttl?: number } {
+  staleTtlMs: number,
+): {
+  cachedAt?: number
+  freshUntil?: number
+  staleUntil?: number
+  expiration_ttl?: number
+} {
   if (ttlMs === undefined || ttlMs <= 0) {
     return {}
   }
 
   const now = Date.now()
-  const expiresAt = now + ttlMs
-  const seconds = Math.round(ttlMs / 1000)
+  const freshUntil = now + ttlMs
+  const staleUntil = now + Math.max(ttlMs, staleTtlMs)
+  const seconds = Math.round((staleUntil - now) / 1000)
 
   return {
-    expiresAt,
+    cachedAt: now,
+    freshUntil,
+    staleUntil,
     expiration_ttl: Math.max(seconds, minSeconds),
   }
 }
@@ -50,9 +74,9 @@ function isCloudflareErrorWithStatus(
  * Create an AirtableCacheStore backed by Cloudflare KV via the public API.
  *
  * This implementation:
- * - Stores JSON-serialized envelopes { value, expiresAt } in KV.
- * - Enforces TTL at read time based on `expiresAt`.
- * - Best-effort forwards TTL to Cloudflare via `expiration_ttl` so KV can
+ * - Stores JSON-serialized envelopes with fresh/stale timestamps in KV.
+ * - Enforces the stale window at read time.
+ * - Best-effort forwards the stale window to Cloudflare via `expiration_ttl` so KV can
  *   automatically evict old keys over time.
  *
  * It is safe to use from multiple processes (DigitalOcean droplets, containers,
@@ -67,11 +91,16 @@ export function createCloudflareApiKvCacheStore(
     namespaceId,
     keyPrefix,
     minCloudflareTtlSeconds = 60,
+    staleTtlMs = 0,
     logger,
   } = options
 
   return {
     async get<T = unknown>(key: string): Promise<T | undefined> {
+      if (shouldBypassCacheRead(key)) {
+        return undefined
+      }
+
       const fullKey = withOptionalPrefix(keyPrefix, key)
 
       let res
@@ -105,12 +134,12 @@ export function createCloudflareApiKvCacheStore(
         return undefined
       }
 
-      // Application-level TTL enforcement
-      if (
-        envelope.expiresAt != null
-        && Number.isFinite(envelope.expiresAt)
-        && Date.now() >= envelope.expiresAt
-      ) {
+      const staleUntil = envelope.staleUntil
+        ?? (envelope.expiresAt !== undefined ? envelope.expiresAt + staleTtlMs : undefined)
+
+      // Application-level stale-window enforcement. Freshness is controlled by
+      // scheduled refresh; user requests may serve stale data until this point.
+      if (staleUntil != null && Number.isFinite(staleUntil) && Date.now() >= staleUntil) {
         // Optionally, we could fire-and-forget a delete here:
         // void client.kv.namespaces.values.delete(namespaceId, fullKey, { account_id: accountId })
         return undefined
@@ -122,13 +151,27 @@ export function createCloudflareApiKvCacheStore(
     async set<T = unknown>(key: string, value: T, ttlMs?: number): Promise<void> {
       const fullKey = withOptionalPrefix(keyPrefix, key)
 
-      const { expiresAt, expiration_ttl } = toCloudflareTtlSeconds(
+      const {
+        cachedAt,
+        freshUntil,
+        staleUntil,
+        expiration_ttl,
+      } = toCacheTiming(
         ttlMs,
         minCloudflareTtlSeconds,
+        staleTtlMs,
       )
 
       const envelope: KvEnvelope<T>
-        = expiresAt !== undefined ? { value, expiresAt } : { value }
+        = freshUntil !== undefined
+          ? {
+              value,
+              cachedAt,
+              freshUntil,
+              staleUntil,
+              expiresAt: freshUntil,
+            }
+          : { value }
 
       const serialized = JSON.stringify(envelope)
       const timestamp = Date.now()
@@ -147,7 +190,9 @@ export function createCloudflareApiKvCacheStore(
         fullKey,
         timestamp,
         ttlMs,
-        expiresAt,
+        expiresAt: freshUntil,
+        freshUntil,
+        staleUntil,
       })
     },
 

@@ -10,10 +10,15 @@ import {
 } from '@/lib/consts'
 import { createKvLogger } from '@/lib/kv-logger'
 import { safeLog } from '@/lib/logger'
-import { createCloudflareApiKvCacheStore } from './cloudflare-kv-cache'
-
-/** Default TTL for Airtable records cache: 12 hours. */
-const TTL = 1000 * 60 * 60 * 12
+import {
+  createCloudflareApiKvCacheStore,
+  runWithAirtableCacheBypass,
+} from './cloudflare-kv-cache'
+import {
+  AIRTABLE_RECORDS_FRESH_TTL_MS,
+  AIRTABLE_RECORDS_STALE_TTL_MS,
+  getAirtableListCachePrefix,
+} from './config'
 
 const logger = createKvLogger({
   client: CloudflareClient,
@@ -28,7 +33,8 @@ const store = createCloudflareApiKvCacheStore({
   accountId: CLOUDFLARE_ACCOUNT_ID,
   namespaceId: CLOUDFLARE_KV_NAMESPACE_ID,
   keyPrefix: 'airtable-cache',
-  minCloudflareTtlSeconds: TTL / 1000,
+  minCloudflareTtlSeconds: AIRTABLE_RECORDS_STALE_TTL_MS / 1000,
+  staleTtlMs: AIRTABLE_RECORDS_STALE_TTL_MS,
   logger,
 })
 
@@ -38,7 +44,7 @@ Airtable.configure({
   apiKey: AIRTABLE_API_KEY,
   recordsCache: {
     store,
-    defaultTtlMs: TTL,
+    defaultTtlMs: AIRTABLE_RECORDS_FRESH_TTL_MS,
     methods: {
       listRecords: true,
       listAllRecords: true,
@@ -83,4 +89,13 @@ export async function getCachedRecords<TFields = Record<string, unknown>>(
     id: r.id,
     fields: r.fields as TFields,
   }))
+}
+
+export async function refreshCachedRecords<TFields = Record<string, unknown>>(
+  tableName: string,
+): Promise<Row<TFields>[]> {
+  return runWithAirtableCacheBypass(
+    [getAirtableListCachePrefix(tableName)],
+    async () => getCachedRecords<TFields>(tableName),
+  )
 }

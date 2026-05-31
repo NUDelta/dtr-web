@@ -39,7 +39,7 @@
     "rss": "^1.2.2",
     "sharp": "^0.34.5",
     "sonner": "^2.0.7",
-    "ts-airtable": "^0.3.1",
+    "ts-airtable": "^0.4.0",
     "zod": "^4.3.6"
   },
   "devDependencies": {

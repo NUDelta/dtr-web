@@ -2,6 +2,7 @@ import type { Metadata } from 'next'
 import { GoogleAnalytics } from '@next/third-parties/google'
 import { Lato } from 'next/font/google'
 import { Toaster } from 'sonner'
+import Footer from '@/components/shared/Footer'
 import Header from '@/components/shared/Header'
 import PopupAnnouncement from '@/components/shared/PopupAnnouncement'
 import RouterTransition from '@/components/shared/RouterTransition'
@@ -51,6 +52,7 @@ export default function RootLayout({
         <main id="main" className="mt-8 mx-auto w-full max-w-7xl px-4 pt-16">
           {children}
         </main>
+        <Footer />
         <Toaster position="top-center" richColors />
       </body>
       <GoogleAnalytics gaId="G-0LME5PW7PW" />

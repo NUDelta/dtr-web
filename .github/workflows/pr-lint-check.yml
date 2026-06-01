@@ -48,7 +48,7 @@ jobs:
       - name: 🚨 Run Lint
         run: |
           set -o pipefail
-          pnpm run lint -- --max-warnings=0 | tee lint-results.txt
+          pnpm exec eslint . --max-warnings=0 | tee lint-results.txt
 
       # 🚮 Clean up all results for comment
       - name: 🚮 Clean up results

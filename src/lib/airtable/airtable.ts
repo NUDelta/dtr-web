@@ -78,6 +78,40 @@ interface Row<TFields = Record<string, unknown>> {
   fields: TFields
 }
 
+async function fetchAndCacheRecords<TFields = Record<string, unknown>>(
+  tableName: string,
+  options: { strictCacheWrite: boolean },
+): Promise<Row<TFields>[]> {
+  const records = await base(tableName).select().all()
+
+  // !NOTE: We trust the Airtable schema matches the TFields provided by caller.
+  const rows = records.map(r => ({
+    id: r.id,
+    fields: r.fields as TFields,
+  }))
+
+  const cacheKey = getAirtableAllRecordsCacheKey(tableName)
+  try {
+    await setRecordsCache(cacheKey, rows, AIRTABLE_RECORDS_FRESH_TTL_MS)
+  }
+  catch (error) {
+    safeLog(logger, {
+      kind: 'set',
+      key: cacheKey,
+      fullKey: `airtable-cache:${cacheKey}`,
+      timestamp: Date.now(),
+      ttlMs: AIRTABLE_RECORDS_FRESH_TTL_MS,
+      error,
+    })
+
+    if (options.strictCacheWrite) {
+      throw error
+    }
+  }
+
+  return rows
+}
+
 /**
  * Cache enabled fetch of all records from an Airtable table.
  *
@@ -107,26 +141,7 @@ export async function getCachedRecords<TFields = Record<string, unknown>>(
     return cached
   }
 
-  const records = await base(tableName).select().all()
-
-  // !NOTE: We trust the Airtable schema matches the TFields provided by caller.
-  const rows = records.map(r => ({
-    id: r.id,
-    fields: r.fields as TFields,
-  }))
-
-  await setRecordsCache(cacheKey, rows, AIRTABLE_RECORDS_FRESH_TTL_MS).catch((error: unknown) => {
-    safeLog(logger, {
-      kind: 'set',
-      key: cacheKey,
-      fullKey: `airtable-cache:${cacheKey}`,
-      timestamp: Date.now(),
-      ttlMs: AIRTABLE_RECORDS_FRESH_TTL_MS,
-      error,
-    })
-  })
-
-  return rows
+  return fetchAndCacheRecords<TFields>(tableName, { strictCacheWrite: false })
 }
 
 export async function refreshCachedRecords<TFields = Record<string, unknown>>(
@@ -137,6 +152,6 @@ export async function refreshCachedRecords<TFields = Record<string, unknown>>(
       getAirtableAllRecordsCacheKey(tableName),
       getAirtableListCachePrefix(tableName),
     ],
-    async () => getCachedRecords<TFields>(tableName),
+    async () => fetchAndCacheRecords<TFields>(tableName, { strictCacheWrite: true }),
   )
 }

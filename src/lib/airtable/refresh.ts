@@ -8,10 +8,10 @@ import { refreshCachedRecords } from './airtable'
 import { AIRTABLE_REFRESH_TABLES } from './config'
 
 const REFRESH_STATE_KEY = 'airtable-refresh:state'
-const REFRESH_LOCK_KEY = 'airtable-refresh:lock'
+const REFRESH_GUARD_KEY = 'airtable-refresh:guard'
 const DEFAULT_MIN_INTERVAL_HOURS = 12
 const REFRESH_INTERVAL_BUFFER_MS = 10 * 60 * 1000
-const REFRESH_LOCK_TTL_SECONDS = 15 * 60
+const REFRESH_GUARD_TTL_SECONDS = 15 * 60
 
 type AirtableRefreshTable = typeof AIRTABLE_REFRESH_TABLES[number]
 
@@ -164,30 +164,33 @@ function getMostRecentRefreshAgeHours(
   return ((Date.now() - mostRecent) / (60 * 60 * 1000)).toFixed(1)
 }
 
-async function acquireRefreshLock(): Promise<string | undefined> {
-  const existingLock = await readKvText(REFRESH_LOCK_KEY)
-  if (existingLock !== undefined) {
+async function claimRefreshSlotBestEffort(): Promise<string | undefined> {
+  const existingGuard = await readKvText(REFRESH_GUARD_KEY)
+  if (existingGuard !== undefined) {
     return undefined
   }
 
   const owner = randomUUID()
+  // Cloudflare KV writes are not compare-and-set. GitHub Actions concurrency is
+  // the authoritative schedule/manual-run serializer; this only reduces
+  // accidental overlap from direct API retries.
   await writeKvJson(
-    REFRESH_LOCK_KEY,
+    REFRESH_GUARD_KEY,
     { lockedAt: Date.now(), owner },
-    REFRESH_LOCK_TTL_SECONDS,
+    REFRESH_GUARD_TTL_SECONDS,
   )
   return owner
 }
 
-async function releaseRefreshLock(owner: string): Promise<void> {
-  const text = await readKvText(REFRESH_LOCK_KEY)
+async function releaseRefreshSlotBestEffort(owner: string): Promise<void> {
+  const text = await readKvText(REFRESH_GUARD_KEY)
   if (text === undefined) {
     return
   }
 
   try {
-    const lock = JSON.parse(text) as { owner?: unknown }
-    if (lock.owner !== owner) {
+    const guard = JSON.parse(text) as { owner?: unknown }
+    if (guard.owner !== owner) {
       return
     }
   }
@@ -197,7 +200,7 @@ async function releaseRefreshLock(owner: string): Promise<void> {
 
   await CloudflareClient.kv.namespaces.values.delete(
     CLOUDFLARE_KV_NAMESPACE_ID,
-    REFRESH_LOCK_KEY,
+    REFRESH_GUARD_KEY,
     { account_id: CLOUDFLARE_ACCOUNT_ID },
   )
 }
@@ -232,8 +235,8 @@ export async function refreshAirtableRecordsCache(options: AirtableRefreshOption
     }
   }
 
-  const lockOwner = await acquireRefreshLock()
-  if (lockOwner === undefined) {
+  const refreshSlotOwner = await claimRefreshSlotBestEffort()
+  if (refreshSlotOwner === undefined) {
     return {
       skipped: true,
       reason: 'refresh already in progress',
@@ -259,25 +262,23 @@ export async function refreshAirtableRecordsCache(options: AirtableRefreshOption
     }
 
     const refreshed = []
-    for (const table of dueTables) {
-      const records = await refreshCachedRecords(table)
-      refreshed.push({ table, records: records.length })
-      await sleep(250)
-    }
-
-    const lastSuccessAt = Date.now()
     const lastSuccessAtByTable = {
       ...(state?.lastSuccessAtByTable ?? {}),
     }
-    for (const table of dueTables) {
-      lastSuccessAtByTable[table] = lastSuccessAt
-    }
+    let lastSuccessAt = state?.lastSuccessAt ?? Date.now()
 
-    await writeKvJson(REFRESH_STATE_KEY, {
-      lastSuccessAt,
-      tables: dueTables,
-      lastSuccessAtByTable,
-    })
+    for (const table of dueTables) {
+      const records = await refreshCachedRecords(table)
+      lastSuccessAt = Date.now()
+      lastSuccessAtByTable[table] = lastSuccessAt
+      refreshed.push({ table, records: records.length })
+      await writeKvJson(REFRESH_STATE_KEY, {
+        lastSuccessAt,
+        tables: refreshed.map(result => result.table),
+        lastSuccessAtByTable,
+      })
+      await sleep(250)
+    }
 
     return {
       skipped: false,
@@ -287,6 +288,6 @@ export async function refreshAirtableRecordsCache(options: AirtableRefreshOption
     }
   }
   finally {
-    await releaseRefreshLock(lockOwner).catch(() => {})
+    await releaseRefreshSlotBestEffort(refreshSlotOwner).catch(() => {})
   }
 }

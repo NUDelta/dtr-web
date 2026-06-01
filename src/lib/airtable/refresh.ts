@@ -1,5 +1,7 @@
 import { randomUUID } from 'node:crypto'
 import { CloudflareClient } from '@/lib/cloudflare'
+import { createKvLogger } from '@/lib/kv-logger'
+import { safeLog } from '@/lib/logger'
 import {
   CLOUDFLARE_ACCOUNT_ID,
   CLOUDFLARE_KV_NAMESPACE_ID,
@@ -12,6 +14,7 @@ const REFRESH_GUARD_KEY = 'airtable-refresh:guard'
 const DEFAULT_MIN_INTERVAL_HOURS = 12
 const REFRESH_INTERVAL_BUFFER_MS = 10 * 60 * 1000
 const REFRESH_GUARD_TTL_SECONDS = 15 * 60
+const REFRESH_LOG_TTL_SECONDS = 60 * 60 * 24 * 180
 
 type AirtableRefreshTable = typeof AIRTABLE_REFRESH_TABLES[number]
 
@@ -25,6 +28,29 @@ interface AirtableRefreshOptions {
   tables?: readonly string[]
   minIntervalHours?: number
   force?: boolean
+  requestId?: string
+}
+
+const refreshLogger = createKvLogger({
+  client: CloudflareClient,
+  accountId: CLOUDFLARE_ACCOUNT_ID,
+  namespaceId: CLOUDFLARE_KV_NAMESPACE_ID,
+  keyPrefix: 'airtable-refresh-log',
+  logTtlSeconds: REFRESH_LOG_TTL_SECONDS,
+})
+
+function getErrorMessage(error: unknown): string {
+  return error instanceof Error ? error.message : String(error)
+}
+
+function logRefreshEvent(
+  event: Omit<CacheLogEvent, 'fullKey' | 'timestamp'>,
+): void {
+  safeLog(refreshLogger, {
+    fullKey: `airtable-refresh:${event.kind}:${event.runId ?? 'unknown'}`,
+    timestamp: Date.now(),
+    ...event,
+  })
 }
 
 function isCloudflareErrorWithStatus(
@@ -210,13 +236,33 @@ async function sleep(ms: number): Promise<void> {
 }
 
 export async function refreshAirtableRecordsCache(options: AirtableRefreshOptions = {}) {
+  const runId = options.requestId ?? randomUUID()
+  const runStartedAt = Date.now()
   const minIntervalHours = options.minIntervalHours ?? DEFAULT_MIN_INTERVAL_HOURS
   const tables = normalizeTables(options.tables)
 
+  logRefreshEvent({
+    kind: 'refreshRunStart',
+    runId,
+    requestedTables: tables,
+    minIntervalHours,
+    force: options.force === true,
+  })
+
   if (tables.length === 0) {
+    const reason = 'no valid refresh tables requested'
+    logRefreshEvent({
+      kind: 'refreshRunSkipped',
+      runId,
+      requestedTables: [],
+      reason,
+      durationMs: Date.now() - runStartedAt,
+    })
+
     return {
       skipped: true,
-      reason: 'no valid refresh tables requested',
+      reason,
+      runId,
       tables: [],
     }
   }
@@ -225,11 +271,22 @@ export async function refreshAirtableRecordsCache(options: AirtableRefreshOption
     const state = await readRefreshState()
     const dueTables = getDueTables(tables, state, minIntervalHours)
     if (dueTables.length === 0) {
+      const reason = state !== undefined
+        ? `last successful refresh ${getMostRecentRefreshAgeHours(tables, state)}h ago`
+        : 'all requested tables are fresh'
+      logRefreshEvent({
+        kind: 'refreshRunSkipped',
+        runId,
+        requestedTables: tables,
+        dueTables,
+        reason,
+        durationMs: Date.now() - runStartedAt,
+      })
+
       return {
         skipped: true,
-        reason: state !== undefined
-          ? `last successful refresh ${getMostRecentRefreshAgeHours(tables, state)}h ago`
-          : 'all requested tables are fresh',
+        reason,
+        runId,
         tables,
       }
     }
@@ -237,12 +294,31 @@ export async function refreshAirtableRecordsCache(options: AirtableRefreshOption
 
   const refreshSlotOwner = await claimRefreshSlotBestEffort()
   if (refreshSlotOwner === undefined) {
+    const reason = 'refresh already in progress'
+    logRefreshEvent({
+      kind: 'refreshGuard',
+      runId,
+      requestedTables: tables,
+      reason,
+      durationMs: Date.now() - runStartedAt,
+    })
+
     return {
       skipped: true,
-      reason: 'refresh already in progress',
+      reason,
+      runId,
       tables,
     }
   }
+
+  logRefreshEvent({
+    kind: 'refreshGuard',
+    runId,
+    requestedTables: tables,
+    reason: 'claimed refresh slot',
+    owner: refreshSlotOwner,
+    durationMs: Date.now() - runStartedAt,
+  })
 
   try {
     const state = await readRefreshState()
@@ -251,11 +327,22 @@ export async function refreshAirtableRecordsCache(options: AirtableRefreshOption
       : getDueTables(tables, state, minIntervalHours)
     if (dueTables.length === 0) {
       if (options.force !== true) {
+        const reason = state !== undefined
+          ? `last successful refresh ${getMostRecentRefreshAgeHours(tables, state)}h ago`
+          : 'all requested tables are fresh'
+        logRefreshEvent({
+          kind: 'refreshRunSkipped',
+          runId,
+          requestedTables: tables,
+          dueTables,
+          reason,
+          durationMs: Date.now() - runStartedAt,
+        })
+
         return {
           skipped: true,
-          reason: state !== undefined
-            ? `last successful refresh ${getMostRecentRefreshAgeHours(tables, state)}h ago`
-            : 'all requested tables are fresh',
+          reason,
+          runId,
           tables,
         }
       }
@@ -268,26 +355,136 @@ export async function refreshAirtableRecordsCache(options: AirtableRefreshOption
     let lastSuccessAt = state?.lastSuccessAt ?? Date.now()
 
     for (const table of dueTables) {
-      const records = await refreshCachedRecords(table)
+      const tableStartedAt = Date.now()
+      logRefreshEvent({
+        kind: 'refreshTableStart',
+        runId,
+        table,
+        requestedTables: tables,
+        dueTables,
+      })
+
+      let records
+      try {
+        records = await refreshCachedRecords(table)
+      }
+      catch (error) {
+        logRefreshEvent({
+          kind: 'refreshTableFailure',
+          runId,
+          table,
+          requestedTables: tables,
+          dueTables,
+          durationMs: Date.now() - tableStartedAt,
+          reason: getErrorMessage(error),
+          error,
+        })
+        throw error
+      }
+
       lastSuccessAt = Date.now()
       lastSuccessAtByTable[table] = lastSuccessAt
       refreshed.push({ table, records: records.length })
-      await writeKvJson(REFRESH_STATE_KEY, {
+
+      logRefreshEvent({
+        kind: 'refreshTableSuccess',
+        runId,
+        table,
+        requestedTables: tables,
+        dueTables,
+        durationMs: Date.now() - tableStartedAt,
+        recordCount: records.length,
+      })
+
+      const stateWriteStartedAt = Date.now()
+      const stateValue = {
         lastSuccessAt,
         tables: refreshed.map(result => result.table),
         lastSuccessAtByTable,
+      }
+
+      try {
+        await writeKvJson(REFRESH_STATE_KEY, stateValue)
+      }
+      catch (error) {
+        logRefreshEvent({
+          kind: 'refreshStateWrite',
+          runId,
+          table,
+          requestedTables: tables,
+          dueTables,
+          durationMs: Date.now() - stateWriteStartedAt,
+          reason: getErrorMessage(error),
+          error,
+        })
+        throw error
+      }
+
+      logRefreshEvent({
+        kind: 'refreshStateWrite',
+        runId,
+        table,
+        requestedTables: tables,
+        dueTables,
+        durationMs: Date.now() - stateWriteStartedAt,
+        affectedCount: refreshed.length,
       })
+
       await sleep(250)
     }
 
+    logRefreshEvent({
+      kind: 'refreshRunSuccess',
+      runId,
+      requestedTables: tables,
+      dueTables,
+      durationMs: Date.now() - runStartedAt,
+      recordCount: refreshed.reduce((total, result) => total + result.records, 0),
+    })
+
     return {
       skipped: false,
+      runId,
       refreshed,
       requestedTables: tables,
+      dueTables,
+      durationMs: Date.now() - runStartedAt,
       lastSuccessAt,
     }
   }
+  catch (error) {
+    logRefreshEvent({
+      kind: 'refreshRunFailure',
+      runId,
+      requestedTables: tables,
+      durationMs: Date.now() - runStartedAt,
+      reason: getErrorMessage(error),
+      error,
+    })
+    throw error
+  }
   finally {
-    await releaseRefreshSlotBestEffort(refreshSlotOwner).catch(() => {})
+    await releaseRefreshSlotBestEffort(refreshSlotOwner)
+      .then(() => {
+        logRefreshEvent({
+          kind: 'refreshGuard',
+          runId,
+          requestedTables: tables,
+          reason: 'released refresh slot',
+          owner: refreshSlotOwner,
+          durationMs: Date.now() - runStartedAt,
+        })
+      })
+      .catch((error: unknown) => {
+        logRefreshEvent({
+          kind: 'refreshGuard',
+          runId,
+          requestedTables: tables,
+          reason: getErrorMessage(error),
+          owner: refreshSlotOwner,
+          durationMs: Date.now() - runStartedAt,
+          error,
+        })
+      })
   }
 }

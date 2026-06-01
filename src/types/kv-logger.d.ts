@@ -1,6 +1,20 @@
 type Cloudflare = import('cloudflare').Cloudflare
 
-type CacheKind = 'get' | 'set' | 'delete' | 'deleteByPrefix' | 'transformAttachmentError'
+type CacheKind
+  = | 'get'
+    | 'set'
+    | 'delete'
+    | 'deleteByPrefix'
+    | 'transformAttachmentError'
+    | 'refreshRunStart'
+    | 'refreshRunSuccess'
+    | 'refreshRunSkipped'
+    | 'refreshRunFailure'
+    | 'refreshGuard'
+    | 'refreshTableStart'
+    | 'refreshTableSuccess'
+    | 'refreshTableFailure'
+    | 'refreshStateWrite'
 
 interface CacheLogEvent {
   kind: CacheKind
@@ -40,6 +54,46 @@ interface CacheLogEvent {
    * If the operation failed, attach the error for diagnostics.
    */
   error?: unknown
+  /**
+   * Correlates events that belong to the same long-running operation.
+   */
+  runId?: string
+  /**
+   * Airtable table being refreshed, when applicable.
+   */
+  table?: string
+  /**
+   * Requested tables for a refresh run.
+   */
+  requestedTables?: string[]
+  /**
+   * Tables selected for actual work after freshness checks.
+   */
+  dueTables?: string[]
+  /**
+   * Human-readable skip/failure/success detail.
+   */
+  reason?: string
+  /**
+   * Operation duration in milliseconds.
+   */
+  durationMs?: number
+  /**
+   * Number of Airtable records involved in an operation.
+   */
+  recordCount?: number
+  /**
+   * Refresh freshness interval used by the caller.
+   */
+  minIntervalHours?: number
+  /**
+   * Whether the caller bypassed freshness checks.
+   */
+  force?: boolean
+  /**
+   * Best-effort guard owner token for refresh overlap diagnostics.
+   */
+  owner?: string
 }
 
 interface CacheLogger {

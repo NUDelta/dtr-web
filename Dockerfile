@@ -3,7 +3,7 @@ FROM node:lts-alpine AS base
 # Stage 1: deps
 FROM base AS deps
 WORKDIR /app
-COPY package.json pnpm-lock.yaml ./
+COPY package.json pnpm-lock.yaml pnpm-workspace.yaml ./
 RUN corepack enable pnpm && pnpm install --frozen-lockfile
 
 # Stage 2: build

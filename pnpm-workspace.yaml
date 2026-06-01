@@ -5,5 +5,12 @@ shellEmulator: true
 
 trustPolicy: no-downgrade
 
+trustPolicyExclude:
+  - semver@6.3.1
+  - ua-parser-js@1.0.41
+
+allowBuilds:
+  sharp: true
+
 packages:
   - .

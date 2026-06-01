@@ -183,5 +183,5 @@ export default async function IndividualProjectPage({
   )
 }
 
-// Revalidate every 6 hours
-export const revalidate = 21_600
+// Revalidate every hour; Airtable fetches are controlled by the 12h KV refresh.
+export const revalidate = 3_600

@@ -10,10 +10,16 @@ import {
 } from '@/lib/consts'
 import { createKvLogger } from '@/lib/kv-logger'
 import { safeLog } from '@/lib/logger'
-import { createCloudflareApiKvCacheStore } from './cloudflare-kv-cache'
-
-/** Default TTL for Airtable records cache: 12 hours. */
-const TTL = 1000 * 60 * 60 * 12
+import {
+  createCloudflareApiKvCacheStore,
+  runWithAirtableCacheBypass,
+} from './cloudflare-kv-cache'
+import {
+  AIRTABLE_RECORDS_FRESH_TTL_MS,
+  AIRTABLE_RECORDS_STALE_TTL_MS,
+  getAirtableAllRecordsCacheKey,
+  getAirtableListCachePrefix,
+} from './config'
 
 const logger = createKvLogger({
   client: CloudflareClient,
@@ -28,9 +34,18 @@ const store = createCloudflareApiKvCacheStore({
   accountId: CLOUDFLARE_ACCOUNT_ID,
   namespaceId: CLOUDFLARE_KV_NAMESPACE_ID,
   keyPrefix: 'airtable-cache',
-  minCloudflareTtlSeconds: TTL / 1000,
+  minCloudflareTtlSeconds: AIRTABLE_RECORDS_STALE_TTL_MS / 1000,
+  staleTtlMs: AIRTABLE_RECORDS_STALE_TTL_MS,
   logger,
 })
+
+async function getFromRecordsCache<T>(key: string): Promise<T | undefined> {
+  return store.get<T>(key)
+}
+
+async function setRecordsCache<T>(key: string, value: T, ttlMs: number): Promise<void> {
+  await store.set(key, value, ttlMs)
+}
 
 /** Configure Airtable SDK (server-only). */
 Airtable.configure({
@@ -38,11 +53,11 @@ Airtable.configure({
   apiKey: AIRTABLE_API_KEY,
   recordsCache: {
     store,
-    defaultTtlMs: TTL,
+    defaultTtlMs: AIRTABLE_RECORDS_FRESH_TTL_MS,
     methods: {
-      listRecords: true,
-      listAllRecords: true,
-      getRecord: true,
+      listRecords: false,
+      listAllRecords: false,
+      getRecord: false,
     },
     onError: (err, context) => {
       safeLog(logger, {
@@ -63,6 +78,40 @@ interface Row<TFields = Record<string, unknown>> {
   fields: TFields
 }
 
+async function fetchAndCacheRecords<TFields = Record<string, unknown>>(
+  tableName: string,
+  options: { strictCacheWrite: boolean },
+): Promise<Row<TFields>[]> {
+  const records = await base(tableName).select().all()
+
+  // !NOTE: We trust the Airtable schema matches the TFields provided by caller.
+  const rows = records.map(r => ({
+    id: r.id,
+    fields: r.fields as TFields,
+  }))
+
+  const cacheKey = getAirtableAllRecordsCacheKey(tableName)
+  try {
+    await setRecordsCache(cacheKey, rows, AIRTABLE_RECORDS_FRESH_TTL_MS)
+  }
+  catch (error) {
+    safeLog(logger, {
+      kind: 'set',
+      key: cacheKey,
+      fullKey: `airtable-cache:${cacheKey}`,
+      timestamp: Date.now(),
+      ttlMs: AIRTABLE_RECORDS_FRESH_TTL_MS,
+      error,
+    })
+
+    if (options.strictCacheWrite) {
+      throw error
+    }
+  }
+
+  return rows
+}
+
 /**
  * Cache enabled fetch of all records from an Airtable table.
  *
@@ -76,11 +125,33 @@ interface Row<TFields = Record<string, unknown>> {
 export async function getCachedRecords<TFields = Record<string, unknown>>(
   tableName: string,
 ): Promise<Row<TFields>[]> {
-  const records = await base(tableName).select().all()
+  const cacheKey = getAirtableAllRecordsCacheKey(tableName)
+  const cached = await getFromRecordsCache<Row<TFields>[]>(cacheKey).catch((error: unknown) => {
+    safeLog(logger, {
+      kind: 'get',
+      key: cacheKey,
+      fullKey: `airtable-cache:${cacheKey}`,
+      timestamp: Date.now(),
+      error,
+    })
+    return undefined
+  })
 
-  // !NOTE: We trust the Airtable schema matches the TFields provided by caller.
-  return records.map(r => ({
-    id: r.id,
-    fields: r.fields as TFields,
-  }))
+  if (cached !== undefined) {
+    return cached
+  }
+
+  return fetchAndCacheRecords<TFields>(tableName, { strictCacheWrite: false })
+}
+
+export async function refreshCachedRecords<TFields = Record<string, unknown>>(
+  tableName: string,
+): Promise<Row<TFields>[]> {
+  return runWithAirtableCacheBypass(
+    [
+      getAirtableAllRecordsCacheKey(tableName),
+      getAirtableListCachePrefix(tableName),
+    ],
+    async () => fetchAndCacheRecords<TFields>(tableName, { strictCacheWrite: true }),
+  )
 }

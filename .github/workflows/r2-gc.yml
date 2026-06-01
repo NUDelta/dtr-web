@@ -10,7 +10,7 @@ jobs:
     steps:
       - name: Trigger R2 GC
         run: |
-          curl -sS -X POST \
+          curl --fail-with-body -sS -X POST \
             -H "x-cron-token: $R2_CRON_SECRET" \
             -H "content-type: application/json" \
             -d '{"prefix":"images/","maxAgeDays":60,"minIntervalHours":24,"maxDeletePerRun":250}' \

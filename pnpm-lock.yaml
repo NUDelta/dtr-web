@@ -75,8 +75,8 @@ importers:
         specifier: ^2.0.7
         version: 2.0.7(react-dom@19.2.6(react@19.2.6))(react@19.2.6)
       ts-airtable:
-        specifier: ^0.3.1
-        version: 0.3.1
+        specifier: ^0.4.0
+        version: 0.4.0
       zod:
         specifier: ^4.4.3
         version: 4.4.3
@@ -3139,8 +3139,8 @@ packages:
   trough@2.2.0:
     resolution: {integrity: sha512-tmMpK00BjZiUyVyvrBK7knerNgmgvcV/KLVyuma/SC+TQN167GrMRciANTz09+k3zW8L8t60jWO1GpfkZdjTaw==}
 
-  ts-airtable@0.3.1:
-    resolution: {integrity: sha512-6socK2JrIH7GSsvN7LSUrlhaLSrJdwsYnXtYYlxo7lCTemij5cl2dcy527a2qpFOibicHLj7HK1dvAUJnvzs5g==}
+  ts-airtable@0.4.0:
+    resolution: {integrity: sha512-JlkUG548iJuGz2zGC/sRxcPNMT+hxPYFLAq4krl5Ba9KI/QkEn1RAgPfM3D2xt2XWkLRxt4EvFa2YZqLeAS7tA==}
     engines: {node: '>=18'}
 
   ts-api-utils@2.5.0:
@@ -6816,7 +6816,7 @@ snapshots:
 
   trough@2.2.0: {}
 
-  ts-airtable@0.3.1: {}
+  ts-airtable@0.4.0: {}
 
   ts-api-utils@2.5.0(typescript@6.0.3):
     dependencies:

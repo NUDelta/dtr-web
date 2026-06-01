@@ -25,6 +25,14 @@ interface CacheLogEvent {
    */
   expiresAt?: number
   /**
+   * Application-level fresh-until timestamp (ms), if any.
+   */
+  freshUntil?: number
+  /**
+   * Application-level stale-until timestamp (ms), if any.
+   */
+  staleUntil?: number
+  /**
    * How many keys were affected (for deleteByPrefix / bulk deletes).
    */
   affectedCount?: number

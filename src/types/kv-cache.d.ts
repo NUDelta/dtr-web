@@ -5,8 +5,23 @@
 interface KvEnvelope<T> {
   value: T
   /**
+   * Absolute timestamp for when this value was cached.
+   */
+  cachedAt?: number
+  /**
+   * Absolute timestamp until which this value is considered fresh.
+   */
+  freshUntil?: number
+  /**
+   * Absolute timestamp until which stale fallback is allowed.
+   */
+  staleUntil?: number
+  /**
    * Absolute expiration timestamp in milliseconds since epoch.
    * If omitted, the entry never expires at the application level.
+   *
+   * @deprecated Kept for compatibility with cache entries written before the
+   * fresh/stale envelope split. New writes mirror this to `freshUntil`.
    */
   expiresAt?: number
 }
@@ -40,6 +55,14 @@ interface CloudflareApiKvCacheStoreOptions {
    * has a minimum of ~60 seconds, so 60s is a safe default.
    */
   minCloudflareTtlSeconds?: number
+
+  /**
+   * How long cached records may be served as stale fallback after write.
+   *
+   * The Airtable records cache TTL is treated as the fresh window. This value
+   * controls the application-level stale window and the physical KV TTL.
+   */
+  staleTtlMs?: number
 
   /**
    * Optional hook to observe mutations (set/delete/deleteByPrefix).

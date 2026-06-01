@@ -1,3 +1,6 @@
+minimumReleaseAge: 1440
+minimumReleaseAgeExclude:
+  - ts-airtable
 shellEmulator: true
 
 trustPolicy: no-downgrade
@@ -8,3 +11,6 @@ trustPolicyExclude:
 
 allowBuilds:
   sharp: true
+
+packages:
+  - .

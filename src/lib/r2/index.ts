@@ -9,9 +9,15 @@ import {
   PutObjectTaggingCommand,
   S3Client,
 } from '@aws-sdk/client-s3'
-import { R2_ACCESS_KEY_ID, R2_BUCKET, R2_ENDPOINT, R2_SECRET_ACCESS_KEY } from '@/lib/consts'
+import {
+  R2_ACCESS_KEY_ID,
+  R2_BUCKET,
+  R2_ENDPOINT,
+  R2_SECRET_ACCESS_KEY,
+  SKIP_REMOTE_DATA,
+} from '@/lib/consts'
 
-if (!R2_ENDPOINT || !R2_ACCESS_KEY_ID || !R2_SECRET_ACCESS_KEY || !R2_BUCKET) {
+if (!SKIP_REMOTE_DATA && (!R2_ENDPOINT || !R2_ACCESS_KEY_ID || !R2_SECRET_ACCESS_KEY || !R2_BUCKET)) {
   // We intentionally don't throw here to keep dev ergonomics;
   // the route will return a 500 with a clear error message when needed.
   console.error('[ERROR] R2 configuration environment variables are missing.')
@@ -45,6 +51,24 @@ export async function r2Put(
   return r2Client.send(
     new PutObjectCommand({
       Bucket: R2_BUCKET,
+      Key: key,
+      Body: body,
+      ContentType: contentType,
+      CacheControl: cacheControl,
+    }),
+  )
+}
+
+export async function r2PutToBucket(
+  bucket: string,
+  key: string,
+  body: Buffer | Uint8Array | string,
+  contentType: string,
+  cacheControl = 'public, max-age=31536000, immutable',
+) {
+  return r2Client.send(
+    new PutObjectCommand({
+      Bucket: bucket,
       Key: key,
       Body: body,
       ContentType: contentType,

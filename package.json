@@ -12,7 +12,7 @@
     "build": "pnpm lint:ci && next build",
     "start": "next start -H 0.0.0.0 -p ${PORT:-8080}",
     "lint": "eslint .",
-    "lint:ci": "eslint . --max-warnings=0 || true",
+    "lint:ci": "eslint . --max-warnings=0",
     "lint:fix": "eslint . --fix",
     "postinstall": "husky || true"
   },

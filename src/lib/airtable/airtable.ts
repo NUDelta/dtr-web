@@ -7,6 +7,7 @@ import {
   AIRTABLE_BASE_ID,
   CLOUDFLARE_ACCOUNT_ID,
   CLOUDFLARE_KV_NAMESPACE_ID,
+  SKIP_REMOTE_DATA,
 } from '@/lib/consts'
 import { createKvLogger } from '@/lib/kv-logger'
 import { safeLog } from '@/lib/logger'
@@ -71,24 +72,36 @@ Airtable.configure({
   },
 })
 
-const base = Airtable.base(AIRTABLE_BASE_ID)
+function getBase() {
+  return Airtable.base(AIRTABLE_BASE_ID)
+}
 
 interface Row<TFields = Record<string, unknown>> {
   id: string
   fields: TFields
 }
 
+export async function fetchAirtableRecords<TFields = Record<string, unknown>>(
+  tableName: string,
+): Promise<Row<TFields>[]> {
+  if (SKIP_REMOTE_DATA) {
+    return []
+  }
+
+  const records = await getBase()(tableName).select().all()
+
+  // !NOTE: We trust the Airtable schema matches the TFields provided by caller.
+  return records.map(r => ({
+    id: r.id,
+    fields: r.fields as TFields,
+  }))
+}
+
 async function fetchAndCacheRecords<TFields = Record<string, unknown>>(
   tableName: string,
   options: { strictCacheWrite: boolean },
 ): Promise<Row<TFields>[]> {
-  const records = await base(tableName).select().all()
-
-  // !NOTE: We trust the Airtable schema matches the TFields provided by caller.
-  const rows = records.map(r => ({
-    id: r.id,
-    fields: r.fields as TFields,
-  }))
+  const rows = await fetchAirtableRecords<TFields>(tableName)
 
   const cacheKey = getAirtableAllRecordsCacheKey(tableName)
   try {
@@ -125,6 +138,10 @@ async function fetchAndCacheRecords<TFields = Record<string, unknown>>(
 export async function getCachedRecords<TFields = Record<string, unknown>>(
   tableName: string,
 ): Promise<Row<TFields>[]> {
+  if (SKIP_REMOTE_DATA) {
+    return []
+  }
+
   const cacheKey = getAirtableAllRecordsCacheKey(tableName)
   const cached = await getFromRecordsCache<Row<TFields>[]>(cacheKey).catch((error: unknown) => {
     safeLog(logger, {
@@ -147,6 +164,10 @@ export async function getCachedRecords<TFields = Record<string, unknown>>(
 export async function refreshCachedRecords<TFields = Record<string, unknown>>(
   tableName: string,
 ): Promise<Row<TFields>[]> {
+  if (SKIP_REMOTE_DATA) {
+    return []
+  }
+
   return runWithAirtableCacheBypass(
     [
       getAirtableAllRecordsCacheKey(tableName),

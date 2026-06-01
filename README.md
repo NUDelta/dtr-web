@@ -48,9 +48,12 @@ The website implements a two-tier caching system to minimize Airtable API usage:
 
 The Airtable refresh endpoint requires `AIRTABLE_REFRESH_SECRET` in production.
 If it is not set, the endpoint falls back to `R2_CRON_SECRET`.
+The weekly Airtable backup endpoint requires `AIRTABLE_BACKUP_SECRET`.
 
 ## Production Environment
 
-DigitalOcean runtime env must include Airtable credentials, Cloudflare KV credentials, R2 credentials, and `AIRTABLE_REFRESH_SECRET` or `R2_CRON_SECRET` for cron endpoints.
+DigitalOcean runtime env must include Airtable credentials, Cloudflare KV credentials, R2 credentials, `AIRTABLE_REFRESH_SECRET` or `R2_CRON_SECRET` for the refresh endpoint, and `AIRTABLE_BACKUP_SECRET` for the backup endpoint.
 
-GitHub repository secrets must include `AIRTABLE_REFRESH_SECRET` for the Airtable refresh workflow and `R2_CRON_SECRET` for the R2 cleanup workflow. If `AIRTABLE_REFRESH_SECRET` is omitted, the Airtable workflow can fall back to `R2_CRON_SECRET`, but using separate secrets is preferred.
+GitHub repository secrets must include `AIRTABLE_REFRESH_SECRET` for the Airtable refresh workflow, `AIRTABLE_BACKUP_SECRET` for the Airtable backup workflow, and `R2_CRON_SECRET` for the R2 cleanup workflow. If `AIRTABLE_REFRESH_SECRET` is omitted, the Airtable workflow can fall back to `R2_CRON_SECRET`, but using separate secrets is preferred.
+
+Airtable backups require `R2_BACKUP_BUCKET`, a private R2 bucket that is not exposed through the image cache route or public bucket access. The backup endpoint skips repeat runs for the same UTC date unless the manual workflow is dispatched with `force`.

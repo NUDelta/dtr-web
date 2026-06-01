@@ -2,6 +2,7 @@ import type { Metadata } from 'next'
 import { GoogleAnalytics } from '@next/third-parties/google'
 import { Lato } from 'next/font/google'
 import { Toaster } from 'sonner'
+import Footer from '@/components/shared/Footer'
 import Header from '@/components/shared/Header'
 import PopupAnnouncement from '@/components/shared/PopupAnnouncement'
 import RouterTransition from '@/components/shared/RouterTransition'
@@ -44,13 +45,14 @@ export default function RootLayout({
   return (
     <html lang="en">
       <link rel="alternate" type="application/rss+xml" title="DTR Annual Letters RSS Feed" href={`${siteUrl}/${feedFileName}`} />
-      <body className={`${lato.variable} bg-white pb-8`}>
+      <body className={`${lato.variable} flex min-h-dvh flex-col bg-white`}>
         <RouterTransition />
         <PopupAnnouncement />
         <Header />
-        <main id="main" className="mt-8 mx-auto w-full max-w-7xl px-4 pt-16">
+        <main id="main" className="mx-auto mt-8 w-full max-w-7xl flex-1 px-4 pt-16">
           {children}
         </main>
+        <Footer />
         <Toaster position="top-center" richColors />
       </body>
       <GoogleAnalytics gaId="G-0LME5PW7PW" />

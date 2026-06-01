@@ -23,6 +23,7 @@ jobs:
             "Project Images"
             "Project Publications"
           )
+          failed_tables=()
 
           for table in "${tables[@]}"; do
             echo "::group::Refresh Airtable table: ${table}"
@@ -59,8 +60,14 @@ jobs:
             echo "::endgroup::"
 
             if [ "${curl_exit}" -ne 0 ]; then
-              exit "${curl_exit}"
+              failed_tables+=("${table} (curl_exit=${curl_exit}, http_status=${http_status})")
             fi
           done
+
+          if [ "${#failed_tables[@]}" -gt 0 ]; then
+            echo "Airtable refresh failed for ${#failed_tables[@]} table(s):"
+            printf ' - %s\n' "${failed_tables[@]}"
+            exit 1
+          fi
         env:
           AIRTABLE_REFRESH_SECRET: ${{ secrets.AIRTABLE_REFRESH_SECRET || secrets.R2_CRON_SECRET }}

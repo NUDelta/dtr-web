@@ -6,7 +6,9 @@ import {
 
 const REFRESH_LOG_KEY_PREFIX = 'airtable-refresh-log:'
 const DEFAULT_LOG_LIMIT = 100
-const MAX_LISTED_KEYS = 300
+const MAX_LOG_LIMIT = 200
+const RECENT_LOG_LOOKBACK_DAYS = 30
+const MIN_KEYS_BEFORE_STOPPING = 300
 
 interface RefreshLogEntry {
   key: string
@@ -30,6 +32,30 @@ function getTimestampFromLogKey(key: string): number {
   return Number.isFinite(parsed) ? parsed : 0
 }
 
+function clampLimit(limit: number): number {
+  if (!Number.isInteger(limit) || limit < 1) {
+    return DEFAULT_LOG_LIMIT
+  }
+
+  return Math.min(limit, MAX_LOG_LIMIT)
+}
+
+function getRecentIsoDays(days: number): string[] {
+  const result: string[] = []
+  const now = new Date()
+
+  for (let offset = 0; offset < days; offset += 1) {
+    const date = new Date(Date.UTC(
+      now.getUTCFullYear(),
+      now.getUTCMonth(),
+      now.getUTCDate() - offset,
+    ))
+    result.push(date.toISOString().slice(0, 10))
+  }
+
+  return result
+}
+
 async function readKvText(key: string): Promise<string | undefined> {
   try {
     const response = await CloudflareClient.kv.namespaces.values.get(
@@ -48,9 +74,7 @@ async function readKvText(key: string): Promise<string | undefined> {
   }
 }
 
-export async function readRecentAirtableRefreshLogs(
-  limit = DEFAULT_LOG_LIMIT,
-): Promise<RefreshLogEntry[]> {
+async function listKvKeysByPrefix(prefix: string): Promise<string[]> {
   const keyNames: string[] = []
   let cursor: string | undefined
 
@@ -59,7 +83,7 @@ export async function readRecentAirtableRefreshLogs(
       CLOUDFLARE_KV_NAMESPACE_ID,
       {
         account_id: CLOUDFLARE_ACCOUNT_ID,
-        prefix: REFRESH_LOG_KEY_PREFIX,
+        prefix,
         ...(cursor !== undefined ? { cursor } : {}),
       },
     )
@@ -70,10 +94,6 @@ export async function readRecentAirtableRefreshLogs(
 
     keyNames.push(...names)
 
-    if (keyNames.length >= MAX_LISTED_KEYS) {
-      break
-    }
-
     const nextCursor = page.result_info?.cursor
     if (typeof nextCursor !== 'string' || nextCursor.length === 0) {
       break
@@ -82,9 +102,25 @@ export async function readRecentAirtableRefreshLogs(
     cursor = nextCursor
   }
 
+  return keyNames
+}
+
+export async function readRecentAirtableRefreshLogs(
+  limit = DEFAULT_LOG_LIMIT,
+): Promise<RefreshLogEntry[]> {
+  const safeLimit = clampLimit(limit)
+  const keyNames: string[] = []
+
+  for (const day of getRecentIsoDays(RECENT_LOG_LOOKBACK_DAYS)) {
+    keyNames.push(...await listKvKeysByPrefix(`${REFRESH_LOG_KEY_PREFIX}${day}:`))
+    if (keyNames.length >= Math.max(safeLimit, MIN_KEYS_BEFORE_STOPPING)) {
+      break
+    }
+  }
+
   const recentKeys = keyNames
     .sort((a, b) => getTimestampFromLogKey(b) - getTimestampFromLogKey(a))
-    .slice(0, limit)
+    .slice(0, safeLimit)
 
   const entries = await Promise.all(
     recentKeys.map(async (key): Promise<RefreshLogEntry | undefined> => {

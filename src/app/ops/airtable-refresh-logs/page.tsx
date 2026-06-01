@@ -1,5 +1,9 @@
 import type { Metadata } from 'next'
+import { Buffer } from 'node:buffer'
+import { createHmac, timingSafeEqual } from 'node:crypto'
 import process from 'node:process'
+import { cookies } from 'next/headers'
+import { redirect } from 'next/navigation'
 import { readRecentAirtableRefreshLogs } from '@/lib/airtable/refresh-log-reader'
 
 export const dynamic = 'force-dynamic'
@@ -13,14 +17,27 @@ export const metadata: Metadata = {
   },
 }
 
+const REFRESH_LOGS_AUTH_COOKIE = 'airtable_refresh_logs_auth'
+const REFRESH_LOGS_AUTH_MAX_AGE_SECONDS = 60 * 60 * 6
+
 interface PageProps {
   searchParams: Promise<{
+    auth?: string
     limit?: string
-    token?: string
   }>
 }
 
-function getRefreshSecret(): string | undefined {
+function getEnvSecret(key: string): string | undefined {
+  const value = process.env[key]
+  return value !== undefined && value.length > 0 ? value : undefined
+}
+
+function getRefreshLogsSecret(): string | undefined {
+  const refreshLogsSecret = getEnvSecret('AIRTABLE_REFRESH_LOGS_SECRET')
+  if (refreshLogsSecret !== undefined) {
+    return refreshLogsSecret
+  }
+
   const refreshSecret = process.env.AIRTABLE_REFRESH_SECRET
   if (refreshSecret !== undefined && refreshSecret.length > 0) {
     return refreshSecret
@@ -28,6 +45,52 @@ function getRefreshSecret(): string | undefined {
 
   const r2Secret = process.env.R2_CRON_SECRET
   return r2Secret !== undefined && r2Secret.length > 0 ? r2Secret : undefined
+}
+
+function getRefreshLogsSessionValue(secret: string): string {
+  return createHmac('sha256', secret)
+    .update('airtable-refresh-logs')
+    .digest('hex')
+}
+
+function isEqualSecret(actual: string, expected: string): boolean {
+  const actualBuffer = Buffer.from(actual)
+  const expectedBuffer = Buffer.from(expected)
+
+  return (
+    actualBuffer.byteLength === expectedBuffer.byteLength
+    && timingSafeEqual(actualBuffer, expectedBuffer)
+  )
+}
+
+async function authenticateAirtableRefreshLogs(formData: FormData) {
+  'use server'
+
+  const secret = getRefreshLogsSecret()
+  const token = formData.get('token')
+
+  if (
+    secret === undefined
+    || typeof token !== 'string'
+    || !isEqualSecret(token, secret)
+  ) {
+    redirect('/ops/airtable-refresh-logs?auth=failed')
+  }
+
+  const cookieStore = await cookies()
+  cookieStore.set(
+    REFRESH_LOGS_AUTH_COOKIE,
+    getRefreshLogsSessionValue(secret),
+    {
+      httpOnly: true,
+      maxAge: REFRESH_LOGS_AUTH_MAX_AGE_SECONDS,
+      path: '/ops/airtable-refresh-logs',
+      sameSite: 'strict',
+      secure: process.env.NODE_ENV === 'production',
+    },
+  )
+
+  redirect('/ops/airtable-refresh-logs')
 }
 
 function parseLimit(value: string | undefined): number {
@@ -61,21 +124,29 @@ function formatDuration(durationMs: number | undefined): string {
 
 export default async function AirtableRefreshLogsPage({ searchParams }: PageProps) {
   const params = await searchParams
-  const secret = getRefreshSecret()
-  const token = params.token ?? ''
+  const secret = getRefreshLogsSecret()
+  const cookieStore = await cookies()
+  const session = cookieStore.get(REFRESH_LOGS_AUTH_COOKIE)?.value ?? ''
+  const isAuthenticated = secret !== undefined
+    && isEqualSecret(session, getRefreshLogsSessionValue(secret))
 
-  if (secret === undefined || token !== secret) {
+  if (!isAuthenticated) {
     return (
       <section className="mx-auto max-w-3xl py-10">
         <h1 className="text-3xl font-bold">Airtable Refresh Logs</h1>
         <p className="mt-4 text-neutral-700">
           Enter the refresh token to view recent Airtable refresh diagnostics.
         </p>
-        <form className="mt-6 flex gap-3" method="get">
+        {params.auth === 'failed' && (
+          <p className="mt-3 text-sm font-medium text-red-700">
+            Invalid refresh log token.
+          </p>
+        )}
+        <form action={authenticateAirtableRefreshLogs} className="mt-6 flex gap-3">
           <input
             className="min-w-0 flex-1 rounded border border-neutral-300 px-3 py-2"
             name="token"
-            placeholder="AIRTABLE_REFRESH_SECRET"
+            placeholder="AIRTABLE_REFRESH_LOGS_SECRET"
             type="password"
           />
           <button className="rounded bg-black px-4 py-2 text-white" type="submit">
@@ -99,7 +170,6 @@ export default async function AirtableRefreshLogsPage({ searchParams }: PageProp
           </p>
         </div>
         <form className="flex items-center gap-2" method="get">
-          <input name="token" type="hidden" value={token} />
           <label className="text-sm text-neutral-600" htmlFor="limit">Limit</label>
           <input
             className="w-24 rounded border border-neutral-300 px-2 py-1"

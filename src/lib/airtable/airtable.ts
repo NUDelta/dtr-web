@@ -72,7 +72,9 @@ Airtable.configure({
   },
 })
 
-const base = Airtable.base(AIRTABLE_BASE_ID)
+function getBase() {
+  return Airtable.base(AIRTABLE_BASE_ID)
+}
 
 interface Row<TFields = Record<string, unknown>> {
   id: string
@@ -86,7 +88,7 @@ export async function fetchAirtableRecords<TFields = Record<string, unknown>>(
     return []
   }
 
-  const records = await base(tableName).select().all()
+  const records = await getBase()(tableName).select().all()
 
   // !NOTE: We trust the Airtable schema matches the TFields provided by caller.
   return records.map(r => ({

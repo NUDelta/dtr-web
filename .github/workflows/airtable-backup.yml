@@ -1,0 +1,23 @@
+name: airtable-backup
+on:
+  schedule:
+    - cron: '23 9 * * 1'
+  workflow_dispatch: {}
+
+concurrency:
+  group: airtable-backup
+  cancel-in-progress: false
+
+jobs:
+  run:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Back up Airtable to R2
+        run: |
+          curl --fail-with-body -sS -X POST \
+            -H "x-cron-token: $AIRTABLE_BACKUP_SECRET" \
+            -H "content-type: application/json" \
+            -d '{}' \
+            "https://dtr.northwestern.edu/api/airtable-backup"
+        env:
+          AIRTABLE_BACKUP_SECRET: ${{ secrets.AIRTABLE_BACKUP_SECRET }}

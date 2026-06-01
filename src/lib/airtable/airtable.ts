@@ -78,17 +78,23 @@ interface Row<TFields = Record<string, unknown>> {
   fields: TFields
 }
 
-async function fetchAndCacheRecords<TFields = Record<string, unknown>>(
+export async function fetchAirtableRecords<TFields = Record<string, unknown>>(
   tableName: string,
-  options: { strictCacheWrite: boolean },
 ): Promise<Row<TFields>[]> {
   const records = await base(tableName).select().all()
 
   // !NOTE: We trust the Airtable schema matches the TFields provided by caller.
-  const rows = records.map(r => ({
+  return records.map(r => ({
     id: r.id,
     fields: r.fields as TFields,
   }))
+}
+
+async function fetchAndCacheRecords<TFields = Record<string, unknown>>(
+  tableName: string,
+  options: { strictCacheWrite: boolean },
+): Promise<Row<TFields>[]> {
+  const rows = await fetchAirtableRecords<TFields>(tableName)
 
   const cacheKey = getAirtableAllRecordsCacheKey(tableName)
   try {

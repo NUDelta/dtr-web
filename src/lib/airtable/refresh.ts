@@ -14,6 +14,7 @@ const DEFAULT_MIN_INTERVAL_HOURS = 12
 const REFRESH_INTERVAL_BUFFER_MS = 10 * 60 * 1000
 const REFRESH_GUARD_TTL_SECONDS = 15 * 60
 const REFRESH_LOG_TTL_SECONDS = 60 * 60 * 24 * 180
+const REFRESH_LOG_WRITE_TIMEOUT_MS = 2_000
 
 type AirtableRefreshTable = typeof AIRTABLE_REFRESH_TABLES[number]
 
@@ -46,11 +47,14 @@ async function logRefreshEvent(
   event: Omit<CacheLogEvent, 'fullKey' | 'timestamp'>,
 ): Promise<void> {
   try {
-    await refreshLogger.log({
-      fullKey: `airtable-refresh:${event.kind}:${event.runId ?? 'unknown'}`,
-      timestamp: Date.now(),
-      ...event,
-    })
+    await Promise.race([
+      refreshLogger.log({
+        fullKey: `airtable-refresh:${event.kind}:${event.runId ?? 'unknown'}`,
+        timestamp: Date.now(),
+        ...event,
+      }),
+      sleep(REFRESH_LOG_WRITE_TIMEOUT_MS),
+    ])
   }
   catch {
     // Diagnostics should never block cache refreshes.

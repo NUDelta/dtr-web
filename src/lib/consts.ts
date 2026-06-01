@@ -1,5 +1,7 @@
 import process from 'node:process'
 
+export const SKIP_REMOTE_DATA = process.env.SKIP_REMOTE_DATA === '1'
+
 // RSS Feed Configuration
 export const siteUrl = 'https://dtr.northwestern.edu' // Without trailing slash
 export const feedFileName = 'letters-feed.xml' // Without leading slash

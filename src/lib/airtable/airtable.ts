@@ -7,6 +7,7 @@ import {
   AIRTABLE_BASE_ID,
   CLOUDFLARE_ACCOUNT_ID,
   CLOUDFLARE_KV_NAMESPACE_ID,
+  SKIP_REMOTE_DATA,
 } from '@/lib/consts'
 import { createKvLogger } from '@/lib/kv-logger'
 import { safeLog } from '@/lib/logger'
@@ -81,6 +82,10 @@ interface Row<TFields = Record<string, unknown>> {
 export async function fetchAirtableRecords<TFields = Record<string, unknown>>(
   tableName: string,
 ): Promise<Row<TFields>[]> {
+  if (SKIP_REMOTE_DATA) {
+    return []
+  }
+
   const records = await base(tableName).select().all()
 
   // !NOTE: We trust the Airtable schema matches the TFields provided by caller.
@@ -131,6 +136,10 @@ async function fetchAndCacheRecords<TFields = Record<string, unknown>>(
 export async function getCachedRecords<TFields = Record<string, unknown>>(
   tableName: string,
 ): Promise<Row<TFields>[]> {
+  if (SKIP_REMOTE_DATA) {
+    return []
+  }
+
   const cacheKey = getAirtableAllRecordsCacheKey(tableName)
   const cached = await getFromRecordsCache<Row<TFields>[]>(cacheKey).catch((error: unknown) => {
     safeLog(logger, {
@@ -153,6 +162,10 @@ export async function getCachedRecords<TFields = Record<string, unknown>>(
 export async function refreshCachedRecords<TFields = Record<string, unknown>>(
   tableName: string,
 ): Promise<Row<TFields>[]> {
+  if (SKIP_REMOTE_DATA) {
+    return []
+  }
+
   return runWithAirtableCacheBypass(
     [
       getAirtableAllRecordsCacheKey(tableName),

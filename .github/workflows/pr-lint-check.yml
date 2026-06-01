@@ -90,3 +90,5 @@ jobs:
 
       - name: 🏗️ Run Build
         run: pnpm build
+        env:
+          SKIP_REMOTE_DATA: '1'

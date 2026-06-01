@@ -71,8 +71,8 @@ jobs:
             fi
           } > formatted-results.txt
 
-      # 💬 Post test results and build status to PR
-      - name: 💬 Post results to PR
+      # 💬 Post lint results to PR
+      - name: 💬 Post lint results to PR
         uses: actions/github-script@v7
         with:
           script: |

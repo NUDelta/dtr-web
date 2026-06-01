@@ -2,7 +2,13 @@ name: airtable-backup
 on:
   schedule:
     - cron: '23 9 * * 1'
-  workflow_dispatch: {}
+  workflow_dispatch:
+    inputs:
+      force:
+        description: Force a new backup even if one already ran today
+        required: false
+        default: false
+        type: boolean
 
 concurrency:
   group: airtable-backup
@@ -17,7 +23,8 @@ jobs:
           curl --fail-with-body -sS -X POST \
             -H "x-cron-token: $AIRTABLE_BACKUP_SECRET" \
             -H "content-type: application/json" \
-            -d '{}' \
+            -d "{\"force\":${AIRTABLE_BACKUP_FORCE}}" \
             "https://dtr.northwestern.edu/api/airtable-backup"
         env:
           AIRTABLE_BACKUP_SECRET: ${{ secrets.AIRTABLE_BACKUP_SECRET }}
+          AIRTABLE_BACKUP_FORCE: ${{ inputs.force || false }}

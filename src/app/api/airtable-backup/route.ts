@@ -4,6 +4,16 @@ import { backupAirtableTables } from '@/lib/airtable/backup'
 
 interface AirtableBackupRequestBody {
   tables?: string[]
+  minIntervalHours?: number
+  force?: boolean
+}
+
+function parsePositiveNumber(value: unknown): number | undefined {
+  if (typeof value !== 'number' || !Number.isFinite(value) || value <= 0) {
+    return undefined
+  }
+
+  return value
 }
 
 export async function POST(req: Request) {
@@ -19,9 +29,16 @@ export async function POST(req: Request) {
   }
 
   const body = await req.json().catch(() => ({})) as AirtableBackupRequestBody
-  const result = await backupAirtableTables({
-    tables: Array.isArray(body.tables) ? body.tables : undefined,
-  })
+  try {
+    const result = await backupAirtableTables({
+      tables: Array.isArray(body.tables) ? body.tables : undefined,
+      minIntervalHours: parsePositiveNumber(body.minIntervalHours),
+      force: body.force === true,
+    })
 
-  return NextResponse.json({ ok: true, ...result })
+    return NextResponse.json({ ok: true, ...result })
+  }
+  catch {
+    return NextResponse.json({ ok: false, error: 'backup failed' }, { status: 500 })
+  }
 }

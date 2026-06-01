@@ -102,6 +102,19 @@ export async function backupAirtableTables(options: AirtableBackupOptions = {}) 
   const files = []
 
   try {
+    if (options.force !== true) {
+      const skipped = getSkippedBackup(await readBackupState(), backupDate, minIntervalHours)
+      if (skipped !== undefined) {
+        return {
+          skipped: true,
+          reason: skipped.reason,
+          backupDate: skipped.state.backupDate,
+          manifestKey: skipped.state.manifestKey,
+          tables: skipped.state.tables,
+        }
+      }
+    }
+
     for (const table of tables) {
       const records = await fetchAirtableRecords(table)
       const key = `${backupPrefix}/${getTableSlug(table)}.json`

@@ -34,8 +34,8 @@ export default function Footer() {
                   href={href}
                   target="_blank"
                   rel="noopener noreferrer"
-                  aria-label={`Visit DTR on ${label}`}
-                  className="inline-flex size-11 items-center justify-center rounded-md border border-black/15 text-black transition-colors hover:border-black hover:bg-yellow focus:outline-none focus-visible:ring-2 focus-visible:ring-yellow focus-visible:ring-offset-2"
+                  aria-label={`Visit DTR on ${label}, opens in a new tab`}
+                  className="inline-flex size-11 items-center justify-center rounded-md border border-black/15 text-black transition-colors hover:border-black hover:bg-yellow focus:outline-none focus-visible:border-black focus-visible:ring-2 focus-visible:ring-black focus-visible:ring-offset-2"
                 >
                   <Icon size={20} aria-hidden="true" />
                 </a>

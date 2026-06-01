@@ -45,11 +45,11 @@ export default function RootLayout({
   return (
     <html lang="en">
       <link rel="alternate" type="application/rss+xml" title="DTR Annual Letters RSS Feed" href={`${siteUrl}/${feedFileName}`} />
-      <body className={`${lato.variable} bg-white pb-8`}>
+      <body className={`${lato.variable} flex min-h-dvh flex-col bg-white`}>
         <RouterTransition />
         <PopupAnnouncement />
         <Header />
-        <main id="main" className="mt-8 mx-auto w-full max-w-7xl px-4 pt-16">
+        <main id="main" className="mx-auto mt-8 w-full max-w-7xl flex-1 px-4 pt-16">
           {children}
         </main>
         <Footer />

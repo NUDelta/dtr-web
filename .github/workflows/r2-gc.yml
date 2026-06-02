@@ -16,4 +16,4 @@ jobs:
             -d '{"prefix":"images/","maxAgeDays":60,"minIntervalHours":24,"maxDeletePerRun":250}' \
             "https://dtr.northwestern.edu/api/r2-gc"
         env:
-          CICD_SECRET: ${{ secrets.CICD_SECRET || secrets.R2_CRON_SECRET }}
+          CICD_SECRET: ${{ secrets.CICD_SECRET }}

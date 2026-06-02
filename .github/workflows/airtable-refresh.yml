@@ -70,4 +70,4 @@ jobs:
             exit 1
           fi
         env:
-          CICD_SECRET: ${{ secrets.CICD_SECRET || secrets.AIRTABLE_REFRESH_SECRET || secrets.R2_CRON_SECRET }}
+          CICD_SECRET: ${{ secrets.CICD_SECRET }}

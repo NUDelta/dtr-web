@@ -26,5 +26,5 @@ jobs:
             -d "{\"force\":${AIRTABLE_BACKUP_FORCE}}" \
             "https://dtr.northwestern.edu/api/airtable-backup"
         env:
-          CICD_SECRET: ${{ secrets.CICD_SECRET || secrets.AIRTABLE_BACKUP_SECRET }}
+          CICD_SECRET: ${{ secrets.CICD_SECRET }}
           AIRTABLE_BACKUP_FORCE: ${{ inputs.force || false }}

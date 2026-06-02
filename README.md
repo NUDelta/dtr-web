@@ -48,13 +48,12 @@ The website implements a two-tier caching system to minimize Airtable API usage:
 
 Cron-triggered endpoints require `CICD_SECRET` in production.
 Internal ops pages require `OPS_SECRET`.
-Legacy endpoint-specific secrets are only retained as migration fallbacks.
 
 ## Production Environment
 
 DigitalOcean runtime env must include Airtable credentials, Cloudflare API/KV credentials, R2 bucket names, `CICD_SECRET` for GitHub Actions / cron-triggered endpoints, `OPS_SECRET` for internal ops pages, and `TURNSTILE_SECRET_KEY` for bot protection.
 
-GitHub repository secrets should include `CICD_SECRET`. The workflows still fall back to the older endpoint-specific secrets during migration.
+GitHub repository secrets should include `CICD_SECRET`.
 
 Airtable backups require `R2_BACKUP_BUCKET`, a private R2 bucket. Runtime image cache objects stay in `R2_BUCKET` under the `images/` prefix and are served through the configured public R2 URL. Backups only include table data plus any cached R2 image keys/public URLs already referenced by those records; they do not duplicate image objects into the backup bucket. The backup endpoint skips repeat runs for the same UTC date unless the manual workflow is dispatched with `force`.
 

@@ -1,7 +1,7 @@
 'use client'
 
 import { useForm } from '@tanstack/react-form-nextjs'
-import { useEffect, useId, useRef, useState } from 'react'
+import { useCallback, useEffect, useId, useRef, useState } from 'react'
 import { toast } from 'sonner'
 import { letterSubscribePayloadSchema } from '@/lib/letters/subscribe'
 import {
@@ -15,6 +15,8 @@ export function useLetterSubscribe() {
   const [open, setOpen] = useState(false)
   const [hasSubscribed, setHasSubscribed] = useState(false)
   const [submitError, setSubmitError] = useState<string | null>(null)
+  const [turnstileToken, setTurnstileToken] = useState('')
+  const [turnstileResetSignal, setTurnstileResetSignal] = useState(0)
 
   const inputRef = useRef<HTMLInputElement | null>(null)
   const formId = useId()
@@ -25,11 +27,15 @@ export function useLetterSubscribe() {
   const form = useForm({
     defaultValues: {
       email: '',
+      turnstileToken: '',
     },
     onSubmit: async ({ value, formApi }) => {
       setSubmitError(null)
 
-      const payload = letterSubscribePayloadSchema.parse(value)
+      const payload = letterSubscribePayloadSchema.parse({
+        ...value,
+        turnstileToken,
+      })
 
       try {
         const response = await fetch('/api/letters/subscribe', {
@@ -59,8 +65,24 @@ export function useLetterSubscribe() {
         setSubmitError(DEFAULT_SUBSCRIBE_ERROR)
         toast.error(DEFAULT_SUBSCRIBE_ERROR)
       }
+      finally {
+        setTurnstileToken('')
+        formApi.setFieldValue('turnstileToken', '')
+        setTurnstileResetSignal(signal => signal + 1)
+      }
     },
   })
+
+  const updateTurnstileToken = useCallback((token: string) => {
+    setTurnstileToken(token)
+    form.setFieldValue('turnstileToken', token)
+  }, [form])
+
+  const resetTurnstile = useCallback(() => {
+    setTurnstileToken('')
+    form.setFieldValue('turnstileToken', '')
+    setTurnstileResetSignal(signal => signal + 1)
+  }, [form])
 
   useEffect(() => {
     if (!open) {
@@ -84,6 +106,7 @@ export function useLetterSubscribe() {
   function closeForm() {
     setSubmitError(null)
     form.reset()
+    resetTurnstile()
     setOpen(false)
   }
 
@@ -105,5 +128,8 @@ export function useLetterSubscribe() {
     clearSubmitError,
     submitError,
     emailSchema,
+    turnstileResetSignal,
+    turnstileToken,
+    updateTurnstileToken,
   }
 }

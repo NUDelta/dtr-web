@@ -1,4 +1,6 @@
 import type { useLetterSubscribe } from './useLetterSubscribe'
+import TurnstileWidget from '@/components/shared/TurnstileWidget'
+import { TURNSTILE_SITE_KEY } from '@/lib/public-consts'
 import { getErrorMessage } from './utils'
 
 interface LetterSubscribeInlineFormProps {
@@ -20,6 +22,9 @@ export default function LetterSubscribeInlineForm({
     inputRef,
     open,
     submitError,
+    turnstileResetSignal,
+    turnstileToken,
+    updateTurnstileToken,
   } = subscribe
 
   return (
@@ -119,10 +124,20 @@ export default function LetterSubscribeInlineForm({
       })}
       >
         {({ canSubmit, email, isSubmitting }) => {
-          const submitDisabled = email.trim().length === 0 || !canSubmit || isSubmitting
+          const submitDisabled = email.trim().length === 0
+            || turnstileToken.length === 0
+            || !canSubmit
+            || isSubmitting
 
           return (
             <>
+              <TurnstileWidget
+                action="letter-subscribe"
+                className="shrink-0"
+                onTokenChange={updateTurnstileToken}
+                resetSignal={turnstileResetSignal}
+                siteKey={TURNSTILE_SITE_KEY}
+              />
               <button
                 type="submit"
                 disabled={submitDisabled}

@@ -5,12 +5,15 @@ import { createHmac, timingSafeEqual } from 'node:crypto'
 import process from 'node:process'
 import { cookies } from 'next/headers'
 import { redirect } from 'next/navigation'
+import Script from 'next/script'
 import {
   readRecentArchivedLogManifests,
   readRecentOpsLogs,
 } from '@/lib/ops/audit-logs'
 import { OPS_LOG_SOURCES } from '@/lib/ops/logging'
+import { TURNSTILE_SITE_KEY } from '@/lib/public-consts'
 import { getOpsSecret } from '@/lib/secrets'
+import { verifyTurnstileToken } from '@/lib/turnstile'
 
 export const dynamic = 'force-dynamic'
 export const revalidate = 0
@@ -59,6 +62,15 @@ async function authenticateAirtableRefreshLogs(formData: FormData) {
 
   const secret = getRefreshLogsSecret()
   const token = formData.get('token')
+  const turnstileToken = formData.get('cf-turnstile-response')
+
+  const turnstile = await verifyTurnstileToken(
+    typeof turnstileToken === 'string' ? turnstileToken : undefined,
+  )
+
+  if (!turnstile.success) {
+    redirect('/ops/airtable-refresh-logs?auth=challenge')
+  }
 
   if (
     secret === undefined
@@ -142,12 +154,28 @@ export default async function AirtableRefreshLogsPage({ searchParams }: PageProp
             Invalid refresh log token.
           </p>
         )}
-        <form action={authenticateAirtableRefreshLogs} className="mt-6 flex gap-3">
+        {params.auth === 'challenge' && (
+          <p className="mt-3 text-sm font-medium text-red-700">
+            Complete the verification challenge.
+          </p>
+        )}
+        <Script
+          async
+          defer
+          src="https://challenges.cloudflare.com/turnstile/v0/api.js"
+          strategy="afterInteractive"
+        />
+        <form action={authenticateAirtableRefreshLogs} className="mt-6 flex flex-col gap-3 sm:flex-row sm:items-start">
           <input
             className="min-w-0 flex-1 rounded border border-neutral-300 px-3 py-2"
             name="token"
             placeholder="OPS_SECRET"
             type="password"
+          />
+          <div
+            className="cf-turnstile"
+            data-action="ops-audit-login"
+            data-sitekey={TURNSTILE_SITE_KEY}
           />
           <button className="rounded bg-black px-4 py-2 text-white" type="submit">
             View

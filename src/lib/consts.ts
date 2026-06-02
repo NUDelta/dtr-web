@@ -27,4 +27,6 @@ export const R2_CLEANUP_MAX_AGE_DAYS = Number.isNaN(Number(process.env.R2_CLEANU
   ? 45 // Default to 45 days
   : Number(process.env.R2_CLEANUP_MAX_AGE_DAYS)
 
+export const TURNSTILE_SECRET_KEY = process.env.TURNSTILE_SECRET_KEY ?? ''
+
 export const LETTER_SUBSCRIBE_APPS_SCRIPT_URL = process.env.LETTER_SUBSCRIBE_APPS_SCRIPT_URL ?? ''

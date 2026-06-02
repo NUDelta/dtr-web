@@ -52,7 +52,7 @@ Legacy endpoint-specific secrets are only retained as migration fallbacks.
 
 ## Production Environment
 
-DigitalOcean runtime env must include Airtable credentials, Cloudflare API/KV credentials, R2 bucket names, `CICD_SECRET` for GitHub Actions / cron-triggered endpoints, and `OPS_SECRET` for internal ops pages.
+DigitalOcean runtime env must include Airtable credentials, Cloudflare API/KV credentials, R2 bucket names, `CICD_SECRET` for GitHub Actions / cron-triggered endpoints, `OPS_SECRET` for internal ops pages, and `TURNSTILE_SECRET_KEY` for bot protection.
 
 GitHub repository secrets should include `CICD_SECRET`. The workflows still fall back to the older endpoint-specific secrets during migration.
 

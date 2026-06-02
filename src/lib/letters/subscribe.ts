@@ -2,6 +2,7 @@ import { z } from 'zod'
 
 export const letterSubscribePayloadSchema = z.object({
   email: z.email('Enter a valid email address.'),
+  turnstileToken: z.string().min(1, 'Complete the verification challenge.'),
 })
 
 export type LetterSubscribePayload = z.infer<typeof letterSubscribePayloadSchema>

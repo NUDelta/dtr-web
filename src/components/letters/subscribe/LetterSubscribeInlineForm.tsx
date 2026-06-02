@@ -38,10 +38,10 @@ export default function LetterSubscribeInlineForm({
       }}
       aria-hidden={!open}
       className={[
-        'items-center gap-2 overflow-hidden',
+        'gap-2 overflow-visible',
         'sm:flex sm:transition-opacity sm:duration-300 sm:ease-in-out',
         open
-          ? 'flex flex-1 sm:flex-none sm:max-w-xs sm:opacity-100 pointer-events-auto'
+          ? 'flex w-full flex-wrap items-start justify-end sm:opacity-100 pointer-events-auto'
           : 'hidden sm:max-w-0 sm:opacity-0 pointer-events-none',
       ].join(' ')}
     >
@@ -72,7 +72,7 @@ export default function LetterSubscribeInlineForm({
             : undefined
 
           return (
-            <div className="relative flex min-w-0 flex-1">
+            <div className="relative flex min-w-52 flex-1 sm:max-w-xs">
               <label htmlFor={emailId} className="sr-only">
                 Email address
               </label>
@@ -97,7 +97,7 @@ export default function LetterSubscribeInlineForm({
                 aria-invalid={hasFieldError ? true : undefined}
                 aria-describedby={describedBy}
                 placeholder="your@email.com"
-                className={`w-44 min-w-0 text-sm px-2.5 py-1 border rounded-md outline-none transition-shadow focus:border-yellow-400 focus:ring-2 focus:ring-yellow-300/40 ${
+                className={`w-full min-w-0 text-sm px-2.5 py-1 border rounded-md outline-none transition-shadow focus:border-yellow-400 focus:ring-2 focus:ring-yellow-300/40 ${
                   hasFieldError
                     ? 'border-red-300 focus:border-red-400 focus:ring-red-200/60'
                     : 'border-slate-300'

@@ -20,7 +20,7 @@ export default function LetterSubscribe() {
   }
 
   return (
-    <div className={`not-prose flex items-center gap-2 ${subscribe.open ? 'w-full sm:w-auto' : ''}`}>
+    <div className={`not-prose flex items-center gap-2 ${subscribe.open ? 'w-full flex-wrap justify-end' : ''}`}>
       <LetterSubscribeTrigger
         hasSubscribed={subscribe.hasSubscribed}
         onClose={subscribe.closeForm}

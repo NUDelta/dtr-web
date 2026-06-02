@@ -13,7 +13,7 @@ const PREFIX_DEFAULT = 'images/'
 
 interface GCOptions {
   prefix?: string
-  /** Delete objects older than this many days since last access */
+  /** Delete objects older than this many days since last modification. */
   maxAgeDays?: number
   /** Throttle: only run if last run is older than this many hours */
   minIntervalHours?: number
@@ -98,7 +98,7 @@ export async function maybeRunR2CleanupFromISR(opts: GCOptions = {}) {
   const runStartedAt = Date.now()
   const runId = randomUUID()
   const prefix = opts.prefix ?? PREFIX_DEFAULT
-  const maxAgeDays = opts.maxAgeDays ?? 45
+  const maxAgeDays = opts.maxAgeDays ?? R2_CLEANUP_MAX_AGE_DAYS
   const maxDeletePerRun = opts.maxDeletePerRun ?? 250
   const minIntervalHours = opts.minIntervalHours ?? 24
 

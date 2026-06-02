@@ -57,3 +57,5 @@ DigitalOcean runtime env must include Airtable credentials, Cloudflare API/KV cr
 GitHub repository secrets should include `CICD_SECRET`. The workflows still fall back to the older endpoint-specific secrets during migration.
 
 Airtable backups require `R2_BACKUP_BUCKET`, a private R2 bucket. Runtime image cache objects stay in `R2_BUCKET` under the `images/` prefix and are served through the configured public R2 URL. Backups only include table data plus any cached R2 image keys/public URLs already referenced by those records; they do not duplicate image objects into the backup bucket. The backup endpoint skips repeat runs for the same UTC date unless the manual workflow is dispatched with `force`.
+
+The internal ops audit page at `/ops/airtable-refresh-logs` uses `OPS_SECRET`, is marked `noindex` through page metadata, and shows recent KV logs plus log snapshots archived under `backups/logs/` in `R2_BACKUP_BUCKET`.

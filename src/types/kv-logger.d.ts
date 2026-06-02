@@ -15,6 +15,15 @@ type CacheKind
     | 'refreshTableSuccess'
     | 'refreshTableFailure'
     | 'refreshStateWrite'
+    | 'backupRunStart'
+    | 'backupRunSuccess'
+    | 'backupRunSkipped'
+    | 'backupRunFailure'
+    | 'backupTableSuccess'
+    | 'backupLogArchive'
+    | 'r2GcRunStart'
+    | 'r2GcRunSuccess'
+    | 'r2GcRunFailure'
 
 interface CacheLogEvent {
   kind: CacheKind
@@ -94,6 +103,46 @@ interface CacheLogEvent {
    * Best-effort guard owner token for refresh overlap diagnostics.
    */
   owner?: string
+  /**
+   * UTC backup date, when applicable.
+   */
+  backupDate?: string
+  /**
+   * R2 manifest key written by backup/archive jobs.
+   */
+  manifestKey?: string
+  /**
+   * Cloudflare R2 bucket name for object operations.
+   */
+  bucket?: string
+  /**
+   * Object prefix scanned by R2 jobs.
+   */
+  prefix?: string
+  /**
+   * Number of objects/log entries scanned.
+   */
+  scannedCount?: number
+  /**
+   * Number of objects/log entries deleted or archived.
+   */
+  deletedCount?: number
+  /**
+   * Number of archived log entries.
+   */
+  logCount?: number
+  /**
+   * Whether an operation stopped at a configured safety cap.
+   */
+  capped?: boolean
+  /**
+   * R2 cleanup age threshold.
+   */
+  maxAgeDays?: number
+  /**
+   * R2 cleanup deletion cap.
+   */
+  maxDeletePerRun?: number
 }
 
 interface CacheLogger {

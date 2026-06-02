@@ -1,8 +1,11 @@
+import { randomUUID } from 'node:crypto'
 import {
   R2_BACKUP_BUCKET,
   SKIP_REMOTE_DATA,
 } from '@/lib/consts'
 import { buildImageObjectKey } from '@/lib/image-cache'
+import { archiveRecentOpsLogsToBackupBucket } from '@/lib/ops/audit-logs'
+import { getErrorMessage, logOpsEvent } from '@/lib/ops/logging'
 import { buildR2PublicUrl, r2Head, r2PutToBucket } from '@/lib/r2'
 import { fetchAirtableRecords } from './airtable'
 import {
@@ -166,6 +169,9 @@ async function collectR2AttachmentReferences(
 }
 
 export async function backupAirtableTables(options: AirtableBackupOptions = {}) {
+  const runStartedAt = Date.now()
+  const runId = randomUUID()
+
   if (SKIP_REMOTE_DATA) {
     throw new Error('Airtable backup cannot run while remote data is disabled')
   }
@@ -187,9 +193,29 @@ export async function backupAirtableTables(options: AirtableBackupOptions = {}) 
   const backupDate = options.backupDate ?? getBackupDate()
   const minIntervalHours = options.minIntervalHours ?? DEFAULT_MIN_INTERVAL_HOURS
 
+  await logOpsEvent('airtable-backup', {
+    kind: 'backupRunStart',
+    runId,
+    requestedTables: tables,
+    backupDate,
+    bucket: R2_BACKUP_BUCKET,
+    minIntervalHours,
+    force: options.force === true,
+  })
+
   if (options.force !== true) {
     const skipped = getSkippedBackup(await readBackupState(), backupDate, minIntervalHours)
     if (skipped !== undefined) {
+      await logOpsEvent('airtable-backup', {
+        kind: 'backupRunSkipped',
+        runId,
+        requestedTables: tables,
+        backupDate: skipped.state.backupDate,
+        manifestKey: skipped.state.manifestKey,
+        reason: skipped.reason,
+        durationMs: Date.now() - runStartedAt,
+      })
+
       return {
         skipped: true,
         reason: skipped.reason,
@@ -202,6 +228,15 @@ export async function backupAirtableTables(options: AirtableBackupOptions = {}) 
 
   const backupSlotOwner = await claimBackupSlotBestEffort()
   if (backupSlotOwner === undefined) {
+    await logOpsEvent('airtable-backup', {
+      kind: 'backupRunSkipped',
+      runId,
+      requestedTables: tables,
+      backupDate,
+      reason: 'backup already in progress',
+      durationMs: Date.now() - runStartedAt,
+    })
+
     return {
       skipped: true,
       reason: 'backup already in progress',
@@ -217,6 +252,16 @@ export async function backupAirtableTables(options: AirtableBackupOptions = {}) 
     if (options.force !== true) {
       const skipped = getSkippedBackup(await readBackupState(), backupDate, minIntervalHours)
       if (skipped !== undefined) {
+        await logOpsEvent('airtable-backup', {
+          kind: 'backupRunSkipped',
+          runId,
+          requestedTables: tables,
+          backupDate: skipped.state.backupDate,
+          manifestKey: skipped.state.manifestKey,
+          reason: skipped.reason,
+          durationMs: Date.now() - runStartedAt,
+        })
+
         return {
           skipped: true,
           reason: skipped.reason,
@@ -239,6 +284,16 @@ export async function backupAirtableTables(options: AirtableBackupOptions = {}) 
         'no-store',
       )
       files.push({ table, key, records: records.length, r2Attachments: r2Attachments.length })
+      await logOpsEvent('airtable-backup', {
+        kind: 'backupTableSuccess',
+        runId,
+        table,
+        backupDate,
+        key,
+        bucket: R2_BACKUP_BUCKET,
+        recordCount: records.length,
+        affectedCount: r2Attachments.length,
+      })
       await sleep(TABLE_BACKUP_DELAY_MS)
     }
 
@@ -258,12 +313,61 @@ export async function backupAirtableTables(options: AirtableBackupOptions = {}) 
       tables: files,
     })
 
+    try {
+      const logArchive = await archiveRecentOpsLogsToBackupBucket({ backupDate, backedUpAt })
+      if (logArchive !== undefined) {
+        await logOpsEvent('airtable-backup', {
+          kind: 'backupLogArchive',
+          runId,
+          backupDate,
+          manifestKey: logArchive.manifestKey,
+          bucket: R2_BACKUP_BUCKET,
+          logCount: logArchive.sources.reduce((total, source) => total + source.logs, 0),
+          affectedCount: logArchive.sources.length,
+        })
+      }
+    }
+    catch (error) {
+      await logOpsEvent('airtable-backup', {
+        kind: 'backupLogArchive',
+        runId,
+        backupDate,
+        bucket: R2_BACKUP_BUCKET,
+        reason: getErrorMessage(error),
+        error,
+      })
+    }
+
+    await logOpsEvent('airtable-backup', {
+      kind: 'backupRunSuccess',
+      runId,
+      requestedTables: tables,
+      backupDate,
+      manifestKey,
+      bucket: R2_BACKUP_BUCKET,
+      durationMs: Date.now() - runStartedAt,
+      recordCount: files.reduce((total, file) => total + file.records, 0),
+      affectedCount: files.length,
+    })
+
     return {
       skipped: false,
       backupDate,
       manifestKey,
       tables: files,
     }
+  }
+  catch (error) {
+    await logOpsEvent('airtable-backup', {
+      kind: 'backupRunFailure',
+      runId,
+      requestedTables: tables,
+      backupDate,
+      reason: getErrorMessage(error),
+      durationMs: Date.now() - runStartedAt,
+      error,
+    })
+    throw error
   }
   finally {
     await releaseBackupSlotBestEffort(backupSlotOwner).catch(() => {})

@@ -79,8 +79,12 @@ export async function r2Head(key: string) {
 }
 
 export async function r2Get(key: string): Promise<R2GetResponse> {
+  return r2GetFromBucket(R2_BUCKET, key)
+}
+
+export async function r2GetFromBucket(bucket: string, key: string): Promise<R2GetResponse> {
   const response = await CloudflareClient.r2.buckets.objects.get(
-    R2_BUCKET,
+    bucket,
     key,
     getObjectParams(),
   )
@@ -126,8 +130,16 @@ export async function r2PutToBucket(
 }
 
 export async function r2List(prefix: string, continuationToken?: string): Promise<R2ListResponse> {
+  return r2ListFromBucket(R2_BUCKET, prefix, continuationToken)
+}
+
+export async function r2ListFromBucket(
+  bucket: string,
+  prefix: string,
+  continuationToken?: string,
+): Promise<R2ListResponse> {
   const page = await CloudflareClient.r2.buckets.objects.list(
-    R2_BUCKET,
+    bucket,
     {
       ...getObjectParams(),
       cursor: continuationToken,

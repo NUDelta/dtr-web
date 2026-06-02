@@ -3,6 +3,9 @@
  * - A throttle ("run at most every X hours") prevents frequent scans in ISR.
  */
 import { Buffer } from 'node:buffer'
+import { randomUUID } from 'node:crypto'
+import { R2_BUCKET } from '@/lib/consts'
+import { getErrorMessage, logOpsEvent } from '@/lib/ops/logging'
 import { r2Delete, r2Get, r2List, r2Put } from '@/lib/r2'
 
 const STATE_KEY = 'gc/last-run.json' // stores {"lastRun":"2025-10-20T00:00:00.000Z"}
@@ -92,19 +95,68 @@ export async function runR2CleanupOnce(opts: GCOptions = {}) {
  * - Writes STATE_KEY before the scan to reduce concurrent duplications.
  */
 export async function maybeRunR2CleanupFromISR(opts: GCOptions = {}) {
+  const runStartedAt = Date.now()
+  const runId = randomUUID()
+  const prefix = opts.prefix ?? PREFIX_DEFAULT
+  const maxAgeDays = opts.maxAgeDays ?? 45
+  const maxDeletePerRun = opts.maxDeletePerRun ?? 250
   const minIntervalHours = opts.minIntervalHours ?? 24
+
+  await logOpsEvent('r2-gc', {
+    kind: 'r2GcRunStart',
+    runId,
+    bucket: R2_BUCKET,
+    prefix,
+    minIntervalHours,
+    maxAgeDays,
+    maxDeletePerRun,
+  })
+
   const last = await getLastRun()
   if (last !== null) {
     const minutes = (Date.now() - last.getTime()) / (1000 * 60)
     // Skip if last run is within the interval (with 5min buffer).
     if (minutes < (minIntervalHours * 60) - 5) {
-      return { skipped: true, reason: `last run ${(minutes / 60).toFixed(1)}h ago` }
+      const reason = `last run ${(minutes / 60).toFixed(1)}h ago`
+      await logOpsEvent('r2-gc', {
+        kind: 'r2GcRunSuccess',
+        runId,
+        bucket: R2_BUCKET,
+        prefix,
+        reason,
+        durationMs: Date.now() - runStartedAt,
+      })
+      return { skipped: true, reason }
     }
   }
 
-  // Best-effort: mark as run NOW to reduce parallel invocations.
-  await setLastRun(new Date())
+  try {
+    // Best-effort: mark as run NOW to reduce parallel invocations.
+    await setLastRun(new Date())
 
-  const res = await runR2CleanupOnce(opts)
-  return { skipped: false, ...res }
+    const res = await runR2CleanupOnce(opts)
+    await logOpsEvent('r2-gc', {
+      kind: 'r2GcRunSuccess',
+      runId,
+      bucket: R2_BUCKET,
+      prefix,
+      durationMs: Date.now() - runStartedAt,
+      scannedCount: res.scanned,
+      deletedCount: res.deleted,
+      capped: res.capped,
+    })
+    return { skipped: false, ...res }
+  }
+  catch (error) {
+    await logOpsEvent('r2-gc', {
+      kind: 'r2GcRunFailure',
+      runId,
+      bucket: R2_BUCKET,
+      prefix,
+      durationMs: Date.now() - runStartedAt,
+      reason: getErrorMessage(error),
+      error,
+    })
+    throw error
+  }
 }

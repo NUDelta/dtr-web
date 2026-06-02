@@ -27,17 +27,7 @@ interface PageProps {
   }>
 }
 
-function getEnvSecret(key: string): string | undefined {
-  const value = process.env[key]
-  return value !== undefined && value.length > 0 ? value : undefined
-}
-
 function getRefreshLogsSecret(): string | undefined {
-  const refreshLogsSecret = getEnvSecret('AIRTABLE_REFRESH_LOGS_SECRET')
-  if (refreshLogsSecret !== undefined) {
-    return refreshLogsSecret
-  }
-
   const refreshSecret = process.env.AIRTABLE_REFRESH_SECRET
   if (refreshSecret !== undefined && refreshSecret.length > 0) {
     return refreshSecret
@@ -146,7 +136,7 @@ export default async function AirtableRefreshLogsPage({ searchParams }: PageProp
           <input
             className="min-w-0 flex-1 rounded border border-neutral-300 px-3 py-2"
             name="token"
-            placeholder="AIRTABLE_REFRESH_LOGS_SECRET"
+            placeholder="AIRTABLE_REFRESH_SECRET"
             type="password"
           />
           <button className="rounded bg-black px-4 py-2 text-white" type="submit">

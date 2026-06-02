@@ -1,8 +1,12 @@
 name: r2-gc
 on:
   schedule:
-    - cron: '0 8 * * *' # Everyday 08:00 AM UTC
+    - cron: '0 8 * * 1' # Mondays 08:00 UTC
   workflow_dispatch: {}
+
+concurrency:
+  group: r2-gc
+  cancel-in-progress: false
 
 jobs:
   run:
@@ -10,10 +14,58 @@ jobs:
     steps:
       - name: Trigger R2 GC
         run: |
-          curl --fail-with-body -sS -X POST \
-            -H "x-cron-token: $CICD_SECRET" \
-            -H "content-type: application/json" \
-            -d '{"prefix":"images/","graceDays":15,"minIntervalHours":24,"maxDeletePerRun":250}' \
-            "https://dtr.northwestern.edu/api/r2-gc"
+          set -euo pipefail
+
+          echo "::group::Trigger R2 GC"
+          response_file="$(mktemp)"
+          payload='{"prefix":"images/","graceDays":15,"minIntervalHours":24,"maxDeletePerRun":250}'
+          started_at="$(date -u +%s)"
+
+          echo "started_at_utc=$(date -u --iso-8601=seconds)"
+          echo "payload=${payload}"
+
+          curl_exit=0
+          http_status="$(
+            curl --fail-with-body -sS \
+              --connect-timeout 30 \
+              --max-time 300 \
+              -o "${response_file}" \
+              -w "%{http_code}" \
+              -X POST \
+              -H "x-cron-token: $CICD_SECRET" \
+              -H "content-type: application/json" \
+              -d "${payload}" \
+              "https://dtr.northwestern.edu/api/r2-gc"
+          )" || curl_exit=$?
+
+          finished_at="$(date -u +%s)"
+          duration_seconds=$((finished_at - started_at))
+          echo "finished_at_utc=$(date -u --iso-8601=seconds)"
+          echo "duration_seconds=${duration_seconds}"
+          echo "http_status=${http_status}"
+          echo "curl_exit=${curl_exit}"
+          echo "response_body:"
+          cat "${response_file}"
+          echo
+          echo "::endgroup::"
+
+          {
+            echo "## R2 GC"
+            echo
+            echo "- Status: ${http_status}"
+            echo "- Duration: ${duration_seconds}s"
+            echo "- Curl exit: ${curl_exit}"
+            echo
+            echo '```json'
+            cat "${response_file}"
+            echo
+            echo '```'
+          } >> "$GITHUB_STEP_SUMMARY"
+
+          rm -f "${response_file}"
+
+          if [ "${curl_exit}" -ne 0 ]; then
+            exit "${curl_exit}"
+          fi
         env:
           CICD_SECRET: ${{ secrets.CICD_SECRET }}

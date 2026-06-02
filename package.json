@@ -17,7 +17,6 @@
     "postinstall": "husky || true"
   },
   "dependencies": {
-    "@aws-sdk/client-s3": "^3.1055.0",
     "@next/third-parties": "16.2.6",
     "@tanstack/react-form-nextjs": "^1.33.0",
     "@zl-asica/react": "^0.13.0",

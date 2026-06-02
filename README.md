@@ -44,7 +44,7 @@ We use [DigitalOcean's App Platform](https://www.digitalocean.com/products/app-p
 The website implements a two-tier caching system to minimize Airtable API usage:
 
 1. **Data Caching**: Airtable table data is cached using [Airtable TS](https://airtable.zla.app)'s built-in caching interface and an injected Cloudflare KV Cache Store. A scheduled GitHub Action refreshes the cache every 12 hours, while stale KV data remains available as a fallback during Airtable/API failures.
-2. **Image Caching**: Images are downloaded once from Airtable, transformed into modern optimized formats (e.g., WebP, AVIF), and cached in Cloudflare R2 Bucket with hash-based invalidation and long-term caching headers.
+2. **Image Caching**: Images are downloaded once from Airtable, transformed into modern optimized formats (e.g., WebP, AVIF), cached in Cloudflare R2, and served from `NEXT_PUBLIC_R2_BUCKET_PUBLIC_URL`.
 
 Cron-triggered endpoints require `CICD_SECRET` in production.
 Internal ops pages require `OPS_SECRET`.
@@ -52,8 +52,8 @@ Legacy endpoint-specific secrets are only retained as migration fallbacks.
 
 ## Production Environment
 
-DigitalOcean runtime env must include Airtable credentials, Cloudflare KV credentials, R2 credentials, `CICD_SECRET` for GitHub Actions / cron-triggered endpoints, and `OPS_SECRET` for internal ops pages.
+DigitalOcean runtime env must include Airtable credentials, Cloudflare API/KV credentials, R2 bucket names, `CICD_SECRET` for GitHub Actions / cron-triggered endpoints, and `OPS_SECRET` for internal ops pages.
 
 GitHub repository secrets should include `CICD_SECRET`. The workflows still fall back to the older endpoint-specific secrets during migration.
 
-Airtable backups require `R2_BACKUP_BUCKET`, a private R2 bucket that is not exposed through the image cache route or public bucket access. The backup endpoint skips repeat runs for the same UTC date unless the manual workflow is dispatched with `force`.
+Airtable backups require `R2_BACKUP_BUCKET`, a private R2 bucket. Runtime image cache objects stay in `R2_BUCKET` under the `images/` prefix and are served through the configured public R2 URL. The backup endpoint skips repeat runs for the same UTC date unless the manual workflow is dispatched with `force`.

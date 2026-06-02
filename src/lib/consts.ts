@@ -16,11 +16,12 @@ export const CLOUDFLARE_ACCOUNT_ID = process.env.CLOUDFLARE_ACCOUNT_ID ?? ''
 export const CLOUDFLARE_KV_NAMESPACE_ID = process.env.CLOUDFLARE_KV_NAMESPACE_ID ?? ''
 
 // R2 Configuration
-export const R2_ENDPOINT = `https://${CLOUDFLARE_ACCOUNT_ID}.r2.cloudflarestorage.com`
-export const R2_ACCESS_KEY_ID = process.env.R2_ACCESS_KEY_ID ?? ''
-export const R2_SECRET_ACCESS_KEY = process.env.R2_SECRET_ACCESS_KEY ?? ''
 export const R2_BUCKET = process.env.R2_BUCKET ?? ''
 export const R2_BACKUP_BUCKET = process.env.R2_BACKUP_BUCKET ?? ''
+export const R2_BUCKET_PUBLIC_URL = (
+  process.env.NEXT_PUBLIC_R2_BUCKET_PUBLIC_URL
+  ?? 'https://r2.dtr-web.pairresearch.io'
+).replace(/\/$/, '')
 
 export const R2_CLEANUP_MAX_AGE_DAYS = Number.isNaN(Number(process.env.R2_CLEANUP_MAX_AGE_DAYS))
   ? 45 // Default to 45 days

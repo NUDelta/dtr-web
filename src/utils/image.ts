@@ -6,9 +6,8 @@ import type { Attachment } from 'ts-airtable'
  * Returns the image URL for the first Airtable attachment.
  *
  * When using `recordsCache` with a store that implements
- * `transformAttachment`, this will already be a stable local URL
- * (e.g. `/api/images/{attId}/full/{filename}`) that no need to
- * exposes Airtable's signed URL.
+ * `transformAttachment`, this will already be a stable public R2 URL
+ * that does not expose Airtable's signed URL.
  */
 export const getImgUrlFromAttachmentObj = async (
   attachmentArr?: Attachment[],

@@ -1,11 +1,9 @@
 /**
- * R2 garbage collector for long-unaccessed images.
- * - We rely on the object tag `last-access=YYYY-MM-DD` (written by the image API).
- * - If the tag is missing, fallback to LastModified.
+ * R2 garbage collector for old image cache objects.
  * - A throttle ("run at most every X hours") prevents frequent scans in ISR.
  */
 import { Buffer } from 'node:buffer'
-import { r2Delete, r2Get, r2GetTags, r2List, r2Put } from '@/lib/r2'
+import { r2Delete, r2Get, r2List, r2Put } from '@/lib/r2'
 
 const STATE_KEY = 'gc/last-run.json' // stores {"lastRun":"2025-10-20T00:00:00.000Z"}
 const PREFIX_DEFAULT = 'images/'
@@ -20,14 +18,6 @@ interface GCOptions {
   maxDeletePerRun?: number
 }
 
-function parseYMD(ymd: string): number | null {
-  const [y, m, d] = ymd.split('-').map(x => Number.parseInt(x, 10))
-  if (!y || !m || !d) {
-    return null
-  }
-  return Date.UTC(y, m - 1, d, 0, 0, 0)
-}
-
 function daysSince(tsMs: number) {
   return (Date.now() - tsMs) / (1000 * 60 * 60 * 24)
 }
@@ -35,9 +25,6 @@ function daysSince(tsMs: number) {
 async function getLastRun(): Promise<Date | null> {
   try {
     const obj = await r2Get(STATE_KEY)
-    if (!obj.Body) {
-      return null
-    };
     const text = await obj.Body.transformToString('utf-8')
     const json = JSON.parse(text) as { lastRun: string }
     const dt = new Date(json.lastRun)
@@ -76,30 +63,11 @@ export async function runR2CleanupOnce(opts: GCOptions = {}) {
       }
       scanned++
 
-      let lastAccessMs: number | null = null
-
-      try {
-        const tags = await r2GetTags(obj.Key)
-        const ymd = (tags.TagSet || []).find(t => t.Key === 'last-access')?.Value
-        if (ymd !== undefined) {
-          const ts = parseYMD(ymd)
-          if (ts !== null) {
-            lastAccessMs = ts
-          }
-        }
-      }
-      catch {
-        // ignore tag read failures
-      }
-
-      if (lastAccessMs === null && obj.LastModified) {
-        lastAccessMs = obj.LastModified.getTime()
-      }
-      if (lastAccessMs === null) {
+      if (obj.LastModified === undefined) {
         continue
       }
 
-      const age = daysSince(lastAccessMs)
+      const age = daysSince(obj.LastModified.getTime())
       if (age > maxAgeDays) {
         try {
           await r2Delete(obj.Key)
@@ -126,7 +94,7 @@ export async function runR2CleanupOnce(opts: GCOptions = {}) {
 export async function maybeRunR2CleanupFromISR(opts: GCOptions = {}) {
   const minIntervalHours = opts.minIntervalHours ?? 24
   const last = await getLastRun()
-  if (last) {
+  if (last !== null) {
     const minutes = (Date.now() - last.getTime()) / (1000 * 60)
     // Skip if last run is within the interval (with 5min buffer).
     if (minutes < (minIntervalHours * 60) - 5) {

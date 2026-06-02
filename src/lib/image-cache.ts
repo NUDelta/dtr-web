@@ -2,7 +2,8 @@
 
 import type { Attachment } from 'ts-airtable'
 import { Buffer } from 'node:buffer'
-import { r2Head, r2Put, r2PutTags } from '@/lib/r2'
+import { R2_BUCKET_PUBLIC_URL } from '@/lib/consts'
+import { r2Head, r2Put } from '@/lib/r2'
 import { transcodeBufferToOptimizedImages } from '@/utils/image-convert'
 
 /** Maximum bounding box for width/height when transcoding. */
@@ -38,10 +39,9 @@ export async function buildImageUrl(
   variant: ImageVariant,
   filename: string,
 ): Promise<string> {
-  const encodedId = encodeURIComponent(attId)
-  const encodedVariant = encodeURIComponent(variant)
-  const encodedName = encodeURIComponent(filename || 'image')
-  return `/api/images/${encodedId}/${encodedVariant}/${encodedName}`
+  const key = await buildImageObjectKey(attId, variant, filename || 'image', 'webp')
+  const encodedKey = key.split('/').map(encodeURIComponent).join('/')
+  return `${R2_BUCKET_PUBLIC_URL}/${encodedKey}`
 }
 
 /**
@@ -57,7 +57,7 @@ export async function buildImageUrl(
  *   1. Fetch the original Airtable URL (short-lived signed URL)
  *   2. Downscale & transcode to AVIF + WebP
  *   3. Store both in R2 with long-lived cache headers
- *   4. Return the stable `/api/images/...` URL
+ *   4. Return the stable public R2 URL
  */
 export async function ensureImageInR2(
   attachment: Attachment,
@@ -82,11 +82,6 @@ export async function ensureImageInR2(
     return { url: await buildImageUrl(attId, variant, filename), webpKey, avifKey }
   }
   catch {}
-  try {
-    await r2Head(avifKey)
-    return { url: await buildImageUrl(attId, variant, filename), webpKey, avifKey }
-  }
-  catch {}
 
   // Cache miss -> fetch from Airtable, transcode and upload.
   const upstream = await fetch(src)
@@ -104,28 +99,9 @@ export async function ensureImageInR2(
     r2Put(avifKey, avif, 'image/avif', 'public, max-age=31536000, immutable'),
   ])
 
-  await Promise.all([
-    touchLastAccess(webpKey),
-    touchLastAccess(avifKey),
-  ])
-
   return {
     url: await buildImageUrl(attId, variant, filename),
     webpKey,
     avifKey,
-  }
-}
-
-/** Best-effort access tracking via object tag `last-access=YYYY-MM-DD`. */
-async function touchLastAccess(key: string) {
-  try {
-    const today = new Date()
-    const y = today.getUTCFullYear()
-    const m = String(today.getUTCMonth() + 1).padStart(2, '0')
-    const d = String(today.getUTCDate()).padStart(2, '0')
-    await r2PutTags(key, { 'last-access': `${y}-${m}-${d}` })
-  }
-  catch {
-    // non-fatal
   }
 }

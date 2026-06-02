@@ -72,11 +72,11 @@ If any required Airtable table cache is missing or cannot be parsed, the cleanup
 
 The cleanup job has a deletion cap per run so a single invocation cannot remove an unbounded number of objects.
 
-The cleanup job writes normal run diagnostics under `r2-gc-log` and orphan-state diagnostics under `r2-gc-orphan-log`, both of which are visible through the operations audit tooling and can be archived by backup jobs.
+The cleanup job writes normal run diagnostics under `r2-gc-log` and orphan-state diagnostics under `r2-gc-orphan-log`, both of which are visible through the automation audit tooling and can be archived by backup jobs.
 
-## Operations Audit Page
+## Automation Audit Page
 
-The internal audit page at `/ops/airtable-refresh-logs` reads recent KV log entries and backup-bucket log archive manifests.
+The internal audit page at `/audit` reads recent CI-driven KV log entries and backup-bucket log archive manifests.
 
 Access to the audit page is protected by `OPS_SECRET` and a Turnstile challenge, and the page is marked `noindex`.
 

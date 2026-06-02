@@ -12,6 +12,18 @@ const DEFAULT_LOG_LIMIT = 100
 const MAX_LOG_LIMIT = 300
 const RECENT_LOG_LOOKBACK_DAYS = 30
 const MIN_KEYS_BEFORE_STOPPING = 300
+const AUDIT_WORKFLOW_SOURCE_IDS: ReadonlySet<OpsLogSourceId> = new Set<OpsLogSourceId>([
+  'airtable-refresh',
+  'airtable-backup',
+  'r2-gc',
+  'r2-gc-orphans',
+])
+/**
+ * Prefix for archived maintenance logs in the dedicated backup bucket.
+ *
+ * Live audit data is read from KV for freshness; archived snapshots are read
+ * from `R2_BACKUP_BUCKET`, never the public/default R2 bucket.
+ */
 const LOG_ARCHIVE_PREFIX = 'backups/logs'
 
 export interface OpsLogEntry {
@@ -31,6 +43,10 @@ export interface ArchivedLogManifest {
     key: string
     logs: number
   }>
+}
+
+function isAuditWorkflowSource(sourceId: string): sourceId is OpsLogSourceId {
+  return AUDIT_WORKFLOW_SOURCE_IDS.has(sourceId as OpsLogSourceId)
 }
 
 function isCloudflareErrorWithStatus(
@@ -173,21 +189,18 @@ export async function readRecentOpsLogs(options: {
   sourceId?: OpsLogSourceId | 'all'
 } = {}): Promise<OpsLogEntry[]> {
   const safeLimit = clampLimit(options.limit ?? DEFAULT_LOG_LIMIT)
-  const selectedSources = options.sourceId === undefined || options.sourceId === 'all'
-    ? OPS_LOG_SOURCES
-    : OPS_LOG_SOURCES.filter(source => source.id === options.sourceId)
-
-  const sourceLimit = options.sourceId === undefined || options.sourceId === 'all'
-    ? safeLimit
-    : safeLimit
+  const isAllSources = options.sourceId === undefined || options.sourceId === 'all'
+  const selectedSources = isAllSources
+    ? OPS_LOG_SOURCES.filter(source => isAuditWorkflowSource(source.id))
+    : OPS_LOG_SOURCES.filter(source => source.id === options.sourceId && isAuditWorkflowSource(source.id))
 
   const logs = (await Promise.all(
-    selectedSources.map(async source => readRecentOpsLogsForSource(source.id, sourceLimit)),
+    selectedSources.map(async source => readRecentOpsLogsForSource(source.id, safeLimit)),
   )).flat()
 
   return logs
     .sort((a, b) => (b.event.timestamp ?? 0) - (a.event.timestamp ?? 0))
-    .slice(0, safeLimit)
+    .slice(0, isAllSources ? safeLimit * selectedSources.length : safeLimit)
 }
 
 export async function archiveRecentOpsLogsToBackupBucket(options: {
@@ -203,7 +216,7 @@ export async function archiveRecentOpsLogsToBackupBucket(options: {
   const archivePrefix = `${LOG_ARCHIVE_PREFIX}/${options.backupDate}`
   const sources = []
 
-  for (const source of OPS_LOG_SOURCES) {
+  for (const source of OPS_LOG_SOURCES.filter(source => isAuditWorkflowSource(source.id))) {
     const logs = await readRecentOpsLogsForSource(source.id, safeLimit)
     const key = `${archivePrefix}/${source.id}.json`
     await r2PutToBucket(
@@ -243,6 +256,12 @@ export async function archiveRecentOpsLogsToBackupBucket(options: {
   return { manifestKey, sources }
 }
 
+/**
+ * Reads archived log manifests from `R2_BACKUP_BUCKET`.
+ *
+ * The audit page uses this for historical snapshots while recent runs remain
+ * KV-backed so operators can inspect current maintenance activity quickly.
+ */
 export async function readRecentArchivedLogManifests(limit = 10): Promise<ArchivedLogManifest[]> {
   if (R2_BACKUP_BUCKET.length === 0) {
     return []
@@ -277,7 +296,7 @@ export async function readRecentArchivedLogManifests(limit = 10): Promise<Archiv
           key,
           backedUpAt: typeof parsed.backedUpAt === 'string' ? parsed.backedUpAt : undefined,
           backupDate: typeof parsed.backupDate === 'string' ? parsed.backupDate : undefined,
-          sources: parsed.sources,
+          sources: parsed.sources.filter(source => isAuditWorkflowSource(source.sourceId)),
         }
       }
       catch {
@@ -286,5 +305,7 @@ export async function readRecentArchivedLogManifests(limit = 10): Promise<Archiv
     }),
   )
 
-  return manifests.filter((manifest): manifest is ArchivedLogManifest => manifest !== undefined)
+  return manifests.filter((manifest): manifest is ArchivedLogManifest => {
+    return manifest !== undefined && manifest.sources.length > 0
+  })
 }

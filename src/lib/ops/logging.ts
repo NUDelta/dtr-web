@@ -9,11 +9,11 @@ export const OPS_LOG_TTL_SECONDS = 60 * 60 * 24 * 180
 const OPS_LOG_WRITE_TIMEOUT_MS = 2_000
 
 export const OPS_LOG_SOURCES = [
-  { id: 'airtable-cache', label: 'Airtable Cache', keyPrefix: 'airtable-log' },
-  { id: 'airtable-refresh', label: 'Airtable Refresh', keyPrefix: 'airtable-refresh-log' },
-  { id: 'airtable-backup', label: 'Airtable Backup', keyPrefix: 'airtable-backup-log' },
+  { id: 'airtable-cache', label: 'Airtable Cache Ops', keyPrefix: 'airtable-log' },
+  { id: 'airtable-refresh', label: 'Cache Refresh', keyPrefix: 'airtable-refresh-log' },
+  { id: 'airtable-backup', label: 'Backups', keyPrefix: 'airtable-backup-log' },
   { id: 'r2-gc', label: 'R2 GC', keyPrefix: 'r2-gc-log' },
-  { id: 'r2-gc-orphans', label: 'R2 GC Orphans', keyPrefix: 'r2-gc-orphan-log' },
+  { id: 'r2-gc-orphans', label: 'R2 Orphan Tracking', keyPrefix: 'r2-gc-orphan-log' },
 ] as const
 
 export type OpsLogSource = typeof OPS_LOG_SOURCES[number]

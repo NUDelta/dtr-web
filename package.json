@@ -10,6 +10,7 @@
   "scripts": {
     "dev": "next dev",
     "build": "pnpm lint:ci && next build",
+    "typecheck": "tsc --noEmit",
     "start": "next start -H 0.0.0.0 -p ${PORT:-8080}",
     "lint": "eslint .",
     "lint:ci": "eslint . --max-warnings=0",

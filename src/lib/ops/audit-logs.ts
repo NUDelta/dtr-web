@@ -1,10 +1,10 @@
 import type { OpsLogSourceId } from './logging'
-import { CloudflareClient } from '@/lib/cloudflare'
 import {
   CLOUDFLARE_ACCOUNT_ID,
   CLOUDFLARE_KV_NAMESPACE_ID,
-  R2_BACKUP_BUCKET,
-} from '@/lib/consts'
+} from '@/constants/cloudflare'
+import { R2_BACKUP_BUCKET } from '@/constants/r2'
+import { CloudflareClient } from '@/lib/cloudflare'
 import { r2GetFromBucket, r2ListFromBucket, r2PutToBucket } from '@/lib/r2'
 import { OPS_LOG_SOURCES } from './logging'
 

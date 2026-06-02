@@ -1,6 +1,6 @@
 import { NextResponse } from 'next/server'
+import { getCicdSecret } from '@/constants/secrets'
 import { backupAirtableTables } from '@/lib/airtable/backup'
-import { getCicdSecret } from '@/lib/secrets'
 
 interface AirtableBackupRequestBody {
   tables?: string[]

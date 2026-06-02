@@ -1,6 +1,4 @@
-import {
-  TURNSTILE_SECRET_KEY,
-} from '@/lib/consts'
+import { TURNSTILE_SECRET_KEY } from '@/constants/cloudflare'
 
 const TURNSTILE_SITEVERIFY_URL = 'https://challenges.cloudflare.com/turnstile/v0/siteverify'
 const TURNSTILE_SITEVERIFY_TIMEOUT_MS = 8_000

@@ -1,6 +1,6 @@
 import type { LetterSubscribeResponse } from '@/lib/letters/subscribe'
 import { NextResponse } from 'next/server'
-import { LETTER_SUBSCRIBE_APPS_SCRIPT_URL } from '@/lib/consts'
+import { LETTER_SUBSCRIBE_APPS_SCRIPT_URL } from '@/constants/letters'
 import { letterSubscribePayloadSchema } from '@/lib/letters/subscribe'
 import { getRequestIp, verifyTurnstileToken } from '@/lib/turnstile'
 
@@ -35,7 +35,7 @@ export async function POST(request: Request) {
   }
 
   if (LETTER_SUBSCRIBE_APPS_SCRIPT_URL.length === 0) {
-    console.error('[letters/subscribe] Missing LETTER_SUBSCRIBE_APPS_SCRIPT_URL environment variable')
+    console.error('[letters/subscribe] Missing letter subscription endpoint configuration')
 
     const response: LetterSubscribeResponse = {
       ok: false,

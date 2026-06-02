@@ -1,8 +1,6 @@
 import { randomUUID } from 'node:crypto'
-import {
-  R2_BACKUP_BUCKET,
-  SKIP_REMOTE_DATA,
-} from '@/lib/consts'
+import { R2_BACKUP_BUCKET } from '@/constants/r2'
+import { SKIP_REMOTE_DATA } from '@/constants/runtime'
 import { buildImageObjectKey } from '@/lib/image-cache'
 import { archiveRecentOpsLogsToBackupBucket } from '@/lib/ops/audit-logs'
 import { getErrorMessage, logOpsEvent } from '@/lib/ops/logging'
@@ -199,7 +197,7 @@ export async function backupAirtableTables(options: AirtableBackupOptions = {}) 
   }
 
   if (R2_BACKUP_BUCKET.length === 0) {
-    throw new Error('Missing R2_BACKUP_BUCKET environment variable')
+    throw new Error('Missing R2 backup bucket configuration')
   }
 
   const tables = normalizeTables(options.tables)

@@ -1,10 +1,10 @@
 import { randomUUID } from 'node:crypto'
-import { CloudflareClient } from '@/lib/cloudflare'
-import { createKvLogger } from '@/lib/kv-logger'
 import {
   CLOUDFLARE_ACCOUNT_ID,
   CLOUDFLARE_KV_NAMESPACE_ID,
-} from '../consts'
+} from '@/constants/cloudflare'
+import { CloudflareClient } from '@/lib/cloudflare'
+import { createKvLogger } from '@/lib/kv-logger'
 import { refreshCachedRecords } from './airtable'
 import { AIRTABLE_REFRESH_TABLES } from './config'
 

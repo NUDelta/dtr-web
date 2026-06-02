@@ -1,16 +1,13 @@
 import { Buffer } from 'node:buffer'
+import { CLOUDFLARE_ACCOUNT_ID } from '@/constants/cloudflare'
+import { R2_BUCKET, R2_BUCKET_PUBLIC_URL } from '@/constants/r2'
+import { SKIP_REMOTE_DATA } from '@/constants/runtime'
 import { CloudflareClient } from '@/lib/cloudflare'
-import {
-  CLOUDFLARE_ACCOUNT_ID,
-  R2_BUCKET,
-  R2_BUCKET_PUBLIC_URL,
-  SKIP_REMOTE_DATA,
-} from '@/lib/consts'
 
 if (!SKIP_REMOTE_DATA && (!CLOUDFLARE_ACCOUNT_ID || !R2_BUCKET)) {
   // We intentionally don't throw here to keep dev ergonomics;
   // the route will return a 500 with a clear error message when needed.
-  console.error('[ERROR] R2 configuration environment variables are missing.')
+  console.error('[ERROR] R2 configuration is missing.')
 }
 
 interface R2Body {

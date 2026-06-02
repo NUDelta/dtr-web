@@ -44,17 +44,17 @@ We use [DigitalOcean's App Platform](https://www.digitalocean.com/products/app-p
 The website implements a two-tier caching system to minimize Airtable API usage:
 
 1. **Data Caching**: Airtable table data is cached using [Airtable TS](https://airtable.zla.app)'s built-in caching interface and an injected Cloudflare KV Cache Store. A scheduled GitHub Action refreshes the cache every 12 hours, while stale KV data remains available as a fallback during Airtable/API failures.
-2. **Image Caching**: Images are downloaded once from Airtable, transformed into modern optimized formats (e.g., WebP, AVIF), cached in Cloudflare R2, and served from `NEXT_PUBLIC_R2_BUCKET_PUBLIC_URL`.
+2. **Image Caching**: Images are downloaded once from Airtable, transformed into modern optimized formats (e.g., WebP, AVIF), cached in Cloudflare R2, and served from the source-controlled R2 public URL in `src/constants`.
 
 Cron-triggered endpoints require `CICD_SECRET` in production.
 Internal ops pages require `OPS_SECRET`.
 
 ## Production Environment
 
-DigitalOcean runtime env must include Airtable credentials, Cloudflare API/KV credentials, R2 bucket names, `CICD_SECRET` for GitHub Actions / cron-triggered endpoints, `OPS_SECRET` for internal ops pages, and `TURNSTILE_SECRET_KEY` for bot protection.
+DigitalOcean runtime env must include Airtable and Cloudflare API credentials, `CICD_SECRET` for GitHub Actions / cron-triggered endpoints, `OPS_SECRET` for internal ops pages, `TURNSTILE_SECRET_KEY` for bot protection, and `LETTER_SUBSCRIBE_APPS_SCRIPT_URL` for newsletter submissions. Stable non-secret values such as Airtable base ID, Cloudflare account/KV IDs, R2 bucket names, the R2 public URL, R2 cleanup default, and Turnstile site key live in `src/constants`.
 
 GitHub repository secrets should include `CICD_SECRET`.
 
-Airtable backups require `R2_BACKUP_BUCKET`, a private R2 bucket. Runtime image cache objects stay in `R2_BUCKET` under the `images/` prefix and are served through the configured public R2 URL. Backups only include table data plus any cached R2 image keys/public URLs already referenced by those records; they do not duplicate image objects into the backup bucket. The backup endpoint skips repeat runs for the same UTC date unless the manual workflow is dispatched with `force`.
+Airtable backups use the private backup bucket configured in `src/constants/r2.ts`. Runtime image cache objects stay in the runtime R2 bucket under the `images/` prefix and are served through the configured public R2 URL. Backups only include table data plus any cached R2 image keys/public URLs already referenced by those records; they do not duplicate image objects into the backup bucket. The backup endpoint skips repeat runs for the same UTC date unless the manual workflow is dispatched with `force`.
 
-The internal ops audit page at `/ops/airtable-refresh-logs` uses `OPS_SECRET`, is marked `noindex` through page metadata, and shows recent KV logs plus log snapshots archived under `backups/logs/` in `R2_BACKUP_BUCKET`.
+The internal ops audit page at `/ops/airtable-refresh-logs` uses `OPS_SECRET`, is marked `noindex` through page metadata, and shows recent KV logs plus log snapshots archived under `backups/logs/` in the backup R2 bucket.

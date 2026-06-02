@@ -4,7 +4,7 @@
  */
 import { Buffer } from 'node:buffer'
 import { randomUUID } from 'node:crypto'
-import { R2_BUCKET } from '@/lib/consts'
+import { R2_BUCKET, R2_CLEANUP_MAX_AGE_DAYS } from '@/constants/r2'
 import { getErrorMessage, logOpsEvent } from '@/lib/ops/logging'
 import { r2Delete, r2Get, r2List, r2Put } from '@/lib/r2'
 
@@ -49,7 +49,7 @@ async function setLastRun(now = new Date()) {
  */
 export async function runR2CleanupOnce(opts: GCOptions = {}) {
   const prefix = opts.prefix ?? PREFIX_DEFAULT
-  const maxAgeDays = opts.maxAgeDays ?? 45
+  const maxAgeDays = opts.maxAgeDays ?? R2_CLEANUP_MAX_AGE_DAYS
   const maxDeletePerRun = opts.maxDeletePerRun ?? 250
 
   let token: string | undefined

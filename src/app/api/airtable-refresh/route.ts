@@ -1,7 +1,7 @@
 import { randomUUID } from 'node:crypto'
 import { NextResponse } from 'next/server'
+import { getCicdSecret } from '@/constants/secrets'
 import { refreshAirtableRecordsCache } from '@/lib/airtable/refresh'
-import { getCicdSecret } from '@/lib/secrets'
 
 interface AirtableRefreshRequestBody {
   tables?: string[]

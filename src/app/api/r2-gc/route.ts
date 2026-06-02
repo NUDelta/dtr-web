@@ -1,7 +1,8 @@
 import { headers } from 'next/headers'
 import { NextResponse } from 'next/server'
+import { R2_CLEANUP_MAX_AGE_DAYS } from '@/constants/r2'
+import { getCicdSecret } from '@/constants/secrets'
 import { maybeRunR2CleanupFromISR } from '@/lib/r2/r2-gc'
-import { getCicdSecret } from '@/lib/secrets'
 
 export async function POST(req: Request) {
   const h = await headers()
@@ -16,7 +17,7 @@ export async function POST(req: Request) {
   const body = await req.json().catch(() => ({})) as unknown
   const {
     prefix = 'images/',
-    maxAgeDays = 60,
+    maxAgeDays = R2_CLEANUP_MAX_AGE_DAYS,
     minIntervalHours = 24,
     maxDeletePerRun = 250,
   } = body as Partial<{

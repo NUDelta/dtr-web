@@ -1,5 +1,6 @@
 import Cloudflare from 'cloudflare'
-import { CLOUDFLARE_API_KEY, SKIP_REMOTE_DATA } from './consts'
+import { CLOUDFLARE_API_KEY } from '@/constants/cloudflare'
+import { SKIP_REMOTE_DATA } from '@/constants/runtime'
 
 function createCloudflareClient() {
   // Small sanity check to avoid silent auth issues

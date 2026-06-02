@@ -1,8 +1,8 @@
-import { CloudflareClient } from '@/lib/cloudflare'
 import {
   CLOUDFLARE_ACCOUNT_ID,
   CLOUDFLARE_KV_NAMESPACE_ID,
-} from '@/lib/consts'
+} from '@/constants/cloudflare'
+import { CloudflareClient } from '@/lib/cloudflare'
 import { createKvLogger } from '@/lib/kv-logger'
 
 export const OPS_LOG_TTL_SECONDS = 60 * 60 * 24 * 180

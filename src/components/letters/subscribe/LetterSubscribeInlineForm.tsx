@@ -1,6 +1,6 @@
 import type { useLetterSubscribe } from './useLetterSubscribe'
 import TurnstileWidget from '@/components/shared/TurnstileWidget'
-import { TURNSTILE_SITE_KEY } from '@/lib/public-consts'
+import { TURNSTILE_SITE_KEY } from '@/constants/cloudflare'
 import { getErrorMessage } from './utils'
 
 interface LetterSubscribeInlineFormProps {

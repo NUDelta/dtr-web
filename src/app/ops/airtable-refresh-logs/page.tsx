@@ -6,13 +6,13 @@ import process from 'node:process'
 import { cookies } from 'next/headers'
 import { redirect } from 'next/navigation'
 import Script from 'next/script'
+import { TURNSTILE_SITE_KEY } from '@/constants/cloudflare'
+import { getOpsSecret } from '@/constants/secrets'
 import {
   readRecentArchivedLogManifests,
   readRecentOpsLogs,
 } from '@/lib/ops/audit-logs'
 import { OPS_LOG_SOURCES } from '@/lib/ops/logging'
-import { TURNSTILE_SITE_KEY } from '@/lib/public-consts'
-import { getOpsSecret } from '@/lib/secrets'
 import { verifyTurnstileToken } from '@/lib/turnstile'
 
 export const dynamic = 'force-dynamic'

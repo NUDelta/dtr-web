@@ -12,7 +12,7 @@ export default antfu({
     quotes: 'single',
   },
   lessOpinionated: true,
-  ignores: ['next-env.d.ts'],
+  ignores: ['next-env.d.ts', '.playwright-mcp/**'],
 }, {
   files: ['src/app/**/loading.tsx'],
   rules: {

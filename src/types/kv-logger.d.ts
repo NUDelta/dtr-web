@@ -21,6 +21,7 @@ type CacheKind
     | 'backupRunFailure'
     | 'backupTableSuccess'
     | 'backupLogArchive'
+    | 'backupR2ReferenceFailure'
     | 'r2GcRunStart'
     | 'r2GcRunSuccess'
     | 'r2GcRunFailure'

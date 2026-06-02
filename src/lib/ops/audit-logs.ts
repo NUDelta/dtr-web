@@ -248,8 +248,16 @@ export async function readRecentArchivedLogManifests(limit = 10): Promise<Archiv
     return []
   }
 
-  const page = await r2ListFromBucket(R2_BACKUP_BUCKET, `${LOG_ARCHIVE_PREFIX}/`)
-  const manifestKeys = (page.Contents ?? [])
+  const objects = []
+  let token: string | undefined
+
+  do {
+    const page = await r2ListFromBucket(R2_BACKUP_BUCKET, `${LOG_ARCHIVE_PREFIX}/`, token)
+    objects.push(...(page.Contents ?? []))
+    token = page.NextContinuationToken
+  } while (token !== undefined)
+
+  const manifestKeys = objects
     .map(object => object.Key)
     .filter((key): key is string => typeof key === 'string' && key.endsWith('/manifest.json'))
     .sort((a, b) => b.localeCompare(a))

@@ -131,10 +131,8 @@ export async function maybeRunR2CleanupFromISR(opts: GCOptions = {}) {
   }
 
   try {
-    // Best-effort: mark as run NOW to reduce parallel invocations.
-    await setLastRun(new Date())
-
     const res = await runR2CleanupOnce(opts)
+    await setLastRun(new Date())
     await logOpsEvent('r2-gc', {
       kind: 'r2GcRunSuccess',
       runId,

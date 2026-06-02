@@ -3,6 +3,7 @@ import {
 } from '@/lib/consts'
 
 const TURNSTILE_SITEVERIFY_URL = 'https://challenges.cloudflare.com/turnstile/v0/siteverify'
+const TURNSTILE_SITEVERIFY_TIMEOUT_MS = 8_000
 
 interface TurnstileSiteverifyResponse {
   'success'?: boolean
@@ -35,20 +36,35 @@ export async function verifyTurnstileToken(
     body.set('remoteip', remoteIp)
   }
 
-  const response = await fetch(TURNSTILE_SITEVERIFY_URL, {
-    method: 'POST',
-    body,
-    cache: 'no-store',
-  })
+  const controller = new AbortController()
+  const timeout = setTimeout(() => controller.abort(), TURNSTILE_SITEVERIFY_TIMEOUT_MS)
 
-  if (!response.ok) {
-    return { success: false, errorCodes: [`siteverify-http-${response.status}`] }
+  try {
+    const response = await fetch(TURNSTILE_SITEVERIFY_URL, {
+      method: 'POST',
+      body,
+      cache: 'no-store',
+      signal: controller.signal,
+    })
+
+    if (!response.ok) {
+      return { success: false, errorCodes: [`siteverify-http-${response.status}`] }
+    }
+
+    const payload = await response.json().catch(() => null) as TurnstileSiteverifyResponse | null
+    return {
+      success: payload?.success === true,
+      errorCodes: payload?.['error-codes'] ?? [],
+    }
   }
-
-  const payload = await response.json().catch(() => null) as TurnstileSiteverifyResponse | null
-  return {
-    success: payload?.success === true,
-    errorCodes: payload?.['error-codes'] ?? [],
+  catch (error) {
+    return {
+      success: false,
+      errorCodes: [error instanceof Error ? error.name : 'siteverify-error'],
+    }
+  }
+  finally {
+    clearTimeout(timeout)
   }
 }
 

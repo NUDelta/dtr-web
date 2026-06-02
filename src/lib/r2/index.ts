@@ -36,6 +36,13 @@ interface R2ListResponse {
   NextContinuationToken?: string
 }
 
+export class R2ObjectNotFoundError extends Error {
+  constructor(key: string) {
+    super(`R2 object not found: ${key}`)
+    this.name = 'R2ObjectNotFoundError'
+  }
+}
+
 function getObjectParams() {
   return { account_id: CLOUDFLARE_ACCOUNT_ID }
 }
@@ -72,7 +79,7 @@ export async function r2Head(key: string) {
   )
   const object = page.result.find(item => item.key === key)
   if (object === undefined) {
-    throw new Error(`R2 object not found: ${key}`)
+    throw new R2ObjectNotFoundError(key)
   }
 
   return object

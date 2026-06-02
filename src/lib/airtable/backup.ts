@@ -6,7 +6,7 @@ import {
 import { buildImageObjectKey } from '@/lib/image-cache'
 import { archiveRecentOpsLogsToBackupBucket } from '@/lib/ops/audit-logs'
 import { getErrorMessage, logOpsEvent } from '@/lib/ops/logging'
-import { buildR2PublicUrl, r2Head, r2PutToBucket } from '@/lib/r2'
+import { buildR2PublicUrl, r2Head, R2ObjectNotFoundError, r2PutToBucket } from '@/lib/r2'
 import { fetchAirtableRecords } from './airtable'
 import {
   claimBackupSlotBestEffort,
@@ -119,8 +119,33 @@ async function getExistingR2ImageVariant(
       publicUrl: buildR2PublicUrl(key),
     }
   }
-  catch {
-    return undefined
+  catch (error) {
+    if (error instanceof R2ObjectNotFoundError) {
+      return undefined
+    }
+
+    throw error
+  }
+}
+
+async function collectR2AttachmentVariants(
+  attachmentId: string,
+  filename: string,
+): Promise<BackupR2ImageVariant[]> {
+  try {
+    return (await Promise.all([
+      getExistingR2ImageVariant(attachmentId, filename, 'webp'),
+      getExistingR2ImageVariant(attachmentId, filename, 'avif'),
+    ])).filter((variant): variant is BackupR2ImageVariant => variant !== undefined)
+  }
+  catch (error) {
+    await logOpsEvent('airtable-backup', {
+      kind: 'backupR2ReferenceFailure',
+      key: attachmentId,
+      reason: getErrorMessage(error),
+      error,
+    })
+    throw error
   }
 }
 
@@ -143,10 +168,7 @@ async function collectR2AttachmentReferences(
           continue
         }
 
-        const variants = (await Promise.all([
-          getExistingR2ImageVariant(attachment.id, attachment.filename, 'webp'),
-          getExistingR2ImageVariant(attachment.id, attachment.filename, 'avif'),
-        ])).filter((variant): variant is BackupR2ImageVariant => variant !== undefined)
+        const variants = await collectR2AttachmentVariants(attachment.id, attachment.filename)
 
         if (variants.length === 0) {
           continue

@@ -5,7 +5,7 @@ import { getEnvValue } from './utils'
  *
  * This is a credential and must stay environment-backed.
  */
-export const CLOUDFLARE_API_KEY = getEnvValue('CLOUDFLARE_API_KEY') ?? ''
+export const CLOUDFLARE_API_TOKEN = getEnvValue('CLOUDFLARE_API_TOKEN') ?? ''
 
 /**
  * Cloudflare account ID that owns the Workers KV namespace and R2 buckets.

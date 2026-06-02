@@ -12,13 +12,13 @@ The app does not run on Cloudflare Workers. Cloudflare is used through the Cloud
 
 Stable non-secret identifiers live in `src/constants`, including the Airtable base ID, Cloudflare account ID, KV namespace ID, R2 bucket names, R2 public URL, Turnstile site key, and cleanup defaults.
 
-Runtime secrets stay in environment variables, including `AIRTABLE_API_KEY`, `CLOUDFLARE_API_KEY`, `CICD_SECRET`, `OPS_SECRET`, `TURNSTILE_SECRET_KEY`, and `LETTER_SUBSCRIBE_APPS_SCRIPT_URL`.
+Runtime secrets stay in environment variables, including `AIRTABLE_API_KEY`, `CLOUDFLARE_API_TOKEN`, `CICD_SECRET`, `OPS_SECRET`, `TURNSTILE_SECRET_KEY`, and `LETTER_SUBSCRIBE_APPS_SCRIPT_URL`.
 
 `SKIP_REMOTE_DATA=1` is a local-only escape hatch for builds or development sessions that do not have Airtable or Cloudflare credentials.
 
 ## Cloudflare Client
 
-All server-side Cloudflare API calls go through `src/lib/cloudflare.ts`, which creates one Cloudflare SDK client using `CLOUDFLARE_API_KEY`.
+All server-side Cloudflare API calls go through `src/lib/cloudflare.ts`, which creates one Cloudflare SDK client using `CLOUDFLARE_API_TOKEN`.
 
 The app talks to Cloudflare through the public Cloudflare API, not Worker bindings, because the production runtime is DigitalOcean rather than a Worker.
 

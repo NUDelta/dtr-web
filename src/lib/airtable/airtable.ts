@@ -1,5 +1,6 @@
 'use server'
 
+import type { AirtableRow } from './attachment-transform'
 import Airtable from 'ts-airtable'
 import {
   AIRTABLE_API_KEY,
@@ -13,6 +14,7 @@ import { SKIP_REMOTE_DATA } from '@/constants/runtime'
 import { CloudflareClient } from '@/lib/cloudflare'
 import { createKvLogger } from '@/lib/kv-logger'
 import { safeLog } from '@/lib/logger'
+import { transformRowsAttachmentsForCache } from './attachment-transform'
 import {
   createCloudflareApiKvCacheStore,
   runWithAirtableCacheBypass,
@@ -78,14 +80,9 @@ function getBase() {
   return Airtable.base(AIRTABLE_BASE_ID)
 }
 
-interface Row<TFields = Record<string, unknown>> {
-  id: string
-  fields: TFields
-}
-
 export async function fetchAirtableRecords<TFields = Record<string, unknown>>(
   tableName: string,
-): Promise<Row<TFields>[]> {
+): Promise<AirtableRow<TFields>[]> {
   if (SKIP_REMOTE_DATA) {
     return []
   }
@@ -102,12 +99,13 @@ export async function fetchAirtableRecords<TFields = Record<string, unknown>>(
 async function fetchAndCacheRecords<TFields = Record<string, unknown>>(
   tableName: string,
   options: { strictCacheWrite: boolean },
-): Promise<Row<TFields>[]> {
+): Promise<AirtableRow<TFields>[]> {
   const rows = await fetchAirtableRecords<TFields>(tableName)
+  const transformedRows = await transformRowsAttachmentsForCache(tableName, rows, logger)
 
   const cacheKey = getAirtableAllRecordsCacheKey(tableName)
   try {
-    await setRecordsCache(cacheKey, rows, AIRTABLE_RECORDS_FRESH_TTL_MS)
+    await setRecordsCache(cacheKey, transformedRows, AIRTABLE_RECORDS_FRESH_TTL_MS)
   }
   catch (error) {
     safeLog(logger, {
@@ -124,7 +122,7 @@ async function fetchAndCacheRecords<TFields = Record<string, unknown>>(
     }
   }
 
-  return rows
+  return transformedRows
 }
 
 /**
@@ -139,13 +137,13 @@ async function fetchAndCacheRecords<TFields = Record<string, unknown>>(
  */
 export async function getCachedRecords<TFields = Record<string, unknown>>(
   tableName: string,
-): Promise<Row<TFields>[]> {
+): Promise<AirtableRow<TFields>[]> {
   if (SKIP_REMOTE_DATA) {
     return []
   }
 
   const cacheKey = getAirtableAllRecordsCacheKey(tableName)
-  const cached = await getFromRecordsCache<Row<TFields>[]>(cacheKey).catch((error: unknown) => {
+  const cached = await getFromRecordsCache<AirtableRow<TFields>[]>(cacheKey).catch((error: unknown) => {
     safeLog(logger, {
       kind: 'get',
       key: cacheKey,
@@ -165,7 +163,7 @@ export async function getCachedRecords<TFields = Record<string, unknown>>(
 
 export async function refreshCachedRecords<TFields = Record<string, unknown>>(
   tableName: string,
-): Promise<Row<TFields>[]> {
+): Promise<AirtableRow<TFields>[]> {
   if (SKIP_REMOTE_DATA) {
     return []
   }

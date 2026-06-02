@@ -1,7 +1,7 @@
 import { randomUUID } from 'node:crypto'
 import { R2_BACKUP_BUCKET } from '@/constants/r2'
 import { SKIP_REMOTE_DATA } from '@/constants/runtime'
-import { buildImageObjectKey } from '@/lib/image-cache'
+import { buildImageObjectKey, buildOriginalImageObjectKey } from '@/lib/image-cache'
 import { archiveRecentOpsLogsToBackupBucket } from '@/lib/ops/audit-logs'
 import { getErrorMessage, logOpsEvent } from '@/lib/ops/logging'
 import { buildR2PublicUrl, r2Head, R2ObjectNotFoundError, r2PutToBucket } from '@/lib/r2'
@@ -20,6 +20,7 @@ const DEFAULT_MIN_INTERVAL_HOURS = 24
 const TABLE_BACKUP_DELAY_MS = 250
 
 type AirtableBackupTable = typeof AIRTABLE_REFRESH_TABLES[number]
+type BackupR2ImageFormat = ImageFormat | 'original'
 
 interface AirtableBackupOptions {
   tables?: readonly string[]
@@ -29,7 +30,7 @@ interface AirtableBackupOptions {
 }
 
 interface BackupR2ImageVariant {
-  format: ImageFormat
+  format: BackupR2ImageFormat
   key: string
   publicUrl: string
 }
@@ -106,9 +107,11 @@ function getAttachmentArrays(fields: Record<string, unknown>): Array<{
 async function getExistingR2ImageVariant(
   attachmentId: string,
   filename: string,
-  format: ImageFormat,
+  format: BackupR2ImageFormat,
 ): Promise<BackupR2ImageVariant | undefined> {
-  const key = await buildImageObjectKey(attachmentId, 'full', filename, format)
+  const key = format === 'original'
+    ? await buildOriginalImageObjectKey(attachmentId, filename)
+    : await buildImageObjectKey(attachmentId, 'full', filename, format)
   try {
     await r2Head(key)
     return {
@@ -134,6 +137,7 @@ async function collectR2AttachmentVariants(
     return (await Promise.all([
       getExistingR2ImageVariant(attachmentId, filename, 'webp'),
       getExistingR2ImageVariant(attachmentId, filename, 'avif'),
+      getExistingR2ImageVariant(attachmentId, filename, 'original'),
     ])).filter((variant): variant is BackupR2ImageVariant => variant !== undefined)
   }
   catch (error) {

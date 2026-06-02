@@ -1,7 +1,7 @@
 import type { AirtableCacheStore, Attachment } from 'ts-airtable'
 import { AsyncLocalStorage } from 'node:async_hooks'
-import { ensureImageInR2 } from '../image-cache'
 import { safeLog } from '../logger'
+import { transformAttachmentForCache } from './attachment-transform'
 
 const cacheBypassStorage = new AsyncLocalStorage<{ prefixes: string[] }>()
 
@@ -337,29 +337,7 @@ export function createCloudflareApiKvCacheStore(
     },
 
     async transformAttachment(attachment: Attachment, _ctx: unknown): Promise<Attachment> {
-      // Non-image attachments are passed through unchanged.
-      if (!attachment?.type?.startsWith('image/')) {
-        return attachment
-      }
-
-      try {
-        const { url } = await ensureImageInR2(attachment, 'full')
-
-        return {
-          ...attachment,
-          url,
-        }
-      }
-      catch (error) {
-        // If anything goes wrong, log and fall back to the original URL.
-        safeLog(logger, {
-          kind: 'transformAttachmentError',
-          timestamp: Date.now(),
-          fullKey: attachment.id,
-          error,
-        })
-        return attachment
-      }
+      return transformAttachmentForCache(attachment, { logger })
     },
   }
 }

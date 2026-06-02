@@ -1,5 +1,6 @@
 import { AIRTABLE_REFRESH_TABLES, getAirtableAllRecordsCacheKey } from '@/lib/airtable/config'
-import { buildImageObjectKey } from '@/lib/image-cache'
+import { buildImageObjectKey, buildOriginalImageObjectKey } from '@/lib/image-cache'
+import { buildR2PublicUrl } from '@/lib/r2'
 import { readKvText } from '@/lib/r2/r2-gc-kv'
 
 const AIRTABLE_CACHE_KEY_PREFIX = 'airtable-cache'
@@ -44,6 +45,7 @@ function isAttachment(value: unknown): value is {
   id?: unknown
   filename?: unknown
   type?: unknown
+  url?: unknown
 } {
   return (
     typeof value === 'object'
@@ -77,6 +79,11 @@ async function collectRecordImageKeys(record: AirtableCacheRecord): Promise<stri
         await buildImageObjectKey(attachment.id, 'full', attachment.filename, 'webp'),
         await buildImageObjectKey(attachment.id, 'full', attachment.filename, 'avif'),
       )
+
+      const originalKey = await buildOriginalImageObjectKey(attachment.id, attachment.filename)
+      if (attachment.url === buildR2PublicUrl(originalKey)) {
+        keys.push(originalKey)
+      }
     }
   }
 

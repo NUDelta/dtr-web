@@ -98,8 +98,7 @@ export async function transcodeBufferToOptimizedImages(
     return { avif, webp, converted: true }
   }
   catch (err) {
-    // Fallback: return original bytes as WebP-ish payload.
-    // If handled outside, rethrow instead.
+    // Return original bytes with converted=false; callers decide the fallback.
     console.warn('[image-convert] multi-format sharp failed, returning original buffer:', err)
     return { avif: input, webp: input, converted: false }
   }

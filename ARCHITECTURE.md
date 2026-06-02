@@ -28,6 +28,8 @@ Workers KV stores Airtable record cache envelopes under the `airtable-cache:` pr
 
 The Airtable cache store lives in `src/lib/airtable/cloudflare-kv-cache.ts` and is injected into `ts-airtable`, so normal data reads try KV first before falling back to Airtable.
 
+The `ts-airtable` method-level record cache is intentionally disabled; `src/lib/airtable/airtable.ts` owns the all-record cache key and explicitly normalizes image attachment URLs to R2 before writing rows to KV.
+
 Scheduled refreshes use `/api/airtable-refresh`, called by `.github/workflows/airtable-refresh.yml`, to refresh specific Airtable tables, update KV cache entries, and write per-table refresh state.
 
 Refresh and backup guard keys are also stored in KV, but they are best-effort locks because Workers KV does not provide compare-and-set semantics; GitHub Actions concurrency is the main serializer.
@@ -39,6 +41,10 @@ Maintenance logs are written as separate KV entries with date-based key prefixes
 Optimized Airtable images are stored in the runtime R2 bucket configured in `src/constants/r2.ts`, under keys like `images/{attachmentId}/{variant}/{basename}.webp` and `images/{attachmentId}/{variant}/{basename}.avif`.
 
 `src/lib/image-cache.ts` fetches short-lived Airtable attachment URLs on cache misses, transcodes the image with Sharp, uploads WebP and AVIF variants to R2, and returns the stable public R2 URL.
+
+If image transcoding fails after the Airtable file has been fetched, the image cache stores the original bytes under `images/{attachmentId}/original/{filename}` and returns that R2 URL instead of keeping the short-lived Airtable URL in cache.
+
+When a later refresh sees an attachment that only has an original fallback in R2, the image cache can read that original object and retry WebP and AVIF generation without needing the Airtable signed URL to still be valid.
 
 The public R2 domain is allowed in `next.config.ts` because those URLs are passed to `next/image` in people and project views.
 
@@ -57,6 +63,8 @@ The backup process also archives recent maintenance logs into the backup bucket 
 The cleanup job stores its last-run marker in the runtime R2 bucket at `gc/last-run.json` to avoid scanning too often.
 
 The cleanup job treats the Airtable KV cache as the source of truth for live image references; R2 object metadata such as last-modified time is not used for deletion decisions.
+
+Live image references include WebP and AVIF keys for each image attachment, and include an original fallback key only while cached site data is still pointing at that fallback URL.
 
 The cleanup job stores orphan tracking state in Workers KV at `r2-gc:orphan-state`, records the first time each unreferenced image object was seen, and deletes only after that object has stayed absent from live references for fifteen days.
 

@@ -27,6 +27,7 @@ interface AirtableBackupOptions {
   backupDate?: string
   minIntervalHours?: number
   force?: boolean
+  requestId?: string
 }
 
 interface BackupR2ImageVariant {
@@ -194,7 +195,7 @@ async function collectR2AttachmentReferences(
 
 export async function backupAirtableTables(options: AirtableBackupOptions = {}) {
   const runStartedAt = Date.now()
-  const runId = randomUUID()
+  const runId = options.requestId ?? randomUUID()
 
   if (SKIP_REMOTE_DATA) {
     throw new Error('Airtable backup cannot run while remote data is disabled')

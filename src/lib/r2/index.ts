@@ -3,6 +3,7 @@ import { CloudflareClient } from '@/lib/cloudflare'
 import {
   CLOUDFLARE_ACCOUNT_ID,
   R2_BUCKET,
+  R2_BUCKET_PUBLIC_URL,
   SKIP_REMOTE_DATA,
 } from '@/lib/consts'
 
@@ -37,6 +38,11 @@ interface R2ListResponse {
 
 function getObjectParams() {
   return { account_id: CLOUDFLARE_ACCOUNT_ID }
+}
+
+export function buildR2PublicUrl(key: string): string {
+  const encodedKey = key.split('/').map(encodeURIComponent).join('/')
+  return `${R2_BUCKET_PUBLIC_URL}/${encodedKey}`
 }
 
 function toBody(response: Response): R2Body {

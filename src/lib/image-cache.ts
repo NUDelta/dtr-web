@@ -2,8 +2,7 @@
 
 import type { Attachment } from 'ts-airtable'
 import { Buffer } from 'node:buffer'
-import { R2_BUCKET_PUBLIC_URL } from '@/lib/consts'
-import { r2Head, r2Put } from '@/lib/r2'
+import { buildR2PublicUrl, r2Head, r2Put } from '@/lib/r2'
 import { transcodeBufferToOptimizedImages } from '@/utils/image-convert'
 
 /** Maximum bounding box for width/height when transcoding. */
@@ -40,8 +39,7 @@ export async function buildImageUrl(
   filename: string,
 ): Promise<string> {
   const key = await buildImageObjectKey(attId, variant, filename || 'image', 'webp')
-  const encodedKey = key.split('/').map(encodeURIComponent).join('/')
-  return `${R2_BUCKET_PUBLIC_URL}/${encodedKey}`
+  return buildR2PublicUrl(key)
 }
 
 /**

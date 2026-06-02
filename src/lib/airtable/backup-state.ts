@@ -14,6 +14,7 @@ export interface AirtableBackupFile {
   table: string
   key: string
   records: number
+  r2Attachments?: number
 }
 
 export interface AirtableBackupState {

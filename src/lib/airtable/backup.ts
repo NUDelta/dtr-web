@@ -2,7 +2,8 @@ import {
   R2_BACKUP_BUCKET,
   SKIP_REMOTE_DATA,
 } from '@/lib/consts'
-import { r2PutToBucket } from '@/lib/r2'
+import { buildImageObjectKey } from '@/lib/image-cache'
+import { buildR2PublicUrl, r2Head, r2PutToBucket } from '@/lib/r2'
 import { fetchAirtableRecords } from './airtable'
 import {
   claimBackupSlotBestEffort,
@@ -24,6 +25,22 @@ interface AirtableBackupOptions {
   backupDate?: string
   minIntervalHours?: number
   force?: boolean
+}
+
+interface BackupR2ImageVariant {
+  format: ImageFormat
+  key: string
+  publicUrl: string
+}
+
+interface BackupR2AttachmentReference {
+  recordId: string
+  fieldName: string
+  attachmentId: string
+  filename: string
+  type?: string
+  size?: number
+  variants: BackupR2ImageVariant[]
 }
 
 function isBackupTable(table: string): table is AirtableBackupTable {
@@ -51,6 +68,101 @@ function getTableSlug(table: string): string {
 
 async function sleep(ms: number): Promise<void> {
   await new Promise(resolve => setTimeout(resolve, ms))
+}
+
+function isAttachment(value: unknown): value is {
+  id?: unknown
+  filename?: unknown
+  type?: unknown
+  size?: unknown
+} {
+  return (
+    typeof value === 'object'
+    && value !== null
+    && 'id' in value
+    && 'filename' in value
+  )
+}
+
+function getAttachmentArrays(fields: Record<string, unknown>): Array<{
+  fieldName: string
+  attachments: Array<{
+    id?: unknown
+    filename?: unknown
+    type?: unknown
+    size?: unknown
+  }>
+}> {
+  return Object.entries(fields)
+    .filter((entry): entry is [string, unknown[]] => Array.isArray(entry[1]))
+    .map(([fieldName, values]) => ({
+      fieldName,
+      attachments: values.filter(isAttachment),
+    }))
+    .filter(({ attachments }) => attachments.length > 0)
+}
+
+async function getExistingR2ImageVariant(
+  attachmentId: string,
+  filename: string,
+  format: ImageFormat,
+): Promise<BackupR2ImageVariant | undefined> {
+  const key = await buildImageObjectKey(attachmentId, 'full', filename, format)
+  try {
+    await r2Head(key)
+    return {
+      format,
+      key,
+      publicUrl: buildR2PublicUrl(key),
+    }
+  }
+  catch {
+    return undefined
+  }
+}
+
+async function collectR2AttachmentReferences(
+  records: Array<{ id: string, fields: Record<string, unknown> }>,
+): Promise<BackupR2AttachmentReference[]> {
+  const references: BackupR2AttachmentReference[] = []
+
+  for (const record of records) {
+    for (const { fieldName, attachments } of getAttachmentArrays(record.fields)) {
+      for (const attachment of attachments) {
+        if (
+          typeof attachment.id !== 'string'
+          || typeof attachment.filename !== 'string'
+          || (
+            typeof attachment.type === 'string'
+            && !attachment.type.startsWith('image/')
+          )
+        ) {
+          continue
+        }
+
+        const variants = (await Promise.all([
+          getExistingR2ImageVariant(attachment.id, attachment.filename, 'webp'),
+          getExistingR2ImageVariant(attachment.id, attachment.filename, 'avif'),
+        ])).filter((variant): variant is BackupR2ImageVariant => variant !== undefined)
+
+        if (variants.length === 0) {
+          continue
+        }
+
+        references.push({
+          recordId: record.id,
+          fieldName,
+          attachmentId: attachment.id,
+          filename: attachment.filename,
+          ...(typeof attachment.type === 'string' ? { type: attachment.type } : {}),
+          ...(typeof attachment.size === 'number' ? { size: attachment.size } : {}),
+          variants,
+        })
+      }
+    }
+  }
+
+  return references
 }
 
 export async function backupAirtableTables(options: AirtableBackupOptions = {}) {
@@ -117,15 +229,16 @@ export async function backupAirtableTables(options: AirtableBackupOptions = {}) 
 
     for (const table of tables) {
       const records = await fetchAirtableRecords(table)
+      const r2Attachments = await collectR2AttachmentReferences(records)
       const key = `${backupPrefix}/${getTableSlug(table)}.json`
       await r2PutToBucket(
         R2_BACKUP_BUCKET,
         key,
-        JSON.stringify({ backedUpAt, table, records }, null, 2),
+        JSON.stringify({ backedUpAt, table, records, r2Attachments }, null, 2),
         'application/json',
         'no-store',
       )
-      files.push({ table, key, records: records.length })
+      files.push({ table, key, records: records.length, r2Attachments: r2Attachments.length })
       await sleep(TABLE_BACKUP_DELAY_MS)
     }
 

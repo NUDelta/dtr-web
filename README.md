@@ -46,14 +46,14 @@ The website implements a two-tier caching system to minimize Airtable API usage:
 1. **Data Caching**: Airtable table data is cached using [Airtable TS](https://airtable.zla.app)'s built-in caching interface and an injected Cloudflare KV Cache Store. A scheduled GitHub Action refreshes the cache every 12 hours, while stale KV data remains available as a fallback during Airtable/API failures.
 2. **Image Caching**: Images are downloaded once from Airtable, transformed into modern optimized formats (e.g., WebP, AVIF), and cached in Cloudflare R2 Bucket with hash-based invalidation and long-term caching headers.
 
-The Airtable refresh endpoint requires `AIRTABLE_REFRESH_SECRET` in production.
-If it is not set, the endpoint falls back to `R2_CRON_SECRET`.
-The weekly Airtable backup endpoint requires `AIRTABLE_BACKUP_SECRET`.
+Cron-triggered endpoints require `CICD_SECRET` in production.
+Internal ops pages require `OPS_SECRET`.
+Legacy endpoint-specific secrets are only retained as migration fallbacks.
 
 ## Production Environment
 
-DigitalOcean runtime env must include Airtable credentials, Cloudflare KV credentials, R2 credentials, `AIRTABLE_REFRESH_SECRET` or `R2_CRON_SECRET` for the refresh endpoint, and `AIRTABLE_BACKUP_SECRET` for the backup endpoint.
+DigitalOcean runtime env must include Airtable credentials, Cloudflare KV credentials, R2 credentials, `CICD_SECRET` for GitHub Actions / cron-triggered endpoints, and `OPS_SECRET` for internal ops pages.
 
-GitHub repository secrets must include `AIRTABLE_REFRESH_SECRET` for the Airtable refresh workflow, `AIRTABLE_BACKUP_SECRET` for the Airtable backup workflow, and `R2_CRON_SECRET` for the R2 cleanup workflow. If `AIRTABLE_REFRESH_SECRET` is omitted, the Airtable workflow can fall back to `R2_CRON_SECRET`, but using separate secrets is preferred.
+GitHub repository secrets should include `CICD_SECRET`. The workflows still fall back to the older endpoint-specific secrets during migration.
 
 Airtable backups require `R2_BACKUP_BUCKET`, a private R2 bucket that is not exposed through the image cache route or public bucket access. The backup endpoint skips repeat runs for the same UTC date unless the manual workflow is dispatched with `force`.

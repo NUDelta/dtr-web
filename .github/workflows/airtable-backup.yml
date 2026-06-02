@@ -21,10 +21,10 @@ jobs:
       - name: Back up Airtable to R2
         run: |
           curl --fail-with-body -sS -X POST \
-            -H "x-cron-token: $AIRTABLE_BACKUP_SECRET" \
+            -H "x-cron-token: $CICD_SECRET" \
             -H "content-type: application/json" \
             -d "{\"force\":${AIRTABLE_BACKUP_FORCE}}" \
             "https://dtr.northwestern.edu/api/airtable-backup"
         env:
-          AIRTABLE_BACKUP_SECRET: ${{ secrets.AIRTABLE_BACKUP_SECRET }}
+          CICD_SECRET: ${{ secrets.CICD_SECRET || secrets.AIRTABLE_BACKUP_SECRET }}
           AIRTABLE_BACKUP_FORCE: ${{ inputs.force || false }}

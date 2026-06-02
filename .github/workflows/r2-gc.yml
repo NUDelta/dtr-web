@@ -11,9 +11,9 @@ jobs:
       - name: Trigger R2 GC
         run: |
           curl --fail-with-body -sS -X POST \
-            -H "x-cron-token: $R2_CRON_SECRET" \
+            -H "x-cron-token: $CICD_SECRET" \
             -H "content-type: application/json" \
             -d '{"prefix":"images/","maxAgeDays":60,"minIntervalHours":24,"maxDeletePerRun":250}' \
             "https://dtr.northwestern.edu/api/r2-gc"
         env:
-          R2_CRON_SECRET: ${{ secrets.R2_CRON_SECRET }}
+          CICD_SECRET: ${{ secrets.CICD_SECRET || secrets.R2_CRON_SECRET }}

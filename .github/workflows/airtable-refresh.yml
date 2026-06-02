@@ -42,7 +42,7 @@ jobs:
                 -o "${response_file}" \
                 -w "%{http_code}" \
                 -X POST \
-                -H "x-cron-token: $AIRTABLE_REFRESH_SECRET" \
+                -H "x-cron-token: $CICD_SECRET" \
                 -H "content-type: application/json" \
                 -d "${payload}" \
                 "https://dtr.northwestern.edu/api/airtable-refresh"
@@ -70,4 +70,4 @@ jobs:
             exit 1
           fi
         env:
-          AIRTABLE_REFRESH_SECRET: ${{ secrets.AIRTABLE_REFRESH_SECRET || secrets.R2_CRON_SECRET }}
+          CICD_SECRET: ${{ secrets.CICD_SECRET || secrets.AIRTABLE_REFRESH_SECRET || secrets.R2_CRON_SECRET }}

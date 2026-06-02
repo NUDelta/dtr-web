@@ -1,22 +1,12 @@
 import { randomUUID } from 'node:crypto'
-import process from 'node:process'
 import { NextResponse } from 'next/server'
 import { refreshAirtableRecordsCache } from '@/lib/airtable/refresh'
+import { getCicdSecret } from '@/lib/secrets'
 
 interface AirtableRefreshRequestBody {
   tables?: string[]
   minIntervalHours?: number
   force?: boolean
-}
-
-function getRefreshSecret(): string | undefined {
-  const refreshSecret = process.env.AIRTABLE_REFRESH_SECRET
-  if (refreshSecret !== undefined && refreshSecret.length > 0) {
-    return refreshSecret
-  }
-
-  const r2Secret = process.env.R2_CRON_SECRET
-  return r2Secret !== undefined && r2Secret.length > 0 ? r2Secret : undefined
 }
 
 function parsePositiveNumber(value: unknown): number | undefined {
@@ -35,7 +25,7 @@ export async function POST(req: Request) {
   const requestId = randomUUID()
   const startedAt = Date.now()
   const tokenFromHeader = req.headers.get('x-cron-token') ?? ''
-  const secret = getRefreshSecret()
+  const secret = getCicdSecret()
 
   if (secret === undefined || secret.length === 0) {
     return NextResponse.json({

@@ -1,15 +1,16 @@
-import process from 'node:process'
 import { headers } from 'next/headers'
 import { NextResponse } from 'next/server'
 import { maybeRunR2CleanupFromISR } from '@/lib/r2/r2-gc'
+import { getCicdSecret } from '@/lib/secrets'
 
 export async function POST(req: Request) {
   const h = await headers()
   const tokenFromHeader = h.get('x-cron-token') ?? ''
-  if (process.env.R2_CRON_SECRET === undefined || process.env.R2_CRON_SECRET.length === 0) {
+  const secret = getCicdSecret()
+  if (secret === undefined) {
     return NextResponse.json({ ok: false, error: 'cron secret is not configured' }, { status: 500 })
   }
-  if (tokenFromHeader !== process.env.R2_CRON_SECRET) {
+  if (tokenFromHeader !== secret) {
     return NextResponse.json({ ok: false, error: 'unauthorized' }, { status: 401 })
   }
   const body = await req.json().catch(() => ({})) as unknown

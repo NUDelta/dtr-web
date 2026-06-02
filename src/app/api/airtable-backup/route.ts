@@ -1,6 +1,6 @@
-import process from 'node:process'
 import { NextResponse } from 'next/server'
 import { backupAirtableTables } from '@/lib/airtable/backup'
+import { getCicdSecret } from '@/lib/secrets'
 
 interface AirtableBackupRequestBody {
   tables?: string[]
@@ -18,7 +18,7 @@ function parsePositiveNumber(value: unknown): number | undefined {
 
 export async function POST(req: Request) {
   const tokenFromHeader = req.headers.get('x-cron-token') ?? ''
-  const secret = process.env.AIRTABLE_BACKUP_SECRET
+  const secret = getCicdSecret()
 
   if (secret === undefined || secret.length === 0) {
     return NextResponse.json({ ok: false, error: 'backup secret is not configured' }, { status: 500 })

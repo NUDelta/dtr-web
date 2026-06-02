@@ -5,6 +5,7 @@ import process from 'node:process'
 import { cookies } from 'next/headers'
 import { redirect } from 'next/navigation'
 import { readRecentAirtableRefreshLogs } from '@/lib/airtable/refresh-log-reader'
+import { getOpsSecret } from '@/lib/secrets'
 
 export const dynamic = 'force-dynamic'
 export const revalidate = 0
@@ -28,13 +29,7 @@ interface PageProps {
 }
 
 function getRefreshLogsSecret(): string | undefined {
-  const refreshSecret = process.env.AIRTABLE_REFRESH_SECRET
-  if (refreshSecret !== undefined && refreshSecret.length > 0) {
-    return refreshSecret
-  }
-
-  const r2Secret = process.env.R2_CRON_SECRET
-  return r2Secret !== undefined && r2Secret.length > 0 ? r2Secret : undefined
+  return getOpsSecret()
 }
 
 function getRefreshLogsSessionValue(secret: string): string {
@@ -136,7 +131,7 @@ export default async function AirtableRefreshLogsPage({ searchParams }: PageProp
           <input
             className="min-w-0 flex-1 rounded border border-neutral-300 px-3 py-2"
             name="token"
-            placeholder="AIRTABLE_REFRESH_SECRET"
+            placeholder="OPS_SECRET"
             type="password"
           />
           <button className="rounded bg-black px-4 py-2 text-white" type="submit">

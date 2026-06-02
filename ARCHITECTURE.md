@@ -52,11 +52,19 @@ The backup process also archives recent maintenance logs into the backup bucket 
 
 ## R2 Cleanup
 
-`/api/r2-gc`, called by `.github/workflows/r2-gc.yml`, scans the runtime image prefix and deletes old objects based on R2 object last-modified time.
+`/api/r2-gc`, called by `.github/workflows/r2-gc.yml`, scans the runtime image prefix and compares each object key against the current Airtable records stored in Workers KV.
 
 The cleanup job stores its last-run marker in the runtime R2 bucket at `gc/last-run.json` to avoid scanning too often.
 
+The cleanup job treats the Airtable KV cache as the source of truth for live image references; R2 object metadata such as last-modified time is not used for deletion decisions.
+
+The cleanup job stores orphan tracking state in Workers KV at `r2-gc:orphan-state`, records the first time each unreferenced image object was seen, and deletes only after that object has stayed absent from live references for fifteen days.
+
+If any required Airtable table cache is missing or cannot be parsed, the cleanup job skips deletion for that run so a cache outage cannot turn live images into false orphans.
+
 The cleanup job has a deletion cap per run so a single invocation cannot remove an unbounded number of objects.
+
+The cleanup job writes normal run diagnostics under `r2-gc-log` and orphan-state diagnostics under `r2-gc-orphan-log`, both of which are visible through the operations audit tooling and can be archived by backup jobs.
 
 ## Operations Audit Page
 

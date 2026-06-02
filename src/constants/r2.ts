@@ -23,9 +23,8 @@ export const R2_BACKUP_BUCKET = 'dtr-web-backups'
 export const R2_BUCKET_PUBLIC_URL = 'https://r2.dtr-web.pairresearch.io'
 
 /**
- * Default age threshold for deleting stale optimized image objects.
+ * How long an R2 image object must stay unreferenced before GC may delete it.
  *
- * The cleanup job can still override this per request; the deployment no longer
- * needs a separate static environment variable for the default.
+ * The first orphan timestamp is tracked in Workers KV.
  */
-export const R2_CLEANUP_MAX_AGE_DAYS = 45
+export const R2_GC_ORPHAN_GRACE_DAYS = 15

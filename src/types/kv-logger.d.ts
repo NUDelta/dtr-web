@@ -25,6 +25,7 @@ type CacheKind
     | 'r2GcRunStart'
     | 'r2GcRunSuccess'
     | 'r2GcRunFailure'
+    | 'r2GcOrphanState'
 
 interface CacheLogEvent {
   kind: CacheKind
@@ -137,13 +138,37 @@ interface CacheLogEvent {
    */
   capped?: boolean
   /**
-   * R2 cleanup age threshold.
+   * R2 cleanup orphan grace period.
    */
-  maxAgeDays?: number
+  graceDays?: number
   /**
    * R2 cleanup deletion cap.
    */
   maxDeletePerRun?: number
+  /**
+   * Airtable cache tables that were unavailable during a maintenance run.
+   */
+  missingTables?: string[]
+  /**
+   * Number of R2 objects still referenced by current Airtable cache data.
+   */
+  liveCount?: number
+  /**
+   * Number of R2 objects first seen as orphaned in this run.
+   */
+  newOrphanCount?: number
+  /**
+   * Number of R2 objects still orphaned from a prior run.
+   */
+  confirmedOrphanCount?: number
+  /**
+   * Number of R2 objects that returned to the live set and were removed from orphan state.
+   */
+  recoveredOrphanCount?: number
+  /**
+   * Number of orphan-state entries removed because the R2 object no longer exists.
+   */
+  prunedOrphanCount?: number
 }
 
 interface CacheLogger {

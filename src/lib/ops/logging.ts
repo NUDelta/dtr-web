@@ -13,6 +13,7 @@ export const OPS_LOG_SOURCES = [
   { id: 'airtable-refresh', label: 'Airtable Refresh', keyPrefix: 'airtable-refresh-log' },
   { id: 'airtable-backup', label: 'Airtable Backup', keyPrefix: 'airtable-backup-log' },
   { id: 'r2-gc', label: 'R2 GC', keyPrefix: 'r2-gc-log' },
+  { id: 'r2-gc-orphans', label: 'R2 GC Orphans', keyPrefix: 'r2-gc-orphan-log' },
 ] as const
 
 export type OpsLogSource = typeof OPS_LOG_SOURCES[number]
@@ -34,8 +35,20 @@ const r2GcLogger = createKvLogger({
   logTtlSeconds: OPS_LOG_TTL_SECONDS,
 })
 
-function getLogger(source: 'airtable-backup' | 'r2-gc'): CacheLogger {
-  return source === 'airtable-backup' ? backupLogger : r2GcLogger
+const r2GcOrphanLogger = createKvLogger({
+  client: CloudflareClient,
+  accountId: CLOUDFLARE_ACCOUNT_ID,
+  namespaceId: CLOUDFLARE_KV_NAMESPACE_ID,
+  keyPrefix: 'r2-gc-orphan-log',
+  logTtlSeconds: OPS_LOG_TTL_SECONDS,
+})
+
+function getLogger(source: 'airtable-backup' | 'r2-gc' | 'r2-gc-orphans'): CacheLogger {
+  if (source === 'airtable-backup') {
+    return backupLogger
+  }
+
+  return source === 'r2-gc' ? r2GcLogger : r2GcOrphanLogger
 }
 
 async function sleep(ms: number): Promise<void> {
@@ -47,7 +60,7 @@ export function getErrorMessage(error: unknown): string {
 }
 
 export async function logOpsEvent(
-  source: 'airtable-backup' | 'r2-gc',
+  source: 'airtable-backup' | 'r2-gc' | 'r2-gc-orphans',
   event: Omit<CacheLogEvent, 'fullKey' | 'timestamp'>,
 ): Promise<void> {
   try {

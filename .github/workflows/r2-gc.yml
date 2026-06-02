@@ -13,7 +13,7 @@ jobs:
           curl --fail-with-body -sS -X POST \
             -H "x-cron-token: $CICD_SECRET" \
             -H "content-type: application/json" \
-            -d '{"prefix":"images/","maxAgeDays":60,"minIntervalHours":24,"maxDeletePerRun":250}' \
+            -d '{"prefix":"images/","graceDays":15,"minIntervalHours":24,"maxDeletePerRun":250}' \
             "https://dtr.northwestern.edu/api/r2-gc"
         env:
           CICD_SECRET: ${{ secrets.CICD_SECRET }}

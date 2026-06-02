@@ -1,28 +1,72 @@
 /**
- * R2 garbage collector for old image cache objects.
- * - A throttle ("run at most every X hours") prevents frequent scans in ISR.
+ * Reference-based R2 garbage collector for old image cache objects.
+ * - Current Airtable cache records define the live image key set.
+ * - KV tracks when an object was first confirmed as orphaned.
  */
 import { Buffer } from 'node:buffer'
 import { randomUUID } from 'node:crypto'
-import { R2_BUCKET, R2_CLEANUP_MAX_AGE_DAYS } from '@/constants/r2'
+import {
+  R2_BUCKET,
+  R2_GC_ORPHAN_GRACE_DAYS,
+} from '@/constants/r2'
 import { getErrorMessage, logOpsEvent } from '@/lib/ops/logging'
 import { r2Delete, r2Get, r2List, r2Put } from '@/lib/r2'
+import { collectLiveImageKeys } from '@/lib/r2/r2-gc-live-keys'
+import {
+  R2_GC_ORPHAN_STATE_KEY,
+  readR2GcOrphanState,
+  writeR2GcOrphanState,
+} from '@/lib/r2/r2-gc-orphan-state'
 
-const STATE_KEY = 'gc/last-run.json' // stores {"lastRun":"2025-10-20T00:00:00.000Z"}
+const STATE_KEY = 'gc/last-run.json'
 const PREFIX_DEFAULT = 'images/'
 
 interface GCOptions {
   prefix?: string
-  /** Delete objects older than this many days since last modification. */
-  maxAgeDays?: number
-  /** Throttle: only run if last run is older than this many hours */
+  /** How long an object must remain unreferenced before it can be deleted. */
+  graceDays?: number
+  /** Throttle: only run if last run is older than this many hours. */
   minIntervalHours?: number
-  /** Safety cap: maximum number of deletions per run to bound work */
+  /** Safety cap: maximum number of deletions per run to bound work. */
   maxDeletePerRun?: number
+}
+
+interface R2CleanupResult {
+  scanned: number
+  deleted: number
+  capped: boolean
+  live: number
+  newOrphans: number
+  confirmedOrphans: number
+  recoveredOrphans: number
+  prunedOrphans: number
+  missingTables: string[]
+  skipped?: boolean
+  reason?: string
 }
 
 function daysSince(tsMs: number) {
   return (Date.now() - tsMs) / (1000 * 60 * 60 * 24)
+}
+
+function normalizePrefix(prefix: string | undefined): string {
+  return typeof prefix === 'string' && prefix.length > 0 ? prefix : PREFIX_DEFAULT
+}
+
+function normalizePositiveNumber(
+  value: number | undefined,
+  fallback: number,
+): number {
+  return typeof value === 'number' && Number.isFinite(value) && value > 0
+    ? value
+    : fallback
+}
+
+function normalizePositiveInteger(
+  value: number | undefined,
+  fallback: number,
+): number {
+  return Math.floor(normalizePositiveNumber(value, fallback))
 }
 
 async function getLastRun(): Promise<Date | null> {
@@ -44,17 +88,41 @@ async function setLastRun(now = new Date()) {
 }
 
 /**
- * Scan and delete old objects under `prefix`.
- * Returns summary counts for observability.
+ * Scan R2 image objects and delete keys that have stayed unreferenced long enough.
  */
-export async function runR2CleanupOnce(opts: GCOptions = {}) {
-  const prefix = opts.prefix ?? PREFIX_DEFAULT
-  const maxAgeDays = opts.maxAgeDays ?? R2_CLEANUP_MAX_AGE_DAYS
-  const maxDeletePerRun = opts.maxDeletePerRun ?? 250
+export async function runR2CleanupOnce(opts: GCOptions = {}): Promise<R2CleanupResult> {
+  const prefix = normalizePrefix(opts.prefix)
+  const graceDays = normalizePositiveNumber(opts.graceDays, R2_GC_ORPHAN_GRACE_DAYS)
+  const maxDeletePerRun = normalizePositiveInteger(opts.maxDeletePerRun, 250)
+  const now = Date.now()
+  const { liveKeys, missingTables } = await collectLiveImageKeys()
 
+  if (missingTables.length > 0) {
+    return {
+      scanned: 0,
+      deleted: 0,
+      capped: false,
+      live: liveKeys.size,
+      newOrphans: 0,
+      confirmedOrphans: 0,
+      recoveredOrphans: 0,
+      prunedOrphans: 0,
+      missingTables,
+      skipped: true,
+      reason: `missing Airtable cache tables: ${missingTables.join(', ')}`,
+    }
+  }
+
+  const orphanState = await readR2GcOrphanState()
+  const seenObjectKeys = new Set<string>()
   let token: string | undefined
   let scanned = 0
   let deleted = 0
+  let newOrphans = 0
+  let confirmedOrphans = 0
+  let recoveredOrphans = 0
+  let prunedOrphans = 0
+  let capped = false
 
   do {
     const page = await r2List(prefix, token)
@@ -64,43 +132,109 @@ export async function runR2CleanupOnce(opts: GCOptions = {}) {
       if (obj.Key === undefined) {
         continue
       }
+
+      const key = obj.Key
+      seenObjectKeys.add(key)
       scanned++
 
-      if (obj.LastModified === undefined) {
+      if (liveKeys.has(key)) {
+        if (orphanState.orphans[key] !== undefined) {
+          delete orphanState.orphans[key]
+          recoveredOrphans++
+        }
         continue
       }
 
-      const age = daysSince(obj.LastModified.getTime())
-      if (age > maxAgeDays) {
-        try {
-          await r2Delete(obj.Key)
-          deleted++
-          if (deleted >= maxDeletePerRun) {
-            return { scanned, deleted, capped: true }
-          }
-        }
-        catch {
-          // ignore delete failure; proceed
+      const existing = orphanState.orphans[key]
+      const firstSeenAt = existing?.firstSeenAt ?? now
+      if (existing === undefined) {
+        newOrphans++
+      }
+      else {
+        confirmedOrphans++
+      }
+
+      orphanState.orphans[key] = {
+        firstSeenAt,
+        lastSeenAt: now,
+        ...(obj.Size !== undefined ? { size: obj.Size } : {}),
+      }
+
+      if (daysSince(firstSeenAt) < graceDays) {
+        continue
+      }
+
+      try {
+        await r2Delete(key)
+        delete orphanState.orphans[key]
+        deleted++
+        if (deleted >= maxDeletePerRun) {
+          capped = true
+          break
         }
       }
+      catch {
+        // Keep the orphan state so a future run can retry the delete.
+      }
     }
-  } while (token !== undefined)
+  } while (token !== undefined && !capped)
 
-  return { scanned, deleted, capped: false }
+  if (!capped) {
+    for (const key of Object.keys(orphanState.orphans)) {
+      if (!key.startsWith(prefix)) {
+        continue
+      }
+
+      if (!seenObjectKeys.has(key) || liveKeys.has(key)) {
+        delete orphanState.orphans[key]
+        prunedOrphans++
+      }
+    }
+  }
+
+  await writeR2GcOrphanState(orphanState)
+  await logOpsEvent('r2-gc-orphans', {
+    kind: 'r2GcOrphanState',
+    key: R2_GC_ORPHAN_STATE_KEY,
+    prefix,
+    bucket: R2_BUCKET,
+    liveCount: liveKeys.size,
+    scannedCount: scanned,
+    deletedCount: deleted,
+    newOrphanCount: newOrphans,
+    confirmedOrphanCount: confirmedOrphans,
+    recoveredOrphanCount: recoveredOrphans,
+    prunedOrphanCount: prunedOrphans,
+    graceDays,
+    maxDeletePerRun,
+    capped,
+  })
+
+  return {
+    scanned,
+    deleted,
+    capped,
+    live: liveKeys.size,
+    newOrphans,
+    confirmedOrphans,
+    recoveredOrphans,
+    prunedOrphans,
+    missingTables,
+  }
 }
 
 /**
- * Throttled entrypoint for ISR hooks.
+ * Throttled entrypoint for scheduled maintenance.
  * - Only runs if the last run is older than `minIntervalHours` (defaults to 24h).
- * - Writes STATE_KEY before the scan to reduce concurrent duplications.
+ * - Writes STATE_KEY after successful scan completion.
  */
 export async function maybeRunR2CleanupFromISR(opts: GCOptions = {}) {
   const runStartedAt = Date.now()
   const runId = randomUUID()
-  const prefix = opts.prefix ?? PREFIX_DEFAULT
-  const maxAgeDays = opts.maxAgeDays ?? R2_CLEANUP_MAX_AGE_DAYS
-  const maxDeletePerRun = opts.maxDeletePerRun ?? 250
-  const minIntervalHours = opts.minIntervalHours ?? 24
+  const prefix = normalizePrefix(opts.prefix)
+  const graceDays = normalizePositiveNumber(opts.graceDays, R2_GC_ORPHAN_GRACE_DAYS)
+  const maxDeletePerRun = normalizePositiveInteger(opts.maxDeletePerRun, 250)
+  const minIntervalHours = normalizePositiveNumber(opts.minIntervalHours, 24)
 
   await logOpsEvent('r2-gc', {
     kind: 'r2GcRunStart',
@@ -108,7 +242,7 @@ export async function maybeRunR2CleanupFromISR(opts: GCOptions = {}) {
     bucket: R2_BUCKET,
     prefix,
     minIntervalHours,
-    maxAgeDays,
+    graceDays,
     maxDeletePerRun,
   })
 
@@ -131,8 +265,14 @@ export async function maybeRunR2CleanupFromISR(opts: GCOptions = {}) {
   }
 
   try {
-    const res = await runR2CleanupOnce(opts)
-    await setLastRun(new Date())
+    const res = await runR2CleanupOnce({
+      prefix,
+      graceDays,
+      maxDeletePerRun,
+    })
+    if (res.skipped !== true) {
+      await setLastRun(new Date())
+    }
     await logOpsEvent('r2-gc', {
       kind: 'r2GcRunSuccess',
       runId,
@@ -141,7 +281,15 @@ export async function maybeRunR2CleanupFromISR(opts: GCOptions = {}) {
       durationMs: Date.now() - runStartedAt,
       scannedCount: res.scanned,
       deletedCount: res.deleted,
+      liveCount: res.live,
+      newOrphanCount: res.newOrphans,
+      confirmedOrphanCount: res.confirmedOrphans,
+      recoveredOrphanCount: res.recoveredOrphans,
+      prunedOrphanCount: res.prunedOrphans,
+      graceDays,
+      missingTables: res.missingTables,
       capped: res.capped,
+      reason: res.reason,
     })
     return { skipped: false, ...res }
   }

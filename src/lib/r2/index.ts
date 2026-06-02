@@ -19,12 +19,10 @@ interface R2GetResponse {
   Body: R2Body
   ContentType?: string
   ETag?: string
-  LastModified?: Date
 }
 
 interface R2ListObject {
   Key?: string
-  LastModified?: Date
   Size?: number
 }
 
@@ -93,13 +91,10 @@ export async function r2GetFromBucket(bucket: string, key: string): Promise<R2Ge
     getObjectParams(),
   )
 
-  const lastModified = response.headers.get('last-modified')
-
   return {
     Body: toBody(response),
     ContentType: response.headers.get('content-type') ?? undefined,
     ETag: response.headers.get('etag') ?? undefined,
-    LastModified: lastModified !== null ? new Date(lastModified) : undefined,
   }
 }
 
@@ -152,13 +147,14 @@ export async function r2ListFromBucket(
     },
   )
 
+  const cursor = page.result_info.cursor
+
   return {
     Contents: page.result.map(item => ({
       Key: item.key,
-      LastModified: item.last_modified !== undefined ? new Date(item.last_modified) : undefined,
       Size: item.size,
     })),
-    NextContinuationToken: page.result_info.cursor,
+    NextContinuationToken: typeof cursor === 'string' && cursor.length > 0 ? cursor : undefined,
   }
 }
 

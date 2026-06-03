@@ -1,7 +1,5 @@
 import type { AuditFilters, TimeRange } from './types'
-import type { OpsLogEntry } from '@/lib/ops/audit-logs'
-import { getEventStatus } from './runStatus'
-import { getRunSummary } from './runText'
+import type { WorkflowRunSummary } from '@/lib/audit/workflow-logs'
 
 export function buildAuditHref(
   filters: AuditFilters,
@@ -27,41 +25,33 @@ export function buildAuditHref(
   return query.length === 0 ? '/audit' : `/audit?${query}`
 }
 
-export function getUniqueTables(logs: OpsLogEntry[]): string[] {
+export function getUniqueTables(summaries: WorkflowRunSummary[]): string[] {
   return Array.from(new Set(
-    logs
-      .map(entry => entry.event.table)
-      .filter((table): table is string => table !== undefined),
+    summaries.flatMap(summary => summary.tableNames),
   )).sort((a, b) => a.localeCompare(b))
 }
 
-function isWithinRange(entry: OpsLogEntry, range: TimeRange): boolean {
-  if (range === 'all') {
-    return true
-  }
-
-  const days = range === '7d' ? 7 : 30
-  return (entry.event.timestamp ?? 0) >= Date.now() - days * 24 * 60 * 60 * 1000
+function isWithinRange(summary: WorkflowRunSummary, range: TimeRange): boolean {
+  const days = range === '7d' ? 7 : range === '30d' ? 30 : 60
+  return summary.endedAt >= Date.now() - days * 24 * 60 * 60 * 1000
 }
 
-function shouldShowAuditLog(entry: OpsLogEntry): boolean {
-  return entry.sourceId !== 'airtable-cache'
-}
-
-export function filterLogs(logs: OpsLogEntry[], filters: AuditFilters): OpsLogEntry[] {
+export function filterRuns(
+  summaries: WorkflowRunSummary[],
+  filters: AuditFilters,
+): WorkflowRunSummary[] {
   const query = filters.q.trim().toLowerCase()
 
-  return logs.filter((entry) => {
-    const event = entry.event
-    if (!shouldShowAuditLog(entry) || !isWithinRange(entry, filters.range)) {
+  return summaries.filter((summary) => {
+    if (!isWithinRange(summary, filters.range)) {
       return false
     }
 
-    if (filters.status !== 'all' && getEventStatus(event) !== filters.status) {
+    if (filters.status !== 'all' && summary.status !== filters.status) {
       return false
     }
 
-    if (filters.table !== '' && event.table !== filters.table) {
+    if (filters.table !== '' && !summary.tableNames.includes(filters.table)) {
       return false
     }
 
@@ -70,12 +60,12 @@ export function filterLogs(logs: OpsLogEntry[], filters: AuditFilters): OpsLogEn
     }
 
     return [
-      entry.sourceLabel,
-      event.kind,
-      event.runId,
-      event.table,
-      event.reason,
-      getRunSummary(event),
+      summary.sourceLabel,
+      summary.runId,
+      summary.title,
+      summary.summary,
+      summary.reason,
+      ...summary.tableNames,
     ].some(value => value?.toLowerCase().includes(query))
   })
 }

@@ -159,8 +159,12 @@ export async function r2ListFromBucket(
 }
 
 export async function r2Delete(key: string) {
+  return r2DeleteFromBucket(R2_BUCKET, key)
+}
+
+export async function r2DeleteFromBucket(bucket: string, key: string) {
   return CloudflareClient.r2.buckets.objects.delete(
-    R2_BUCKET,
+    bucket,
     key,
     getObjectParams(),
   )

@@ -1,13 +1,13 @@
-import type { OpsLogEntry } from '@/lib/ops/audit-logs'
+import type { WorkflowRunSummary } from '@/lib/audit/workflow-logs'
 import { STATUS_META } from './statusMeta'
 import { getLastSevenDays } from './utils'
 
 interface AuditHeaderProps {
-  logs: OpsLogEntry[]
+  summaries: WorkflowRunSummary[]
 }
 
-export default function AuditHeader({ logs }: AuditHeaderProps) {
-  const days = getLastSevenDays(logs)
+export default function AuditHeader({ summaries }: AuditHeaderProps) {
+  const days = getLastSevenDays(summaries)
 
   return (
     <header className="flex flex-wrap items-start justify-between gap-6">

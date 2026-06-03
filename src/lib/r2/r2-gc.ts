@@ -6,10 +6,12 @@
 import { Buffer } from 'node:buffer'
 import { randomUUID } from 'node:crypto'
 import {
+  R2_BACKUP_BUCKET,
   R2_BUCKET,
   R2_GC_ORPHAN_GRACE_DAYS,
 } from '@/constants/r2'
-import { getErrorMessage, logOpsEvent } from '@/lib/ops/logging'
+import { cleanupExpiredWorkflowLogs } from '@/lib/audit/workflow-log-retention'
+import { createWorkflowLogRun, getErrorMessage } from '@/lib/audit/workflow-logs'
 import { r2Delete, r2Get, r2List, r2Put } from '@/lib/r2'
 import { collectLiveImageKeys } from '@/lib/r2/r2-gc-live-keys'
 import {
@@ -41,6 +43,8 @@ interface R2CleanupResult {
   recoveredOrphans: number
   prunedOrphans: number
   missingTables: string[]
+  workflowLogsScanned?: number
+  workflowLogsDeleted?: number
   skipped?: boolean
   reason?: string
 }
@@ -193,22 +197,6 @@ export async function runR2CleanupOnce(opts: GCOptions = {}): Promise<R2CleanupR
   }
 
   await writeR2GcOrphanState(orphanState)
-  await logOpsEvent('r2-gc-orphans', {
-    kind: 'r2GcOrphanState',
-    key: R2_GC_ORPHAN_STATE_KEY,
-    prefix,
-    bucket: R2_BUCKET,
-    liveCount: liveKeys.size,
-    scannedCount: scanned,
-    deletedCount: deleted,
-    newOrphanCount: newOrphans,
-    confirmedOrphanCount: confirmedOrphans,
-    recoveredOrphanCount: recoveredOrphans,
-    prunedOrphanCount: prunedOrphans,
-    graceDays,
-    maxDeletePerRun,
-    capped,
-  })
 
   return {
     scanned,
@@ -231,14 +219,14 @@ export async function runR2CleanupOnce(opts: GCOptions = {}): Promise<R2CleanupR
 export async function maybeRunR2CleanupFromISR(opts: GCOptions = {}) {
   const runStartedAt = Date.now()
   const runId = randomUUID()
+  const workflowLog = createWorkflowLogRun('r2-gc', runId, runStartedAt)
   const prefix = normalizePrefix(opts.prefix)
   const graceDays = normalizePositiveNumber(opts.graceDays, R2_GC_ORPHAN_GRACE_DAYS)
   const maxDeletePerRun = normalizePositiveInteger(opts.maxDeletePerRun, 250)
   const minIntervalHours = normalizePositiveNumber(opts.minIntervalHours, 24)
 
-  await logOpsEvent('r2-gc', {
+  workflowLog.add({
     kind: 'r2GcRunStart',
-    runId,
     bucket: R2_BUCKET,
     prefix,
     minIntervalHours,
@@ -252,14 +240,14 @@ export async function maybeRunR2CleanupFromISR(opts: GCOptions = {}) {
     // Skip if last run is within the interval (with 5min buffer).
     if (minutes < (minIntervalHours * 60) - 5) {
       const reason = `last run ${(minutes / 60).toFixed(1)}h ago`
-      await logOpsEvent('r2-gc', {
+      workflowLog.add({
         kind: 'r2GcRunSuccess',
-        runId,
         bucket: R2_BUCKET,
         prefix,
         reason,
         durationMs: Date.now() - runStartedAt,
       })
+      await workflowLog.flush()
       return { skipped: true, reason }
     }
   }
@@ -273,9 +261,45 @@ export async function maybeRunR2CleanupFromISR(opts: GCOptions = {}) {
     if (res.skipped !== true) {
       await setLastRun(new Date())
     }
-    await logOpsEvent('r2-gc', {
+    const workflowLogRetention = await cleanupExpiredWorkflowLogs().catch((error: unknown) => {
+      workflowLog.add({
+        kind: 'workflowLogRetention',
+        bucket: R2_BACKUP_BUCKET,
+        durationMs: Date.now() - runStartedAt,
+        reason: getErrorMessage(error),
+        error,
+      })
+      return undefined
+    })
+    if (workflowLogRetention !== undefined) {
+      workflowLog.add({
+        kind: 'workflowLogRetention',
+        bucket: R2_BACKUP_BUCKET,
+        scannedCount: workflowLogRetention.scanned,
+        deletedCount: workflowLogRetention.deleted,
+        durationMs: Date.now() - runStartedAt,
+        affectedCount: workflowLogRetention.deleted,
+        capped: workflowLogRetention.capped,
+      })
+    }
+    workflowLog.add({
+      kind: 'r2GcOrphanState',
+      key: R2_GC_ORPHAN_STATE_KEY,
+      prefix,
+      bucket: R2_BUCKET,
+      liveCount: res.live,
+      scannedCount: res.scanned,
+      deletedCount: res.deleted,
+      newOrphanCount: res.newOrphans,
+      confirmedOrphanCount: res.confirmedOrphans,
+      recoveredOrphanCount: res.recoveredOrphans,
+      prunedOrphanCount: res.prunedOrphans,
+      graceDays,
+      maxDeletePerRun,
+      capped: res.capped,
+    })
+    workflowLog.add({
       kind: 'r2GcRunSuccess',
-      runId,
       bucket: R2_BUCKET,
       prefix,
       durationMs: Date.now() - runStartedAt,
@@ -291,18 +315,24 @@ export async function maybeRunR2CleanupFromISR(opts: GCOptions = {}) {
       capped: res.capped,
       reason: res.reason,
     })
-    return { skipped: false, ...res }
+    await workflowLog.flush()
+    return {
+      skipped: false,
+      ...res,
+      workflowLogsScanned: workflowLogRetention?.scanned,
+      workflowLogsDeleted: workflowLogRetention?.deleted,
+    }
   }
   catch (error) {
-    await logOpsEvent('r2-gc', {
+    workflowLog.add({
       kind: 'r2GcRunFailure',
-      runId,
       bucket: R2_BUCKET,
       prefix,
       durationMs: Date.now() - runStartedAt,
       reason: getErrorMessage(error),
       error,
     })
+    await workflowLog.flush()
     throw error
   }
 }

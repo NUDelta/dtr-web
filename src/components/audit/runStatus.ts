@@ -1,6 +1,15 @@
 import type { RunStatus } from './types'
-import type { OpsLogEntry } from '@/lib/ops/audit-logs'
-import type { OpsLogSourceId } from '@/lib/ops/logging'
+import type {
+  OpsLogSourceId,
+  WorkflowRunSummary,
+} from '@/lib/audit/workflow-logs'
+
+export function getLatestBySource(
+  summaries: WorkflowRunSummary[],
+  sourceId: OpsLogSourceId,
+): WorkflowRunSummary | undefined {
+  return summaries.find(summary => summary.sourceId === sourceId)
+}
 
 export function getEventStatus(event: CacheLogEvent): RunStatus {
   if (
@@ -33,17 +42,10 @@ export function getEventStatus(event: CacheLogEvent): RunStatus {
   return 'success'
 }
 
-export function getLatestBySource(
-  logs: OpsLogEntry[],
-  sourceId: OpsLogSourceId,
-): OpsLogEntry | undefined {
-  return logs.find(entry => entry.sourceId === sourceId)
-}
-
-export function getOverallStatus(entries: Array<OpsLogEntry | undefined>): RunStatus {
-  const statuses = entries
-    .filter((entry): entry is OpsLogEntry => entry !== undefined)
-    .map(entry => getEventStatus(entry.event))
+export function getOverallStatus(summaries: Array<WorkflowRunSummary | undefined>): RunStatus {
+  const statuses = summaries
+    .filter((summary): summary is WorkflowRunSummary => summary !== undefined)
+    .map(summary => summary.status)
 
   if (statuses.includes('failure')) {
     return 'failure'
@@ -60,18 +62,16 @@ export function getOverallStatus(entries: Array<OpsLogEntry | undefined>): RunSt
   return statuses.includes('success') ? 'success' : 'skipped'
 }
 
-export function getLastSevenDays(logs: OpsLogEntry[]): Array<{ day: string, status?: RunStatus }> {
+export function getLastSevenDays(summaries: WorkflowRunSummary[]): Array<{ day: string, status?: RunStatus }> {
   return Array.from({ length: 7 }, (_, index) => {
     const date = new Date()
     date.setDate(date.getDate() - (6 - index))
     const dateKey = date.toISOString().slice(0, 10)
-    const dayLogs = logs.filter((entry) => {
-      return new Date(entry.event.timestamp ?? 0).toISOString().slice(0, 10) === dateKey
-    })
+    const daySummaries = summaries.filter(summary => summary.date === dateKey)
 
     return {
       day: new Intl.DateTimeFormat('en-US', { weekday: 'short' }).format(date),
-      status: dayLogs.length === 0 ? undefined : getOverallStatus(dayLogs),
+      status: daySummaries.length === 0 ? undefined : getOverallStatus(daySummaries),
     }
   })
 }

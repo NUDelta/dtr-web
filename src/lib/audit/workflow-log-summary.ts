@@ -1,0 +1,143 @@
+import type {
+  OpsLogSource,
+  OpsLogSourceId,
+  WorkflowRunStatus,
+  WorkflowRunSummary,
+} from './workflow-log-types'
+import { WORKFLOW_LOG_PREFIX } from './workflow-log-types'
+
+function getEventStatus(event: CacheLogEvent): WorkflowRunStatus {
+  if (
+    event.kind.endsWith('Failure')
+    || event.kind.endsWith('Error')
+    || event.error !== undefined
+  ) {
+    return 'failure'
+  }
+
+  if (event.kind.endsWith('Start')) {
+    return 'running'
+  }
+
+  if (event.kind.endsWith('Skipped')) {
+    return 'skipped'
+  }
+
+  if (
+    event.kind === 'r2GcOrphanState'
+    || event.capped === true
+    || (event.confirmedOrphanCount ?? 0) > 0
+    || (event.newOrphanCount ?? 0) > 0
+    || (event.missingTables?.length ?? 0) > 0
+    || (event.reason !== undefined && !event.kind.endsWith('Success'))
+  ) {
+    return 'warning'
+  }
+
+  return 'success'
+}
+
+function getOverallStatus(events: CacheLogEvent[]): WorkflowRunStatus {
+  const statuses = events.map(getEventStatus)
+
+  if (statuses.includes('failure')) {
+    return 'failure'
+  }
+
+  if (statuses.includes('warning')) {
+    return 'warning'
+  }
+
+  if (statuses.includes('running')) {
+    return 'running'
+  }
+
+  return statuses.includes('success') ? 'success' : 'skipped'
+}
+
+function getPrimaryEvent(events: CacheLogEvent[]): CacheLogEvent {
+  return events.find(event => event.kind.endsWith('Failure'))
+    ?? events.find(event => event.kind.endsWith('Success'))
+    ?? events.find(event => event.kind.endsWith('Skipped'))
+    ?? events[events.length - 1]
+}
+
+function getSummaryText(sourceId: OpsLogSourceId, event: CacheLogEvent, events: CacheLogEvent[]): string {
+  if (event.reason !== undefined) {
+    return event.reason
+  }
+
+  if (sourceId === 'airtable-refresh') {
+    const tableCount = new Set(events.map(item => item.table).filter(Boolean)).size
+    return `${event.recordCount ?? 0} records refreshed · ${tableCount} tables`
+  }
+
+  if (sourceId === 'airtable-backup') {
+    return `${event.recordCount ?? 0} records backed up · ${event.affectedCount ?? 0} tables`
+  }
+
+  return `${event.deletedCount ?? 0} deleted · ${event.newOrphanCount ?? 0} new orphan candidates`
+}
+
+function getObjectDate(timestamp: number): string {
+  return new Date(timestamp).toISOString().slice(0, 10)
+}
+
+function buildWorkflowLogKeys(sourceId: OpsLogSourceId, date: string, runId: string) {
+  return {
+    summaryKey: `${WORKFLOW_LOG_PREFIX}/summaries/${sourceId}/${date}/${runId}.json`,
+    detailKey: `${WORKFLOW_LOG_PREFIX}/details/${sourceId}/${date}/${runId}.json`,
+  }
+}
+
+export function buildWorkflowRunSummary(
+  source: OpsLogSource,
+  runId: string,
+  startedAt: number,
+  events: CacheLogEvent[],
+): WorkflowRunSummary {
+  const endedAt = Date.now()
+  const primary = getPrimaryEvent(events)
+  const status = getOverallStatus(events)
+  const date = getObjectDate(startedAt)
+  const { summaryKey, detailKey } = buildWorkflowLogKeys(source.id, date, runId)
+  const tableNames = Array.from(new Set(
+    events
+      .map(event => event.table)
+      .filter((table): table is string => table !== undefined),
+  )).sort((a, b) => a.localeCompare(b))
+
+  return {
+    schemaVersion: 1,
+    sourceId: source.id,
+    sourceLabel: source.label,
+    runId,
+    date,
+    key: summaryKey,
+    detailKey,
+    status,
+    title: source.label,
+    summary: getSummaryText(source.id, primary, events),
+    startedAt,
+    endedAt,
+    durationMs: primary.durationMs ?? endedAt - startedAt,
+    tableNames,
+    requestedTables: primary.requestedTables,
+    dueTables: primary.dueTables,
+    recordCount: primary.recordCount,
+    affectedCount: primary.affectedCount,
+    deletedCount: primary.deletedCount,
+    logCount: events.length,
+    reason: primary.reason,
+    bucket: primary.bucket,
+    prefix: primary.prefix,
+    scannedCount: primary.scannedCount,
+    liveCount: primary.liveCount,
+    newOrphanCount: primary.newOrphanCount,
+    confirmedOrphanCount: primary.confirmedOrphanCount,
+    recoveredOrphanCount: primary.recoveredOrphanCount,
+    prunedOrphanCount: primary.prunedOrphanCount,
+    missingTables: primary.missingTables,
+    capped: primary.capped,
+  }
+}

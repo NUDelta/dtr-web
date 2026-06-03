@@ -24,12 +24,12 @@ export default function RecentRuns({
         {runs.map((run) => {
           const meta = STATUS_META[run.status]
           const Icon = meta.icon
-          const isSelected = run.key === selectedKey
+          const isSelected = run.detailKey === selectedKey
 
           return (
             <Link
               className={`flex items-center gap-4 rounded-lg border p-4 transition-colors ${isSelected ? 'border-blue-400 bg-blue-50' : 'border-neutral-200 bg-white hover:border-neutral-300 hover:bg-neutral-50'}`}
-              href={buildAuditHref(filters, { run: run.key })}
+              href={buildAuditHref(filters, { run: run.detailKey })}
               key={run.key}
             >
               <span className={`flex size-8 shrink-0 items-center justify-center rounded-full ${meta.bgClass} ${meta.textClass}`}>
@@ -39,7 +39,7 @@ export default function RecentRuns({
                 <span className="block truncate text-base font-bold text-neutral-950">{run.title}</span>
                 <span className="mt-1 block truncate text-sm text-neutral-600">{run.summary}</span>
               </span>
-              <span className="shrink-0 text-sm text-neutral-600">{formatTime(run.timestamp)}</span>
+              <span className="shrink-0 text-sm text-neutral-600">{formatTime(run.endedAt)}</span>
             </Link>
           )
         })}

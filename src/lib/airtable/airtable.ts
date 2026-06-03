@@ -12,7 +12,6 @@ import {
 } from '@/constants/cloudflare'
 import { SKIP_REMOTE_DATA } from '@/constants/runtime'
 import { CloudflareClient } from '@/lib/cloudflare'
-import { createKvLogger } from '@/lib/kv-logger'
 import { safeLog } from '@/lib/logger'
 import { transformRowsAttachmentsForCache } from './attachment-transform'
 import {
@@ -26,13 +25,21 @@ import {
   getAirtableListCachePrefix,
 } from './config'
 
-const logger = createKvLogger({
-  client: CloudflareClient,
-  accountId: CLOUDFLARE_ACCOUNT_ID,
-  namespaceId: CLOUDFLARE_KV_NAMESPACE_ID,
-  keyPrefix: 'airtable-log',
-  logTtlSeconds: 60 * 60 * 24 * 180, // keep 180 days of logs
-})
+const logger: CacheLogger = {
+  log(event) {
+    if (event.error === undefined) {
+      return
+    }
+
+    console.error('[airtable-cache]', {
+      kind: event.kind,
+      key: event.key,
+      fullKey: event.fullKey,
+      table: event.table,
+      error: event.error instanceof Error ? event.error.message : String(event.error),
+    })
+  },
+}
 
 const store = createCloudflareApiKvCacheStore({
   client: CloudflareClient,

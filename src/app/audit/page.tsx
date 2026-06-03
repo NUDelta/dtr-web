@@ -1,5 +1,5 @@
 import type { Metadata } from 'next'
-import type { OpsLogSourceId } from '@/lib/ops/logging'
+import type { OpsLogSourceId } from '@/lib/audit/workflow-logs'
 import Script from 'next/script'
 import { authenticateAudit } from '@/app/audit/actions'
 import AuditConsole from '@/components/audit/AuditConsole'
@@ -11,10 +11,10 @@ import {
   shouldRefreshAuditSession,
 } from '@/lib/audit/session'
 import {
-  readRecentArchivedLogManifests,
-  readRecentOpsLogs,
-} from '@/lib/ops/audit-logs'
-import { OPS_LOG_SOURCES } from '@/lib/ops/logging'
+  readRecentWorkflowRunSummaries,
+  readWorkflowRunDetail,
+} from '@/lib/audit/workflow-log-reader'
+import { OPS_LOG_SOURCES } from '@/lib/audit/workflow-logs'
 
 export const dynamic = 'force-dynamic'
 export const revalidate = 0
@@ -40,10 +40,10 @@ interface PageProps {
 }
 
 type RunStatus = 'failure' | 'running' | 'skipped' | 'success' | 'warning'
-type TimeRange = '7d' | '30d' | 'all'
+type TimeRange = '7d' | '30d' | '60d'
 
 function parseSource(value: string | undefined): OpsLogSourceId | 'all' {
-  if (value === undefined || value === 'all' || value === 'airtable-cache') {
+  if (value === undefined || value === 'all') {
     return 'all'
   }
 
@@ -66,7 +66,7 @@ function parseStatus(value: string | undefined): RunStatus | 'all' {
 }
 
 function parseRange(value: string | undefined): TimeRange {
-  if (value === '30d' || value === 'all') {
+  if (value === '30d' || value === '60d') {
     return value
   }
 
@@ -156,19 +156,20 @@ export default async function AuditPage({ searchParams }: PageProps) {
   const range = parseRange(params.range)
   const table = params.table ?? ''
   const q = params.q ?? ''
-  const [logs, archivedManifests] = await Promise.all([
-    readRecentOpsLogs({ limit: 200, sourceId: source }),
-    readRecentArchivedLogManifests(10),
+  const days = range === '7d' ? 7 : range === '30d' ? 30 : 60
+  const [summaries, selectedDetail] = await Promise.all([
+    readRecentWorkflowRunSummaries({ days, limit: 200, sourceId: source }),
+    readWorkflowRunDetail(params.run),
   ])
 
   return (
     <>
       <AuditSessionRefresher enabled={shouldRefreshAuditSession(session)} />
       <AuditConsole
-        archivedManifests={archivedManifests}
         filters={{ q, range, source, status, table }}
-        logs={logs}
+        selectedDetail={selectedDetail}
         selectedKey={params.run}
+        summaries={summaries}
       />
     </>
   )

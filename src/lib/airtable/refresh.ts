@@ -3,8 +3,8 @@ import {
   CLOUDFLARE_ACCOUNT_ID,
   CLOUDFLARE_KV_NAMESPACE_ID,
 } from '@/constants/cloudflare'
+import { createWorkflowLogRun } from '@/lib/audit/workflow-logs'
 import { CloudflareClient } from '@/lib/cloudflare'
-import { createKvLogger } from '@/lib/kv-logger'
 import { refreshCachedRecords } from './airtable'
 import { AIRTABLE_REFRESH_TABLES } from './config'
 
@@ -13,8 +13,6 @@ const REFRESH_GUARD_KEY = 'airtable-refresh:guard'
 const DEFAULT_MIN_INTERVAL_HOURS = 12
 const REFRESH_INTERVAL_BUFFER_MS = 10 * 60 * 1000
 const REFRESH_GUARD_TTL_SECONDS = 15 * 60
-const REFRESH_LOG_TTL_SECONDS = 60 * 60 * 24 * 180
-const REFRESH_LOG_WRITE_TIMEOUT_MS = 2_000
 
 type AirtableRefreshTable = typeof AIRTABLE_REFRESH_TABLES[number]
 
@@ -31,34 +29,8 @@ interface AirtableRefreshOptions {
   requestId?: string
 }
 
-const refreshLogger = createKvLogger({
-  client: CloudflareClient,
-  accountId: CLOUDFLARE_ACCOUNT_ID,
-  namespaceId: CLOUDFLARE_KV_NAMESPACE_ID,
-  keyPrefix: 'airtable-refresh-log',
-  logTtlSeconds: REFRESH_LOG_TTL_SECONDS,
-})
-
 function getErrorMessage(error: unknown): string {
   return error instanceof Error ? error.message : String(error)
-}
-
-async function logRefreshEvent(
-  event: Omit<CacheLogEvent, 'fullKey' | 'timestamp'>,
-): Promise<void> {
-  try {
-    await Promise.race([
-      refreshLogger.log({
-        fullKey: `airtable-refresh:${event.kind}:${event.runId ?? 'unknown'}`,
-        timestamp: Date.now(),
-        ...event,
-      }),
-      sleep(REFRESH_LOG_WRITE_TIMEOUT_MS),
-    ])
-  }
-  catch {
-    // Diagnostics should never block cache refreshes.
-  }
 }
 
 function isCloudflareErrorWithStatus(
@@ -246,12 +218,12 @@ async function sleep(ms: number): Promise<void> {
 export async function refreshAirtableRecordsCache(options: AirtableRefreshOptions = {}) {
   const runId = options.requestId ?? randomUUID()
   const runStartedAt = Date.now()
+  const workflowLog = createWorkflowLogRun('airtable-refresh', runId, runStartedAt)
   const minIntervalHours = options.minIntervalHours ?? DEFAULT_MIN_INTERVAL_HOURS
   const tables = normalizeTables(options.tables)
 
-  await logRefreshEvent({
+  workflowLog.add({
     kind: 'refreshRunStart',
-    runId,
     requestedTables: tables,
     minIntervalHours,
     force: options.force === true,
@@ -259,13 +231,13 @@ export async function refreshAirtableRecordsCache(options: AirtableRefreshOption
 
   if (tables.length === 0) {
     const reason = 'no valid refresh tables requested'
-    await logRefreshEvent({
+    workflowLog.add({
       kind: 'refreshRunSkipped',
-      runId,
       requestedTables: [],
       reason,
       durationMs: Date.now() - runStartedAt,
     })
+    await workflowLog.flush()
 
     return {
       skipped: true,
@@ -282,14 +254,14 @@ export async function refreshAirtableRecordsCache(options: AirtableRefreshOption
       const reason = state !== undefined
         ? `last successful refresh ${getMostRecentRefreshAgeHours(tables, state)}h ago`
         : 'all requested tables are fresh'
-      await logRefreshEvent({
+      workflowLog.add({
         kind: 'refreshRunSkipped',
-        runId,
         requestedTables: tables,
         dueTables,
         reason,
         durationMs: Date.now() - runStartedAt,
       })
+      await workflowLog.flush()
 
       return {
         skipped: true,
@@ -303,13 +275,13 @@ export async function refreshAirtableRecordsCache(options: AirtableRefreshOption
   const refreshSlotOwner = await claimRefreshSlotBestEffort()
   if (refreshSlotOwner === undefined) {
     const reason = 'refresh already in progress'
-    await logRefreshEvent({
+    workflowLog.add({
       kind: 'refreshGuard',
-      runId,
       requestedTables: tables,
       reason,
       durationMs: Date.now() - runStartedAt,
     })
+    await workflowLog.flush()
 
     return {
       skipped: true,
@@ -319,9 +291,8 @@ export async function refreshAirtableRecordsCache(options: AirtableRefreshOption
     }
   }
 
-  await logRefreshEvent({
+  workflowLog.add({
     kind: 'refreshGuard',
-    runId,
     requestedTables: tables,
     reason: 'claimed refresh slot',
     owner: refreshSlotOwner,
@@ -338,9 +309,8 @@ export async function refreshAirtableRecordsCache(options: AirtableRefreshOption
         const reason = state !== undefined
           ? `last successful refresh ${getMostRecentRefreshAgeHours(tables, state)}h ago`
           : 'all requested tables are fresh'
-        await logRefreshEvent({
+        workflowLog.add({
           kind: 'refreshRunSkipped',
-          runId,
           requestedTables: tables,
           dueTables,
           reason,
@@ -364,9 +334,8 @@ export async function refreshAirtableRecordsCache(options: AirtableRefreshOption
 
     for (const table of dueTables) {
       const tableStartedAt = Date.now()
-      await logRefreshEvent({
+      workflowLog.add({
         kind: 'refreshTableStart',
-        runId,
         table,
         requestedTables: tables,
         dueTables,
@@ -377,9 +346,8 @@ export async function refreshAirtableRecordsCache(options: AirtableRefreshOption
         records = await refreshCachedRecords(table)
       }
       catch (error) {
-        await logRefreshEvent({
+        workflowLog.add({
           kind: 'refreshTableFailure',
-          runId,
           table,
           requestedTables: tables,
           dueTables,
@@ -394,9 +362,8 @@ export async function refreshAirtableRecordsCache(options: AirtableRefreshOption
       lastSuccessAtByTable[table] = lastSuccessAt
       refreshed.push({ table, records: records.length })
 
-      await logRefreshEvent({
+      workflowLog.add({
         kind: 'refreshTableSuccess',
-        runId,
         table,
         requestedTables: tables,
         dueTables,
@@ -415,9 +382,8 @@ export async function refreshAirtableRecordsCache(options: AirtableRefreshOption
         await writeKvJson(REFRESH_STATE_KEY, stateValue)
       }
       catch (error) {
-        await logRefreshEvent({
+        workflowLog.add({
           kind: 'refreshStateWrite',
-          runId,
           table,
           requestedTables: tables,
           dueTables,
@@ -428,9 +394,8 @@ export async function refreshAirtableRecordsCache(options: AirtableRefreshOption
         throw error
       }
 
-      await logRefreshEvent({
+      workflowLog.add({
         kind: 'refreshStateWrite',
-        runId,
         table,
         requestedTables: tables,
         dueTables,
@@ -441,9 +406,8 @@ export async function refreshAirtableRecordsCache(options: AirtableRefreshOption
       await sleep(250)
     }
 
-    await logRefreshEvent({
+    workflowLog.add({
       kind: 'refreshRunSuccess',
-      runId,
       requestedTables: tables,
       dueTables,
       durationMs: Date.now() - runStartedAt,
@@ -461,9 +425,8 @@ export async function refreshAirtableRecordsCache(options: AirtableRefreshOption
     }
   }
   catch (error) {
-    await logRefreshEvent({
+    workflowLog.add({
       kind: 'refreshRunFailure',
-      runId,
       requestedTables: tables,
       durationMs: Date.now() - runStartedAt,
       reason: getErrorMessage(error),
@@ -474,9 +437,8 @@ export async function refreshAirtableRecordsCache(options: AirtableRefreshOption
   finally {
     await releaseRefreshSlotBestEffort(refreshSlotOwner)
       .then(() => {
-        void logRefreshEvent({
+        workflowLog.add({
           kind: 'refreshGuard',
-          runId,
           requestedTables: tables,
           reason: 'released refresh slot',
           owner: refreshSlotOwner,
@@ -484,9 +446,8 @@ export async function refreshAirtableRecordsCache(options: AirtableRefreshOption
         })
       })
       .catch((error: unknown) => {
-        void logRefreshEvent({
+        workflowLog.add({
           kind: 'refreshGuard',
-          runId,
           requestedTables: tables,
           reason: getErrorMessage(error),
           owner: refreshSlotOwner,
@@ -494,5 +455,6 @@ export async function refreshAirtableRecordsCache(options: AirtableRefreshOption
           error,
         })
       })
+    await workflowLog.flush()
   }
 }

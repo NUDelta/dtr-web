@@ -1,9 +1,6 @@
 import type { LucideIcon } from 'lucide-react'
 import type { RunStatus } from './types'
-import type {
-  ArchivedLogManifest,
-  OpsLogEntry,
-} from '@/lib/ops/audit-logs'
+import type { WorkflowRunSummary } from '@/lib/audit/workflow-logs'
 import {
   AlertTriangle,
   Database,
@@ -14,7 +11,7 @@ import { StatusBadge } from './status'
 import { STATUS_META } from './statusMeta'
 import {
   formatRelativeTime,
-  getEventStatus,
+  getLatestBySource,
   getOverallStatus,
 } from './utils'
 
@@ -48,58 +45,37 @@ function HealthCard({
 }
 
 interface HealthCardsProps {
-  archivedManifests: ArchivedLogManifest[]
-  logs: OpsLogEntry[]
-}
-
-function getLatestRefreshRun(logs: OpsLogEntry[]): OpsLogEntry | undefined {
-  return logs.find((entry) => {
-    return (
-      entry.sourceId === 'airtable-refresh'
-      && (
-        entry.event.kind === 'refreshRunSuccess'
-        || entry.event.kind === 'refreshRunSkipped'
-        || entry.event.kind === 'refreshRunFailure'
-      )
-    )
-  })
-}
-
-function getLatestBySource(logs: OpsLogEntry[], sourceId: OpsLogEntry['sourceId']): OpsLogEntry | undefined {
-  return logs.find(entry => entry.sourceId === sourceId)
+  summaries: WorkflowRunSummary[]
 }
 
 export default function HealthCards({
-  archivedManifests,
-  logs,
+  summaries,
 }: HealthCardsProps) {
-  const refreshLatest = getLatestRefreshRun(logs)
-  const backupLatest = getLatestBySource(logs, 'airtable-backup')
-  const r2Latest = getLatestBySource(logs, 'r2-gc')
-  const orphanLatest = getLatestBySource(logs, 'r2-gc-orphans')
-  const imageStatus = getOverallStatus([r2Latest, orphanLatest])
+  const refreshLatest = getLatestBySource(summaries, 'airtable-refresh')
+  const backupLatest = getLatestBySource(summaries, 'airtable-backup')
+  const r2Latest = getLatestBySource(summaries, 'r2-gc')
   const maintenanceStatus = getOverallStatus([refreshLatest, backupLatest, r2Latest])
-  const orphanCandidates = (orphanLatest?.event.confirmedOrphanCount ?? 0)
-    + (orphanLatest?.event.newOrphanCount ?? 0)
+  const orphanCandidates = (r2Latest?.confirmedOrphanCount ?? 0)
+    + (r2Latest?.newOrphanCount ?? 0)
 
   return (
     <div className="mt-8 grid gap-4 md:grid-cols-2 xl:grid-cols-4">
       <HealthCard
-        detail={`Last refresh ${formatRelativeTime(refreshLatest?.event.timestamp)} · ${refreshLatest?.event.dueTables?.length ?? 0} tables updated`}
+        detail={`Last refresh ${formatRelativeTime(refreshLatest?.endedAt)} · ${refreshLatest?.dueTables?.length ?? 0} tables updated`}
         icon={Database}
-        status={refreshLatest === undefined ? 'skipped' : getEventStatus(refreshLatest.event)}
+        status={refreshLatest?.status ?? 'skipped'}
         title="Cache Refresh"
       />
       <HealthCard
-        detail={`${orphanCandidates} orphan candidates · GC ${formatRelativeTime(r2Latest?.event.timestamp)}`}
+        detail={`${orphanCandidates} orphan candidates · GC ${formatRelativeTime(r2Latest?.endedAt)}`}
         icon={AlertTriangle}
-        status={imageStatus}
+        status={r2Latest?.status ?? 'skipped'}
         title="R2 Cleanup"
       />
       <HealthCard
-        detail={`Last backup ${formatRelativeTime(backupLatest?.event.timestamp)} · ${archivedManifests.length} snapshots`}
+        detail={`Last backup ${formatRelativeTime(backupLatest?.endedAt)} · ${backupLatest?.affectedCount ?? 0} tables`}
         icon={ShieldCheck}
-        status={backupLatest === undefined ? 'skipped' : getEventStatus(backupLatest.event)}
+        status={backupLatest?.status ?? 'skipped'}
         title="Backups"
       />
       <HealthCard

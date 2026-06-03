@@ -1,5 +1,3 @@
-type Cloudflare = import('cloudflare').Cloudflare
-
 type CacheKind
   = | 'get'
     | 'set'
@@ -26,6 +24,7 @@ type CacheKind
     | 'r2GcRunSuccess'
     | 'r2GcRunFailure'
     | 'r2GcOrphanState'
+    | 'workflowLogRetention'
 
 interface CacheLogEvent {
   kind: CacheKind
@@ -173,20 +172,4 @@ interface CacheLogEvent {
 
 interface CacheLogger {
   log: (event: CacheLogEvent) => void | Promise<void>
-}
-
-interface KvLoggerOptions {
-  client: Cloudflare
-  accountId: string
-  namespaceId: string
-  /**
-   * Optional prefix for log keys.
-   * Final key looks like: `${keyPrefix}:${ISO_DATE}:${timestamp}:${rand}`
-   */
-  keyPrefix?: string
-  /**
-   * TTL for log entries in seconds, e.g. 7 days.
-   * If omitted, logs never expire at KV level.
-   */
-  logTtlSeconds?: number
 }

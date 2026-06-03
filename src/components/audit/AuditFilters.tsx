@@ -1,9 +1,7 @@
 import type { AuditFilters as AuditFiltersValue } from './types'
 import { Search } from 'lucide-react'
-import { OPS_LOG_SOURCES } from '@/lib/ops/logging'
+import { OPS_LOG_SOURCES } from '@/lib/audit/workflow-logs'
 import { STATUS_META } from './statusMeta'
-
-const AUDIT_SOURCE_OPTIONS = OPS_LOG_SOURCES.filter(source => source.id !== 'airtable-cache')
 
 interface AuditFiltersProps {
   filters: AuditFiltersValue
@@ -20,7 +18,7 @@ export default function AuditFilters({
         Source
         <select className="h-12 rounded-md border border-neutral-200 bg-white px-3 text-base text-neutral-950" defaultValue={filters.source} name="source">
           <option value="all">All</option>
-          {AUDIT_SOURCE_OPTIONS.map(source => (
+          {OPS_LOG_SOURCES.map(source => (
             <option key={source.id} value={source.id}>{source.label}</option>
           ))}
         </select>
@@ -48,7 +46,7 @@ export default function AuditFilters({
         <select className="h-12 rounded-md border border-neutral-200 bg-white px-3 text-base text-neutral-950" defaultValue={filters.range} name="range">
           <option value="7d">Last 7 days</option>
           <option value="30d">Last 30 days</option>
-          <option value="all">All logs</option>
+          <option value="60d">Last 60 days</option>
         </select>
       </label>
       <label className="flex flex-col gap-2 text-sm font-medium text-neutral-600">

@@ -34,7 +34,7 @@ Scheduled refreshes use `/api/airtable-refresh`, called by `.github/workflows/ai
 
 Refresh and backup guard keys are also stored in KV, but they are best-effort locks because Workers KV does not provide compare-and-set semantics; GitHub Actions concurrency is the main serializer.
 
-Maintenance logs are written as separate KV entries with date-based key prefixes such as `airtable-refresh-log`, `airtable-backup-log`, `r2-gc-log`, and `airtable-log`.
+KV is reserved for Airtable records cache and small state such as refresh state, best-effort guards, backup state, and R2 orphan tracking; ordinary workflow logs are not written to KV.
 
 ## R2 Images
 
@@ -54,7 +54,7 @@ Airtable backups use a separate private R2 backup bucket configured in `src/cons
 
 `/api/airtable-backup`, called by `.github/workflows/airtable-backup.yml`, writes table snapshots under `backups/airtable/{date}/`, writes a manifest, and records references to any already-cached R2 image variants without copying image objects into the backup bucket.
 
-The backup process also archives recent maintenance logs into the backup bucket under `backups/logs/{date}/`.
+The backup R2 bucket also stores workflow audit logs. Each workflow run writes one summary object under `logs/summaries/{workflow}/{date}/{runId}.json` and one detail object under `logs/details/{workflow}/{date}/{runId}.json`; there is no daily manifest read-modify-write path.
 
 ## R2 Cleanup
 
@@ -72,11 +72,15 @@ If any required Airtable table cache is missing or cannot be parsed, the cleanup
 
 The cleanup job has a deletion cap per run so a single invocation cannot remove an unbounded number of objects.
 
-The cleanup job writes normal run diagnostics under `r2-gc-log` and orphan-state diagnostics under `r2-gc-orphan-log`, both of which are visible through the automation audit tooling and can be archived by backup jobs.
+The cleanup job writes run diagnostics and orphan-state counts into the same per-run R2 workflow log detail object.
+
+The cleanup job also removes workflow audit summary and detail objects older than sixty days from the backup R2 bucket.
 
 ## Automation Audit Page
 
-The internal audit page at `/audit` reads recent CI-driven KV log entries and backup-bucket log archive manifests.
+The internal audit page at `/audit` reads recent workflow summary objects from the backup R2 bucket by listing bounded date/workflow prefixes, defaulting to the last seven days.
+
+When an operator opens a run, the audit page reads that run's detail object from R2; routine page loads do not scan the bucket or read every detail object.
 
 Access to the audit page is protected by `OPS_SECRET` and a Turnstile challenge, and the page is marked `noindex`.
 

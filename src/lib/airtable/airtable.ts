@@ -165,7 +165,15 @@ export async function getCachedRecords<TFields = Record<string, unknown>>(
     return cached
   }
 
-  return fetchAndCacheRecords<TFields>(tableName, { strictCacheWrite: false })
+  console.error('[airtable-cache]', {
+    kind: 'get',
+    key: cacheKey,
+    fullKey: `airtable-cache:${cacheKey}`,
+    table: tableName,
+    reason: 'cache miss on public read; scheduled refresh is responsible for repopulating KV',
+  })
+
+  return []
 }
 
 export async function refreshCachedRecords<TFields = Record<string, unknown>>(

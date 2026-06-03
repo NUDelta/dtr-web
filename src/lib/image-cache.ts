@@ -8,7 +8,17 @@ import { transcodeBufferToOptimizedImages } from '@/utils/image-convert'
 /** Maximum bounding box for width/height when transcoding. */
 const MAX_DIMENSION = 2400
 const FILE_EXTENSION_PATTERN = /\.[^.]+$/
+const UNSAFE_OBJECT_KEY_CHARS = /[^\w.-]+/g
 const ORIGINAL_CACHE_CONTROL = 'public, max-age=31536000, immutable'
+
+function sanitizeObjectKeyPart(value: string, fallback: string): string {
+  const sanitized = value
+    .split(/[?#]/)[0]
+    .replace(UNSAFE_OBJECT_KEY_CHARS, '-')
+    .replace(/^-+|-+$/g, '')
+
+  return sanitized.length > 0 ? sanitized : fallback
+}
 
 /**
  * Normalize filename and attach requested extension.
@@ -22,7 +32,7 @@ export async function buildImageObjectKey(
   filename: string,
   format: ImageFormat,
 ): Promise<string> {
-  const base = filename.replace(FILE_EXTENSION_PATTERN, '') || 'image'
+  const base = sanitizeObjectKeyPart(filename.replace(FILE_EXTENSION_PATTERN, ''), 'image')
   return `images/${attId}/${variant}/${base}.${format}`
 }
 
@@ -30,7 +40,7 @@ export async function buildOriginalImageObjectKey(
   attId: string,
   filename: string,
 ): Promise<string> {
-  return `images/${attId}/original/${filename || 'image'}`
+  return `images/${attId}/original/${sanitizeObjectKeyPart(filename, 'image')}`
 }
 
 /**

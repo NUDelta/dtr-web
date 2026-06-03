@@ -157,10 +157,11 @@ export default async function AuditPage({ searchParams }: PageProps) {
   const table = params.table ?? ''
   const q = params.q ?? ''
   const days = range === '7d' ? 7 : range === '30d' ? 30 : 60
-  const [summaries, selectedDetail] = await Promise.all([
-    readRecentWorkflowRunSummaries({ days, limit: 200, sourceId: source }),
-    readWorkflowRunDetail(params.run),
-  ])
+  const summaries = await readRecentWorkflowRunSummaries({ days, limit: 200, sourceId: source })
+  const selectedDetailKey = summaries.some(summary => summary.detailKey === params.run)
+    ? params.run
+    : undefined
+  const selectedDetail = await readWorkflowRunDetail(selectedDetailKey)
 
   return (
     <>
@@ -168,7 +169,7 @@ export default async function AuditPage({ searchParams }: PageProps) {
       <AuditConsole
         filters={{ q, range, source, status, table }}
         selectedDetail={selectedDetail}
-        selectedKey={params.run}
+        selectedKey={selectedDetailKey}
         summaries={summaries}
       />
     </>

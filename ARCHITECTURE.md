@@ -26,11 +26,11 @@ The app talks to Cloudflare through the public Cloudflare API, not Worker bindin
 
 Workers KV stores Airtable record cache envelopes under the `airtable-cache:` prefix, with fresh and stale timestamps kept in the JSON value and a physical KV TTL used for cleanup.
 
-The Airtable cache store lives in `src/lib/airtable/cloudflare-kv-cache.ts` and is injected into `ts-airtable`, so normal data reads try KV first before falling back to Airtable.
+The Airtable cache store lives in `src/lib/airtable/cloudflare-kv-cache.ts` and is injected into `ts-airtable`, while public data reads are cache-only so user traffic cannot repopulate KV or call Airtable on cache misses.
 
 The `ts-airtable` method-level record cache is intentionally disabled; `src/lib/airtable/airtable.ts` owns the all-record cache key and explicitly normalizes image attachment URLs to R2 before writing rows to KV.
 
-Scheduled refreshes use `/api/airtable-refresh`, called by `.github/workflows/airtable-refresh.yml`, to refresh specific Airtable tables, update KV cache entries, and write per-table refresh state.
+Scheduled refreshes use `/api/airtable-refresh`, called by `.github/workflows/airtable-refresh.yml`, to refresh specific Airtable tables, update KV cache entries, normalize image attachments into R2 public URLs, and write per-table refresh state.
 
 Refresh and backup guard keys are also stored in KV, but they are best-effort locks because Workers KV does not provide compare-and-set semantics; GitHub Actions concurrency is the main serializer.
 
@@ -98,11 +98,11 @@ The refresh workflow runs every twelve hours and calls one table at a time to re
 
 The backup workflow runs weekly by default and can be manually forced.
 
-The R2 cleanup workflow runs daily and uses `CICD_SECRET` to call the protected endpoint.
+The R2 cleanup workflow runs weekly and uses `CICD_SECRET` to call the protected endpoint.
 
 ## Failure Behavior
 
-Public pages can serve stale KV data for an extended window if Airtable or Cloudflare writes fail.
+Public pages can serve stale KV data for an extended window if Airtable or Cloudflare writes fail, but they do not refill missing cache entries themselves.
 
 Image cache misses can fall back to the original Airtable attachment URL if R2 upload or image transcoding fails during attachment transformation.
 

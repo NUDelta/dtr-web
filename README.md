@@ -43,7 +43,7 @@ We use [DigitalOcean's App Platform](https://www.digitalocean.com/products/app-p
 
 The website implements a two-tier caching system to minimize Airtable API usage:
 
-1. **Data Caching**: Airtable table data is cached in Cloudflare Workers KV through an injected Cloudflare KV Cache Store. A scheduled GitHub Action refreshes the cache every 12 hours, while stale KV data remains available as a fallback during Airtable/API failures. KV is reserved for Airtable records cache and small state such as refresh guards and R2 orphan tracking.
+1. **Data Caching**: Airtable table data is cached in Cloudflare Workers KV through an injected Cloudflare KV Cache Store. A scheduled GitHub Action refreshes the cache every 12 hours, while stale KV data remains available as a fallback during Airtable/API failures. Public reads are cache-only; cache misses do not call Airtable or write KV. KV is reserved for Airtable records cache and small state such as refresh guards and R2 orphan tracking.
 2. **Image Caching**: Images are downloaded once from Airtable, transformed into modern optimized formats (e.g., WebP, AVIF), cached in Cloudflare R2, and served from the source-controlled R2 public URL in `src/constants`.
 
 Cron-triggered endpoints require `CICD_SECRET` in production.

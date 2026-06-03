@@ -1,4 +1,4 @@
-import type { AuditFilters as AuditFiltersValue } from './types'
+import type { AuditFilters as AuditFiltersValue } from './lib/types'
 import { Search } from 'lucide-react'
 import { OPS_LOG_SOURCES } from '@/lib/audit/workflow-logs'
 import { STATUS_META } from './statusMeta'
@@ -33,20 +33,20 @@ export default function AuditFilters({
         </select>
       </label>
       <label className="flex flex-col gap-2 text-sm font-medium text-neutral-600">
+        Time range
+        <select className="h-12 rounded-md border border-neutral-200 bg-white px-3 text-base text-neutral-950" defaultValue={filters.range} name="range">
+          <option value="7d">Last 7 days</option>
+          <option value="30d">Last 30 days</option>
+          <option value="60d">Last 60 days</option>
+        </select>
+      </label>
+      <label className="flex flex-col gap-2 text-sm font-medium text-neutral-600">
         Table
         <select className="h-12 rounded-md border border-neutral-200 bg-white px-3 text-base text-neutral-950" defaultValue={filters.table} name="table">
           <option value="">All</option>
           {tables.map(table => (
             <option key={table} value={table}>{table}</option>
           ))}
-        </select>
-      </label>
-      <label className="flex flex-col gap-2 text-sm font-medium text-neutral-600">
-        Time range
-        <select className="h-12 rounded-md border border-neutral-200 bg-white px-3 text-base text-neutral-950" defaultValue={filters.range} name="range">
-          <option value="7d">Last 7 days</option>
-          <option value="30d">Last 30 days</option>
-          <option value="60d">Last 60 days</option>
         </select>
       </label>
       <label className="flex flex-col gap-2 text-sm font-medium text-neutral-600">

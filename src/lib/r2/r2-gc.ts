@@ -49,6 +49,16 @@ interface R2CleanupResult {
   reason?: string
 }
 
+function hasR2CleanupChanges(result: R2CleanupResult): boolean {
+  return result.deleted > 0
+    || result.newOrphans > 0
+    || result.confirmedOrphans > 0
+    || result.recoveredOrphans > 0
+    || result.prunedOrphans > 0
+    || result.missingTables.length > 0
+    || result.capped
+}
+
 function daysSince(tsMs: number) {
   return (Date.now() - tsMs) / (1000 * 60 * 60 * 24)
 }
@@ -241,7 +251,7 @@ export async function maybeRunR2CleanupFromISR(opts: GCOptions = {}) {
     if (minutes < (minIntervalHours * 60) - 5) {
       const reason = `last run ${(minutes / 60).toFixed(1)}h ago`
       workflowLog.add({
-        kind: 'r2GcRunSuccess',
+        kind: 'r2GcRunSkipped',
         bucket: R2_BUCKET,
         prefix,
         reason,
@@ -313,7 +323,7 @@ export async function maybeRunR2CleanupFromISR(opts: GCOptions = {}) {
       graceDays,
       missingTables: res.missingTables,
       capped: res.capped,
-      reason: res.reason,
+      reason: res.reason ?? (hasR2CleanupChanges(res) ? undefined : 'no R2 cleanup changes detected'),
     })
     await workflowLog.flush()
     return {

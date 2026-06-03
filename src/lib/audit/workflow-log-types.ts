@@ -19,6 +19,7 @@ export interface WorkflowRunSummary {
   date: string
   key: string
   detailKey: string
+  detailKeys?: string[]
   status: WorkflowRunStatus
   title: string
   summary: string
@@ -28,6 +29,7 @@ export interface WorkflowRunSummary {
   tableNames: string[]
   requestedTables?: string[]
   dueTables?: string[]
+  guardOwner?: string
   recordCount?: number
   affectedCount?: number
   deletedCount?: number

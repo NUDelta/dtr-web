@@ -3,6 +3,7 @@ import type {
   OpsLogSourceId,
   WorkflowRunSummary,
 } from '@/lib/audit/workflow-logs'
+import { getWorkflowEventStatus } from '@/lib/audit/workflow-log-helpers'
 
 export function getLatestBySource(
   summaries: WorkflowRunSummary[],
@@ -12,34 +13,7 @@ export function getLatestBySource(
 }
 
 export function getEventStatus(event: CacheLogEvent): RunStatus {
-  if (
-    event.kind.endsWith('Failure')
-    || event.kind.endsWith('Error')
-    || event.error !== undefined
-  ) {
-    return 'failure'
-  }
-
-  if (event.kind.endsWith('Start')) {
-    return 'running'
-  }
-
-  if (event.kind.endsWith('Skipped')) {
-    return 'skipped'
-  }
-
-  if (
-    event.kind === 'r2GcOrphanState'
-    || event.capped === true
-    || (event.confirmedOrphanCount ?? 0) > 0
-    || (event.newOrphanCount ?? 0) > 0
-    || (event.missingTables?.length ?? 0) > 0
-    || (event.reason !== undefined && !event.kind.endsWith('Success'))
-  ) {
-    return 'warning'
-  }
-
-  return 'success'
+  return getWorkflowEventStatus(event)
 }
 
 export function getOverallStatus(summaries: Array<WorkflowRunSummary | undefined>): RunStatus {
@@ -55,11 +29,15 @@ export function getOverallStatus(summaries: Array<WorkflowRunSummary | undefined
     return 'warning'
   }
 
-  if (statuses.includes('running')) {
-    return 'running'
+  if (statuses.includes('success')) {
+    return 'success'
   }
 
-  return statuses.includes('success') ? 'success' : 'skipped'
+  if (statuses.includes('skipped')) {
+    return 'skipped'
+  }
+
+  return statuses.includes('running') ? 'running' : 'skipped'
 }
 
 export function getLastSevenDays(summaries: WorkflowRunSummary[]): Array<{ day: string, status?: RunStatus }> {

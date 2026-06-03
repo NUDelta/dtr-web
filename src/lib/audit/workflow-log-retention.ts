@@ -12,7 +12,7 @@ import {
 const LOG_KINDS = ['summaries', 'details'] as const
 const MAX_DELETE_PER_RUN = 500
 
-export interface WorkflowLogRetentionResult {
+interface WorkflowLogRetentionResult {
   scanned: number
   deleted: number
   retentionDays: number
@@ -49,6 +49,12 @@ async function listWorkflowLogKeys(prefix: string): Promise<string[]> {
   return keys
 }
 
+/**
+ * Deletes expired audit summary/detail objects from the backup R2 bucket.
+ *
+ * The cleanup scans known workflow prefixes and caps deletes per run so log
+ * retention cannot turn into an unbounded maintenance job.
+ */
 export async function cleanupExpiredWorkflowLogs(
   retentionDays = WORKFLOW_LOG_RETENTION_DAYS,
 ): Promise<WorkflowLogRetentionResult> {

@@ -24,14 +24,62 @@ jobs:
             "Project Publications"
           )
           failed_tables=()
+          guard_owner="airtable-refresh-${GITHUB_RUN_ID}-${GITHUB_RUN_ATTEMPT}"
+          guard_released=0
+
+          release_guard() {
+            if [ "${guard_released}" -eq 1 ]; then
+              return
+            fi
+
+            guard_released=1
+            release_response_file="$(mktemp)"
+            release_payload="{\"releaseGuardOnly\":true,\"guardOwner\":\"${guard_owner}\"}"
+            release_started_at="$(date -u +%s)"
+
+            echo "::group::Release Airtable refresh guard"
+            echo "started_at_utc=$(date -u --iso-8601=seconds)"
+            echo "guard_owner=${guard_owner}"
+            echo "payload=${release_payload}"
+
+            set +e
+            release_http_status="$(
+              curl -sS \
+                --connect-timeout 30 \
+                --max-time 90 \
+                -o "${release_response_file}" \
+                -w "%{http_code}" \
+                -X POST \
+                -H "x-cron-token: $CICD_SECRET" \
+                -H "content-type: application/json" \
+                -d "${release_payload}" \
+                "https://dtr.northwestern.edu/api/airtable-refresh"
+            )"
+            release_curl_exit=$?
+            set -e
+
+            release_finished_at="$(date -u +%s)"
+            echo "finished_at_utc=$(date -u --iso-8601=seconds)"
+            echo "duration_seconds=$((release_finished_at - release_started_at))"
+            echo "http_status=${release_http_status}"
+            echo "curl_exit=${release_curl_exit}"
+            echo "response_body:"
+            cat "${release_response_file}"
+            echo
+            rm -f "${release_response_file}"
+            echo "::endgroup::"
+          }
+
+          trap release_guard EXIT
 
           for table in "${tables[@]}"; do
             echo "::group::Refresh Airtable table: ${table}"
             response_file="$(mktemp)"
-            payload="{\"minIntervalHours\":11,\"tables\":[\"${table}\"]}"
+            payload="{\"minIntervalHours\":11,\"guardOwner\":\"${guard_owner}\",\"releaseGuard\":false,\"tables\":[\"${table}\"]}"
             started_at="$(date -u +%s)"
 
             echo "started_at_utc=$(date -u --iso-8601=seconds)"
+            echo "guard_owner=${guard_owner}"
             echo "payload=${payload}"
 
             curl_exit=0

@@ -4,41 +4,20 @@ import type {
   WorkflowRunStatus,
   WorkflowRunSummary,
 } from './workflow-log-types'
+import {
+  getWorkflowEventStatus,
+  getWorkflowEventTables,
+} from './workflow-log-helpers'
 import { WORKFLOW_LOG_PREFIX } from './workflow-log-types'
 
 function getEventStatus(event: CacheLogEvent): WorkflowRunStatus {
-  if (
-    event.kind.endsWith('Failure')
-    || event.kind.endsWith('Error')
-    || event.error !== undefined
-  ) {
-    return 'failure'
-  }
-
-  if (event.kind.endsWith('Start')) {
-    return 'running'
-  }
-
-  if (event.kind.endsWith('Skipped')) {
-    return 'skipped'
-  }
-
-  if (
-    event.kind === 'r2GcOrphanState'
-    || event.capped === true
-    || (event.confirmedOrphanCount ?? 0) > 0
-    || (event.newOrphanCount ?? 0) > 0
-    || (event.missingTables?.length ?? 0) > 0
-    || (event.reason !== undefined && !event.kind.endsWith('Success'))
-  ) {
-    return 'warning'
-  }
-
-  return 'success'
+  return getWorkflowEventStatus(event)
 }
 
 function getOverallStatus(events: CacheLogEvent[]): WorkflowRunStatus {
   const statuses = events.map(getEventStatus)
+  const hasRunSkipped = events.some(event => event.kind.endsWith('RunSkipped'))
+  const hasRunSuccess = events.some(event => event.kind.endsWith('RunSuccess') && getEventStatus(event) === 'success')
 
   if (statuses.includes('failure')) {
     return 'failure'
@@ -48,27 +27,69 @@ function getOverallStatus(events: CacheLogEvent[]): WorkflowRunStatus {
     return 'warning'
   }
 
-  if (statuses.includes('running')) {
-    return 'running'
+  if (hasRunSuccess) {
+    return 'success'
   }
 
-  return statuses.includes('success') ? 'success' : 'skipped'
+  if (hasRunSkipped) {
+    return 'skipped'
+  }
+
+  if (statuses.includes('success')) {
+    return 'success'
+  }
+
+  if (statuses.includes('skipped')) {
+    return 'skipped'
+  }
+
+  return statuses.includes('running') ? 'running' : 'skipped'
 }
 
 function getPrimaryEvent(events: CacheLogEvent[]): CacheLogEvent {
-  return events.find(event => event.kind.endsWith('Failure'))
+  return events.find(event => event.kind.endsWith('RunFailure'))
+    ?? events.find(event => event.kind.endsWith('RunSuccess'))
+    ?? events.find(event => event.kind.endsWith('RunSkipped'))
+    ?? events.find(event => event.kind.endsWith('Failure'))
     ?? events.find(event => event.kind.endsWith('Success'))
     ?? events.find(event => event.kind.endsWith('Skipped'))
     ?? events[events.length - 1]
 }
 
+function getR2GcSummaryText(event: CacheLogEvent): string {
+  if (event.kind === 'r2GcRunSkipped' && event.reason !== undefined) {
+    return event.reason
+  }
+
+  const parts = [
+    `${event.scannedCount ?? 0} scanned`,
+    `${event.liveCount ?? 0} live`,
+    `${event.deletedCount ?? 0} deleted`,
+    `${event.newOrphanCount ?? 0} new orphan candidates`,
+  ]
+
+  if ((event.confirmedOrphanCount ?? 0) > 0) {
+    parts.push(`${event.confirmedOrphanCount} confirmed orphan candidates`)
+  }
+
+  if (event.reason !== undefined) {
+    parts.push(event.reason)
+  }
+
+  return parts.join(' · ')
+}
+
 function getSummaryText(sourceId: OpsLogSourceId, event: CacheLogEvent, events: CacheLogEvent[]): string {
   if (event.reason !== undefined) {
+    if (sourceId === 'r2-gc') {
+      return getR2GcSummaryText(event)
+    }
+
     return event.reason
   }
 
   if (sourceId === 'airtable-refresh') {
-    const tableCount = new Set(events.map(item => item.table).filter(Boolean)).size
+    const tableCount = new Set(events.flatMap(getWorkflowEventTables)).size
     return `${event.recordCount ?? 0} records refreshed · ${tableCount} tables`
   }
 
@@ -76,7 +97,7 @@ function getSummaryText(sourceId: OpsLogSourceId, event: CacheLogEvent, events: 
     return `${event.recordCount ?? 0} records backed up · ${event.affectedCount ?? 0} tables`
   }
 
-  return `${event.deletedCount ?? 0} deleted · ${event.newOrphanCount ?? 0} new orphan candidates`
+  return getR2GcSummaryText(event)
 }
 
 function getObjectDate(timestamp: number): string {
@@ -88,6 +109,11 @@ function buildWorkflowLogKeys(sourceId: OpsLogSourceId, date: string, runId: str
     summaryKey: `${WORKFLOW_LOG_PREFIX}/summaries/${sourceId}/${date}/${runId}.json`,
     detailKey: `${WORKFLOW_LOG_PREFIX}/details/${sourceId}/${date}/${runId}.json`,
   }
+}
+
+function getGuardOwner(events: CacheLogEvent[]): string | undefined {
+  const owner = events.find(event => typeof event.owner === 'string')?.owner
+  return typeof owner === 'string' && owner.length > 0 ? owner : undefined
 }
 
 export function buildWorkflowRunSummary(
@@ -103,9 +129,9 @@ export function buildWorkflowRunSummary(
   const { summaryKey, detailKey } = buildWorkflowLogKeys(source.id, date, runId)
   const tableNames = Array.from(new Set(
     events
-      .map(event => event.table)
-      .filter((table): table is string => table !== undefined),
+      .flatMap(getWorkflowEventTables),
   )).sort((a, b) => a.localeCompare(b))
+  const guardOwner = getGuardOwner(events)
 
   return {
     schemaVersion: 1,
@@ -124,6 +150,7 @@ export function buildWorkflowRunSummary(
     tableNames,
     requestedTables: primary.requestedTables,
     dueTables: primary.dueTables,
+    guardOwner,
     recordCount: primary.recordCount,
     affectedCount: primary.affectedCount,
     deletedCount: primary.deletedCount,

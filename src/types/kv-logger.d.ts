@@ -22,6 +22,7 @@ type CacheKind
     | 'backupR2ReferenceFailure'
     | 'r2GcRunStart'
     | 'r2GcRunSuccess'
+    | 'r2GcRunSkipped'
     | 'r2GcRunFailure'
     | 'r2GcOrphanState'
     | 'workflowLogRetention'

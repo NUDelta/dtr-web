@@ -42,6 +42,12 @@ function getObjectParams() {
   return { account_id: CLOUDFLARE_ACCOUNT_ID }
 }
 
+/**
+ * Build a public URL from a raw R2 object key.
+ *
+ * The key is not decoded first: a literal percent escape in an object name
+ * such as `%2F` must remain part of that segment, not become a path slash.
+ */
 export function buildR2PublicUrl(key: string): string {
   const encodedKey = key.split('/').map(encodeURIComponent).join('/')
   return `${R2_BUCKET_PUBLIC_URL}/${encodedKey}`

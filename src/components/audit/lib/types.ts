@@ -10,6 +10,7 @@ export type TimeRange = '7d' | '30d' | '60d'
 
 export interface AuditFilters {
   q: string
+  page: number
   source: OpsLogSourceId | 'all'
   status: RunStatus | 'all'
   table: string
@@ -18,7 +19,6 @@ export interface AuditFilters {
 
 export interface AuditConsoleProps {
   filters: AuditFilters
-  selectedDetail?: WorkflowRunDetail
   selectedKey?: string
   summaries: WorkflowRunSummary[]
 }

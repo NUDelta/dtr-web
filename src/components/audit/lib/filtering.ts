@@ -1,9 +1,10 @@
 import type { AuditFilters, TimeRange } from './types'
 import type { WorkflowRunSummary } from '@/lib/audit/workflow-logs'
+import { getWorkflowSummaryTables } from '@/lib/audit/workflow-log-helpers'
 
 export function buildAuditHref(
   filters: AuditFilters,
-  updates: Record<string, string | undefined>,
+  updates: Record<string, number | string | undefined>,
 ): string {
   const params = new URLSearchParams()
   const next = {
@@ -12,23 +13,24 @@ export function buildAuditHref(
     table: filters.table,
     range: filters.range,
     q: filters.q,
+    page: filters.page,
     ...updates,
   }
 
   for (const [key, value] of Object.entries(next)) {
-    if (value !== undefined && value !== '' && value !== 'all' && value !== '7d') {
-      params.set(key, value)
+    if (
+      value !== undefined
+      && value !== ''
+      && value !== 'all'
+      && value !== '7d'
+      && !(key === 'page' && value === 1)
+    ) {
+      params.set(key, String(value))
     }
   }
 
   const query = params.toString()
   return query.length === 0 ? '/audit' : `/audit?${query}`
-}
-
-export function getUniqueTables(summaries: WorkflowRunSummary[]): string[] {
-  return Array.from(new Set(
-    summaries.flatMap(summary => summary.tableNames),
-  )).sort((a, b) => a.localeCompare(b))
 }
 
 function isWithinRange(summary: WorkflowRunSummary, range: TimeRange): boolean {
@@ -51,7 +53,9 @@ export function filterRuns(
       return false
     }
 
-    if (filters.table !== '' && !summary.tableNames.includes(filters.table)) {
+    const tableNames = getWorkflowSummaryTables(summary)
+
+    if (filters.table !== '' && !tableNames.includes(filters.table)) {
       return false
     }
 
@@ -65,7 +69,13 @@ export function filterRuns(
       summary.title,
       summary.summary,
       summary.reason,
-      ...summary.tableNames,
+      ...tableNames,
     ].some(value => value?.toLowerCase().includes(query))
   })
+}
+
+export function getUniqueTables(summaries: WorkflowRunSummary[]): string[] {
+  return Array.from(new Set(
+    summaries.flatMap(getWorkflowSummaryTables),
+  )).sort((a, b) => a.localeCompare(b))
 }

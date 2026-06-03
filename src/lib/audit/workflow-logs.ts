@@ -15,7 +15,6 @@ const WORKFLOW_LOG_WRITE_TIMEOUT_MS = 5_000
 
 export {
   OPS_LOG_SOURCES,
-  WORKFLOW_LOG_PREFIX,
 } from './workflow-log-types'
 
 export type {

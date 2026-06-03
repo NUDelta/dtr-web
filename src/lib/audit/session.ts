@@ -5,10 +5,10 @@ import { cookies } from 'next/headers'
 import { isEqualSecret } from '@/constants/secrets'
 
 export const AUDIT_PATH = '/audit'
-export const AUDIT_AUTH_COOKIE = 'dtr_audit_auth'
-export const AUDIT_SESSION_MAX_AGE_SECONDS = 60 * 60 * 6
-export const AUDIT_REMEMBER_MAX_AGE_SECONDS = 60 * 60 * 24 * 60
-export const AUDIT_REMEMBER_REFRESH_WINDOW_SECONDS = 60 * 60 * 24 * 7
+const AUDIT_AUTH_COOKIE = 'dtr_audit_auth'
+const AUDIT_SESSION_MAX_AGE_SECONDS = 60 * 60 * 6
+const AUDIT_REMEMBER_MAX_AGE_SECONDS = 60 * 60 * 24 * 60
+const AUDIT_REMEMBER_REFRESH_WINDOW_SECONDS = 60 * 60 * 24 * 7
 
 interface AuditSessionPayload {
   exp: number
@@ -55,7 +55,7 @@ function decodeAuditPayload(payload: string): AuditSessionPayload | undefined {
   }
 }
 
-export function createAuditSessionCookieValue(secret: string, remember: boolean, now = Date.now()): string {
+function createAuditSessionCookieValue(secret: string, remember: boolean, now = Date.now()): string {
   const maxAgeSeconds = remember
     ? AUDIT_REMEMBER_MAX_AGE_SECONDS
     : AUDIT_SESSION_MAX_AGE_SECONDS
@@ -68,7 +68,7 @@ export function createAuditSessionCookieValue(secret: string, remember: boolean,
   return `${payload}.${signAuditPayload(payload, secret)}`
 }
 
-export function parseAuditSessionCookie(value: string, secret: string, now = Date.now()): AuditSession | undefined {
+function parseAuditSessionCookie(value: string, secret: string, now = Date.now()): AuditSession | undefined {
   const [payload, signature] = value.split('.')
   if (
     payload === undefined

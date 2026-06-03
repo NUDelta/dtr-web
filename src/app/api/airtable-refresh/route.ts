@@ -1,12 +1,18 @@
 import { randomUUID } from 'node:crypto'
 import { NextResponse } from 'next/server'
 import { getCicdSecret, isEqualSecret } from '@/constants/secrets'
-import { refreshAirtableRecordsCache } from '@/lib/airtable/refresh'
+import {
+  refreshAirtableRecordsCache,
+  releaseAirtableRefreshGuard,
+} from '@/lib/airtable/refresh'
 
 interface AirtableRefreshRequestBody {
   tables?: string[]
   minIntervalHours?: number
   force?: boolean
+  guardOwner?: unknown
+  releaseGuard?: unknown
+  releaseGuardOnly?: unknown
 }
 
 function parsePositiveNumber(value: unknown): number | undefined {
@@ -19,6 +25,10 @@ function parsePositiveNumber(value: unknown): number | undefined {
 
 function getErrorMessage(error: unknown): string {
   return error instanceof Error ? error.message : String(error)
+}
+
+function parseNonEmptyString(value: unknown): string | undefined {
+  return typeof value === 'string' && value.length > 0 ? value : undefined
 }
 
 export async function POST(req: Request) {
@@ -43,20 +53,48 @@ export async function POST(req: Request) {
   const tables = Array.isArray(body.tables) ? body.tables : undefined
   const minIntervalHours = parsePositiveNumber(body.minIntervalHours)
   const force = body.force === true
+  const guardOwner = parseNonEmptyString(body.guardOwner)
+  const releaseGuard = body.releaseGuard !== false
+  const releaseGuardOnly = body.releaseGuardOnly === true
 
   console.warn('[airtable-refresh] request started', {
     requestId,
     tables,
     minIntervalHours,
     force,
+    guardOwner,
+    releaseGuard,
+    releaseGuardOnly,
   })
 
   try {
+    if (releaseGuardOnly) {
+      if (guardOwner === undefined) {
+        return NextResponse.json({
+          ok: false,
+          requestId,
+          error: 'guardOwner is required to release refresh guard',
+        }, { status: 400 })
+      }
+
+      await releaseAirtableRefreshGuard(guardOwner)
+      const durationMs = Date.now() - startedAt
+      console.warn('[airtable-refresh] refresh guard released', {
+        requestId,
+        durationMs,
+        guardOwner,
+      })
+
+      return NextResponse.json({ ok: true, requestId, durationMs, released: true })
+    }
+
     const result = await refreshAirtableRecordsCache({
       tables,
       minIntervalHours,
       force,
       requestId,
+      guardOwner,
+      releaseGuard,
     })
 
     const durationMs = Date.now() - startedAt
@@ -79,6 +117,9 @@ export async function POST(req: Request) {
       tables,
       minIntervalHours,
       force,
+      guardOwner,
+      releaseGuard,
+      releaseGuardOnly,
       error: message,
     })
 

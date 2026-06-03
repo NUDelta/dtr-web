@@ -47,5 +47,22 @@ export function formatDuration(durationMs: number | undefined): string {
     return '-'
   }
 
-  return `${(durationMs / 1000).toFixed(1)}s`
+  if (durationMs < 100) {
+    return `${(durationMs / 1000).toFixed(2)}s`
+  }
+
+  if (durationMs < 1000) {
+    return `${(durationMs / 1000).toFixed(1)}s`
+  }
+
+  const seconds = Math.round(durationMs / 1000)
+  if (seconds < 60) {
+    return `${seconds}s`
+  }
+
+  const minutes = Math.floor(seconds / 60)
+  const remainingSeconds = seconds % 60
+  return remainingSeconds === 0
+    ? `${minutes}m`
+    : `${minutes}m ${remainingSeconds}s`
 }

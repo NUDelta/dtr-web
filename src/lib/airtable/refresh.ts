@@ -27,6 +27,7 @@ interface AirtableRefreshOptions {
   minIntervalHours?: number
   force?: boolean
   requestId?: string
+  guardOwner?: string
 }
 
 function getErrorMessage(error: unknown): string {
@@ -170,22 +171,36 @@ function getMostRecentRefreshAgeHours(
   return ((Date.now() - mostRecent) / (60 * 60 * 1000)).toFixed(1)
 }
 
-async function claimRefreshSlotBestEffort(): Promise<string | undefined> {
+interface RefreshSlotClaim {
+  owner: string
+  reused: boolean
+}
+
+async function claimRefreshSlotBestEffort(
+  requestedOwner: string = randomUUID(),
+): Promise<RefreshSlotClaim | undefined> {
   const existingGuard = await readKvText(REFRESH_GUARD_KEY)
   if (existingGuard !== undefined) {
+    try {
+      const guard = JSON.parse(existingGuard) as { owner?: unknown }
+      if (guard.owner === requestedOwner) {
+        return { owner: requestedOwner, reused: true }
+      }
+    }
+    catch {}
+
     return undefined
   }
 
-  const owner = randomUUID()
   // Cloudflare KV writes are not compare-and-set. GitHub Actions concurrency is
   // the authoritative schedule/manual-run serializer; this only reduces
   // accidental overlap from direct API retries.
   await writeKvJson(
     REFRESH_GUARD_KEY,
-    { lockedAt: Date.now(), owner },
+    { lockedAt: Date.now(), owner: requestedOwner },
     REFRESH_GUARD_TTL_SECONDS,
   )
-  return owner
+  return { owner: requestedOwner, reused: false }
 }
 
 async function releaseRefreshSlotBestEffort(owner: string): Promise<void> {
@@ -272,8 +287,8 @@ export async function refreshAirtableRecordsCache(options: AirtableRefreshOption
     }
   }
 
-  const refreshSlotOwner = await claimRefreshSlotBestEffort()
-  if (refreshSlotOwner === undefined) {
+  const refreshSlot = await claimRefreshSlotBestEffort(options.guardOwner)
+  if (refreshSlot === undefined) {
     const reason = 'refresh already in progress'
     workflowLog.add({
       kind: 'refreshGuard',
@@ -294,8 +309,8 @@ export async function refreshAirtableRecordsCache(options: AirtableRefreshOption
   workflowLog.add({
     kind: 'refreshGuard',
     requestedTables: tables,
-    reason: 'claimed refresh slot',
-    owner: refreshSlotOwner,
+    reason: refreshSlot.reused ? 'reused refresh slot' : 'claimed refresh slot',
+    owner: refreshSlot.owner,
     durationMs: Date.now() - runStartedAt,
   })
 
@@ -435,13 +450,13 @@ export async function refreshAirtableRecordsCache(options: AirtableRefreshOption
     throw error
   }
   finally {
-    await releaseRefreshSlotBestEffort(refreshSlotOwner)
+    await releaseRefreshSlotBestEffort(refreshSlot.owner)
       .then(() => {
         workflowLog.add({
           kind: 'refreshGuard',
           requestedTables: tables,
           reason: 'released refresh slot',
-          owner: refreshSlotOwner,
+          owner: refreshSlot.owner,
           durationMs: Date.now() - runStartedAt,
         })
       })
@@ -450,7 +465,7 @@ export async function refreshAirtableRecordsCache(options: AirtableRefreshOption
           kind: 'refreshGuard',
           requestedTables: tables,
           reason: getErrorMessage(error),
-          owner: refreshSlotOwner,
+          owner: refreshSlot.owner,
           durationMs: Date.now() - runStartedAt,
           error,
         })

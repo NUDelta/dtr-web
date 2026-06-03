@@ -12,6 +12,14 @@ export function getLatestBySource(
 }
 
 export function getEventStatus(event: CacheLogEvent): RunStatus {
+  if (event.kind === 'refreshGuard') {
+    if (event.reason === 'refresh already in progress') {
+      return 'skipped'
+    }
+
+    return event.error === undefined ? 'success' : 'warning'
+  }
+
   if (
     event.kind.endsWith('Failure')
     || event.kind.endsWith('Error')
@@ -55,11 +63,15 @@ export function getOverallStatus(summaries: Array<WorkflowRunSummary | undefined
     return 'warning'
   }
 
-  if (statuses.includes('running')) {
-    return 'running'
+  if (statuses.includes('success')) {
+    return 'success'
   }
 
-  return statuses.includes('success') ? 'success' : 'skipped'
+  if (statuses.includes('skipped')) {
+    return 'skipped'
+  }
+
+  return statuses.includes('running') ? 'running' : 'skipped'
 }
 
 export function getLastSevenDays(summaries: WorkflowRunSummary[]): Array<{ day: string, status?: RunStatus }> {

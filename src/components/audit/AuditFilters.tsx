@@ -5,15 +5,13 @@ import { STATUS_META } from './statusMeta'
 
 interface AuditFiltersProps {
   filters: AuditFiltersValue
-  tables: string[]
 }
 
 export default function AuditFilters({
   filters,
-  tables,
 }: AuditFiltersProps) {
   return (
-    <form className="mt-5 grid gap-4 rounded-lg border border-neutral-200 bg-white p-4 shadow-sm md:grid-cols-[minmax(0,1fr)_minmax(0,1fr)_minmax(0,1fr)_minmax(0,1fr)_minmax(260px,2fr)]" method="get">
+    <form className="mt-5 grid gap-4 rounded-lg border border-neutral-200 bg-white p-4 shadow-sm md:grid-cols-[minmax(0,1fr)_minmax(0,1fr)_minmax(0,1fr)_minmax(260px,2fr)]" method="get">
       <label className="flex flex-col gap-2 text-sm font-medium text-neutral-600">
         Source
         <select className="h-12 rounded-md border border-neutral-200 bg-white px-3 text-base text-neutral-950" defaultValue={filters.source} name="source">
@@ -29,15 +27,6 @@ export default function AuditFilters({
           <option value="all">All</option>
           {Object.entries(STATUS_META).map(([value, meta]) => (
             <option key={value} value={value}>{meta.label}</option>
-          ))}
-        </select>
-      </label>
-      <label className="flex flex-col gap-2 text-sm font-medium text-neutral-600">
-        Table
-        <select className="h-12 rounded-md border border-neutral-200 bg-white px-3 text-base text-neutral-950" defaultValue={filters.table} name="table">
-          <option value="">All</option>
-          {tables.map(table => (
-            <option key={table} value={table}>{table}</option>
           ))}
         </select>
       </label>

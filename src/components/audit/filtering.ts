@@ -1,23 +1,37 @@
 import type { AuditFilters, TimeRange } from './types'
 import type { WorkflowRunSummary } from '@/lib/audit/workflow-logs'
 
+export function getRunTables(summary: WorkflowRunSummary): string[] {
+  return Array.from(new Set([
+    ...summary.tableNames,
+    ...(summary.dueTables ?? []),
+    ...(summary.requestedTables ?? []),
+  ])).sort((a, b) => a.localeCompare(b))
+}
+
 export function buildAuditHref(
   filters: AuditFilters,
-  updates: Record<string, string | undefined>,
+  updates: Record<string, number | string | undefined>,
 ): string {
   const params = new URLSearchParams()
   const next = {
     source: filters.source,
     status: filters.status,
-    table: filters.table,
     range: filters.range,
     q: filters.q,
+    page: filters.page,
     ...updates,
   }
 
   for (const [key, value] of Object.entries(next)) {
-    if (value !== undefined && value !== '' && value !== 'all' && value !== '7d') {
-      params.set(key, value)
+    if (
+      value !== undefined
+      && value !== ''
+      && value !== 'all'
+      && value !== '7d'
+      && !(key === 'page' && value === 1)
+    ) {
+      params.set(key, String(value))
     }
   }
 
@@ -27,7 +41,7 @@ export function buildAuditHref(
 
 export function getUniqueTables(summaries: WorkflowRunSummary[]): string[] {
   return Array.from(new Set(
-    summaries.flatMap(summary => summary.tableNames),
+    summaries.flatMap(getRunTables),
   )).sort((a, b) => a.localeCompare(b))
 }
 
@@ -51,9 +65,7 @@ export function filterRuns(
       return false
     }
 
-    if (filters.table !== '' && !summary.tableNames.includes(filters.table)) {
-      return false
-    }
+    const tableNames = getRunTables(summary)
 
     if (query.length === 0) {
       return true
@@ -65,7 +77,7 @@ export function filterRuns(
       summary.title,
       summary.summary,
       summary.reason,
-      ...summary.tableNames,
+      ...tableNames,
     ].some(value => value?.toLowerCase().includes(query))
   })
 }

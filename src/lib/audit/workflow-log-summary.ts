@@ -7,6 +7,14 @@ import type {
 import { WORKFLOW_LOG_PREFIX } from './workflow-log-types'
 
 function getEventStatus(event: CacheLogEvent): WorkflowRunStatus {
+  if (event.kind === 'refreshGuard') {
+    if (event.reason === 'refresh already in progress') {
+      return 'skipped'
+    }
+
+    return event.error === undefined ? 'success' : 'warning'
+  }
+
   if (
     event.kind.endsWith('Failure')
     || event.kind.endsWith('Error')
@@ -39,6 +47,8 @@ function getEventStatus(event: CacheLogEvent): WorkflowRunStatus {
 
 function getOverallStatus(events: CacheLogEvent[]): WorkflowRunStatus {
   const statuses = events.map(getEventStatus)
+  const hasRunSkipped = events.some(event => event.kind.endsWith('RunSkipped'))
+  const hasRunSuccess = events.some(event => event.kind.endsWith('RunSuccess'))
 
   if (statuses.includes('failure')) {
     return 'failure'
@@ -48,15 +58,30 @@ function getOverallStatus(events: CacheLogEvent[]): WorkflowRunStatus {
     return 'warning'
   }
 
-  if (statuses.includes('running')) {
-    return 'running'
+  if (hasRunSuccess) {
+    return 'success'
   }
 
-  return statuses.includes('success') ? 'success' : 'skipped'
+  if (hasRunSkipped) {
+    return 'skipped'
+  }
+
+  if (statuses.includes('success')) {
+    return 'success'
+  }
+
+  if (statuses.includes('skipped')) {
+    return 'skipped'
+  }
+
+  return statuses.includes('running') ? 'running' : 'skipped'
 }
 
 function getPrimaryEvent(events: CacheLogEvent[]): CacheLogEvent {
-  return events.find(event => event.kind.endsWith('Failure'))
+  return events.find(event => event.kind.endsWith('RunFailure'))
+    ?? events.find(event => event.kind.endsWith('RunSuccess'))
+    ?? events.find(event => event.kind.endsWith('RunSkipped'))
+    ?? events.find(event => event.kind.endsWith('Failure'))
     ?? events.find(event => event.kind.endsWith('Success'))
     ?? events.find(event => event.kind.endsWith('Skipped'))
     ?? events[events.length - 1]
@@ -68,7 +93,7 @@ function getSummaryText(sourceId: OpsLogSourceId, event: CacheLogEvent, events: 
   }
 
   if (sourceId === 'airtable-refresh') {
-    const tableCount = new Set(events.map(item => item.table).filter(Boolean)).size
+    const tableCount = new Set(events.flatMap(getEventTables)).size
     return `${event.recordCount ?? 0} records refreshed · ${tableCount} tables`
   }
 
@@ -90,6 +115,19 @@ function buildWorkflowLogKeys(sourceId: OpsLogSourceId, date: string, runId: str
   }
 }
 
+function getEventTables(event: CacheLogEvent): string[] {
+  return [
+    event.table,
+    ...(event.dueTables ?? []),
+    ...(event.requestedTables ?? []),
+  ].filter((table): table is string => typeof table === 'string' && table.length > 0)
+}
+
+function getGuardOwner(events: CacheLogEvent[]): string | undefined {
+  const owner = events.find(event => typeof event.owner === 'string')?.owner
+  return typeof owner === 'string' && owner.length > 0 ? owner : undefined
+}
+
 export function buildWorkflowRunSummary(
   source: OpsLogSource,
   runId: string,
@@ -103,9 +141,9 @@ export function buildWorkflowRunSummary(
   const { summaryKey, detailKey } = buildWorkflowLogKeys(source.id, date, runId)
   const tableNames = Array.from(new Set(
     events
-      .map(event => event.table)
-      .filter((table): table is string => table !== undefined),
+      .flatMap(getEventTables),
   )).sort((a, b) => a.localeCompare(b))
+  const guardOwner = getGuardOwner(events)
 
   return {
     schemaVersion: 1,
@@ -124,6 +162,7 @@ export function buildWorkflowRunSummary(
     tableNames,
     requestedTables: primary.requestedTables,
     dueTables: primary.dueTables,
+    guardOwner,
     recordCount: primary.recordCount,
     affectedCount: primary.affectedCount,
     deletedCount: primary.deletedCount,

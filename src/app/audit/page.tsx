@@ -12,9 +12,9 @@ import {
 } from '@/lib/audit/session'
 import {
   readRecentWorkflowRunSummaries,
-  readWorkflowRunDetail,
 } from '@/lib/audit/workflow-log-reader'
 import { OPS_LOG_SOURCES } from '@/lib/audit/workflow-logs'
+import { groupWorkflowRunSummaries } from '@/lib/audit/workflow-run-grouping'
 
 export const dynamic = 'force-dynamic'
 export const revalidate = 0
@@ -30,6 +30,7 @@ export const metadata: Metadata = {
 interface PageProps {
   searchParams: Promise<{
     auth?: string
+    page?: string
     q?: string
     range?: string
     run?: string
@@ -71,6 +72,15 @@ function parseRange(value: string | undefined): TimeRange {
   }
 
   return '7d'
+}
+
+function parsePage(value: string | undefined): number {
+  if (value === undefined) {
+    return 1
+  }
+
+  const parsed = Number.parseInt(value, 10)
+  return Number.isInteger(parsed) && parsed > 0 ? parsed : 1
 }
 
 function LoginError({ auth }: { auth?: string }) {
@@ -154,21 +164,21 @@ export default async function AuditPage({ searchParams }: PageProps) {
   const source = parseSource(params.source)
   const status = parseStatus(params.status)
   const range = parseRange(params.range)
-  const table = params.table ?? ''
+  const table = ''
   const q = params.q ?? ''
+  const page = parsePage(params.page)
   const days = range === '7d' ? 7 : range === '30d' ? 30 : 60
-  const summaries = await readRecentWorkflowRunSummaries({ days, limit: 200, sourceId: source })
+  const rawSummaries = await readRecentWorkflowRunSummaries({ days, limit: 200, sourceId: source })
+  const summaries = groupWorkflowRunSummaries(rawSummaries)
   const selectedDetailKey = summaries.some(summary => summary.detailKey === params.run)
     ? params.run
     : undefined
-  const selectedDetail = await readWorkflowRunDetail(selectedDetailKey)
 
   return (
     <>
       <AuditSessionRefresher enabled={shouldRefreshAuditSession(session)} />
       <AuditConsole
-        filters={{ q, range, source, status, table }}
-        selectedDetail={selectedDetail}
+        filters={{ q, page, range, source, status, table }}
         selectedKey={selectedDetailKey}
         summaries={summaries}
       />

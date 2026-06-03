@@ -24,14 +24,16 @@ jobs:
             "Project Publications"
           )
           failed_tables=()
+          guard_owner="airtable-refresh-${GITHUB_RUN_ID}-${GITHUB_RUN_ATTEMPT}"
 
           for table in "${tables[@]}"; do
             echo "::group::Refresh Airtable table: ${table}"
             response_file="$(mktemp)"
-            payload="{\"minIntervalHours\":11,\"tables\":[\"${table}\"]}"
+            payload="{\"minIntervalHours\":11,\"guardOwner\":\"${guard_owner}\",\"tables\":[\"${table}\"]}"
             started_at="$(date -u +%s)"
 
             echo "started_at_utc=$(date -u --iso-8601=seconds)"
+            echo "guard_owner=${guard_owner}"
             echo "payload=${payload}"
 
             curl_exit=0

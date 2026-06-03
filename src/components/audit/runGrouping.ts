@@ -8,9 +8,11 @@ export function getSelectedRun(
   runs: AuditRun[],
   selectedKey: string | undefined,
 ): AuditRun | undefined {
-  return runs.length === 0
-    ? undefined
-    : runs.find(run => run.detailKey === selectedKey || run.key === selectedKey) ?? runs[0]
+  if (selectedKey === undefined) {
+    return undefined
+  }
+
+  return runs.find(run => run.detailKey === selectedKey || run.key === selectedKey)
 }
 
 export function attachSelectedDetail(

@@ -7,6 +7,7 @@ interface AirtableRefreshRequestBody {
   tables?: string[]
   minIntervalHours?: number
   force?: boolean
+  guardOwner?: unknown
 }
 
 function parsePositiveNumber(value: unknown): number | undefined {
@@ -19,6 +20,10 @@ function parsePositiveNumber(value: unknown): number | undefined {
 
 function getErrorMessage(error: unknown): string {
   return error instanceof Error ? error.message : String(error)
+}
+
+function parseNonEmptyString(value: unknown): string | undefined {
+  return typeof value === 'string' && value.length > 0 ? value : undefined
 }
 
 export async function POST(req: Request) {
@@ -43,12 +48,14 @@ export async function POST(req: Request) {
   const tables = Array.isArray(body.tables) ? body.tables : undefined
   const minIntervalHours = parsePositiveNumber(body.minIntervalHours)
   const force = body.force === true
+  const guardOwner = parseNonEmptyString(body.guardOwner)
 
   console.warn('[airtable-refresh] request started', {
     requestId,
     tables,
     minIntervalHours,
     force,
+    guardOwner,
   })
 
   try {
@@ -57,6 +64,7 @@ export async function POST(req: Request) {
       minIntervalHours,
       force,
       requestId,
+      guardOwner,
     })
 
     const durationMs = Date.now() - startedAt
@@ -79,6 +87,7 @@ export async function POST(req: Request) {
       tables,
       minIntervalHours,
       force,
+      guardOwner,
       error: message,
     })
 

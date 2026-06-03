@@ -184,3 +184,10 @@ export async function readWorkflowRunDetail(
   const text = await readR2Text(detailKey)
   return text === undefined ? undefined : parseWorkflowDetail(text)
 }
+
+export async function readWorkflowRunDetails(
+  detailKeys: string[],
+): Promise<WorkflowRunDetail[]> {
+  const details = await Promise.all(detailKeys.map(readWorkflowRunDetail))
+  return details.filter((detail): detail is WorkflowRunDetail => detail !== undefined)
+}

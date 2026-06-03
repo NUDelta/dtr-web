@@ -82,6 +82,8 @@ The internal audit page at `/audit` reads recent workflow summary objects from t
 
 When an operator opens a run, the audit page reads that run's detail object from R2; routine page loads do not scan the bucket or read every detail object.
 
+Table-by-table Airtable refresh calls remain separate summary/detail objects in R2, and the audit page groups nearby refresh objects into one visible cache refresh item at read time.
+
 Access to the audit page is protected by `OPS_SECRET` and a Turnstile challenge, and the page is marked `noindex`.
 
 ## Turnstile

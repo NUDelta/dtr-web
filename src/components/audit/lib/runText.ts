@@ -157,7 +157,34 @@ function getReadableDiagnostic(value: string): string {
   }
 }
 
+function formatR2GcStats(event: CacheLogEvent): string {
+  const parts = [
+    `${event.scannedCount ?? 0} scanned`,
+    `${event.liveCount ?? 0} live`,
+    `${event.deletedCount ?? 0} deleted`,
+    `${event.newOrphanCount ?? 0} new orphan candidates`,
+  ]
+
+  if ((event.confirmedOrphanCount ?? 0) > 0) {
+    parts.push(`${event.confirmedOrphanCount} confirmed orphan candidates`)
+  }
+
+  if (event.reason !== undefined) {
+    parts.push(getReadableDiagnostic(event.reason))
+  }
+
+  return parts.join(' · ')
+}
+
 export function getEventSummary(event: CacheLogEvent): string {
+  if (event.kind === 'r2GcRunSuccess') {
+    return formatR2GcStats(event)
+  }
+
+  if (event.kind === 'r2GcRunSkipped') {
+    return event.reason ?? 'Cleanup skipped'
+  }
+
   if (event.reason !== undefined) {
     return getReadableDiagnostic(event.reason)
   }
@@ -192,10 +219,6 @@ export function getEventSummary(event: CacheLogEvent): string {
 
   if (event.kind === 'backupRunSuccess') {
     return `${event.recordCount ?? 0} records backed up · ${event.affectedCount ?? 0} tables`
-  }
-
-  if (event.kind === 'r2GcRunSuccess') {
-    return `${event.deletedCount ?? 0} deleted · ${event.newOrphanCount ?? 0} new orphan candidates`
   }
 
   if (event.kind === 'r2GcOrphanState') {

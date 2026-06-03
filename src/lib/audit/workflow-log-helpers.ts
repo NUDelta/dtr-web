@@ -24,6 +24,10 @@ export function getWorkflowEventStatus(event: CacheLogEvent): WorkflowRunStatus 
     return 'failure'
   }
 
+  if (event.kind === 'r2GcRunSuccess') {
+    return 'success'
+  }
+
   if (event.kind.endsWith('Start')) {
     return 'running'
   }

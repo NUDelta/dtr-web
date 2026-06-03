@@ -56,8 +56,35 @@ function getPrimaryEvent(events: CacheLogEvent[]): CacheLogEvent {
     ?? events[events.length - 1]
 }
 
+function getR2GcSummaryText(event: CacheLogEvent): string {
+  if (event.kind === 'r2GcRunSkipped' && event.reason !== undefined) {
+    return event.reason
+  }
+
+  const parts = [
+    `${event.scannedCount ?? 0} scanned`,
+    `${event.liveCount ?? 0} live`,
+    `${event.deletedCount ?? 0} deleted`,
+    `${event.newOrphanCount ?? 0} new orphan candidates`,
+  ]
+
+  if ((event.confirmedOrphanCount ?? 0) > 0) {
+    parts.push(`${event.confirmedOrphanCount} confirmed orphan candidates`)
+  }
+
+  if (event.reason !== undefined) {
+    parts.push(event.reason)
+  }
+
+  return parts.join(' · ')
+}
+
 function getSummaryText(sourceId: OpsLogSourceId, event: CacheLogEvent, events: CacheLogEvent[]): string {
   if (event.reason !== undefined) {
+    if (sourceId === 'r2-gc') {
+      return getR2GcSummaryText(event)
+    }
+
     return event.reason
   }
 
@@ -70,7 +97,7 @@ function getSummaryText(sourceId: OpsLogSourceId, event: CacheLogEvent, events: 
     return `${event.recordCount ?? 0} records backed up · ${event.affectedCount ?? 0} tables`
   }
 
-  return `${event.deletedCount ?? 0} deleted · ${event.newOrphanCount ?? 0} new orphan candidates`
+  return getR2GcSummaryText(event)
 }
 
 function getObjectDate(timestamp: number): string {

@@ -98,7 +98,10 @@ function getR2GcResultTitle(event: CacheLogEvent): string {
     return 'Orphan tracking'
   }
 
-  if (event.kind === 'r2GcRunSuccess' && event.reason?.startsWith('last run ')) {
+  if (
+    event.kind === 'r2GcRunSkipped'
+    || (event.kind === 'r2GcRunSuccess' && event.reason?.startsWith('last run '))
+  ) {
     return 'Cleanup schedule'
   }
 
@@ -186,6 +189,8 @@ function getMetricChips(sourceId: OpsLogSourceId, events: CacheLogEvent[]): stri
       primary.deletedCount === undefined ? undefined : `${primary.deletedCount} deleted`,
       primary.newOrphanCount === undefined ? undefined : `${primary.newOrphanCount} new`,
       primary.confirmedOrphanCount === undefined ? undefined : `${primary.confirmedOrphanCount} confirmed`,
+      primary.recoveredOrphanCount === undefined || primary.recoveredOrphanCount === 0 ? undefined : `${primary.recoveredOrphanCount} recovered`,
+      primary.prunedOrphanCount === undefined || primary.prunedOrphanCount === 0 ? undefined : `${primary.prunedOrphanCount} pruned`,
     ].filter((value): value is string => value !== undefined)
   }
 

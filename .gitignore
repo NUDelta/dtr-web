@@ -449,6 +449,9 @@ $RECYCLE.BIN/
 !.yarn/sdks
 !.yarn/versions
 
+# Next.js specific files
+next-env.d.ts
+
 ############## Custom ##############
 .env.local
 .vercel

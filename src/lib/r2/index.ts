@@ -42,8 +42,20 @@ function getObjectParams() {
   return { account_id: CLOUDFLARE_ACCOUNT_ID }
 }
 
+const INVALID_PERCENT_ESCAPE = /%(?![\dA-F]{2})/gi
+
+function normalizeR2PublicUrlSegment(segment: string): string {
+  try {
+    const decodeableSegment = segment.replace(INVALID_PERCENT_ESCAPE, '%25')
+    return encodeURIComponent(decodeURIComponent(decodeableSegment))
+  }
+  catch {
+    return encodeURIComponent(segment)
+  }
+}
+
 export function buildR2PublicUrl(key: string): string {
-  const encodedKey = key.split('/').map(encodeURIComponent).join('/')
+  const encodedKey = key.split('/').map(normalizeR2PublicUrlSegment).join('/')
   return `${R2_BUCKET_PUBLIC_URL}/${encodedKey}`
 }
 

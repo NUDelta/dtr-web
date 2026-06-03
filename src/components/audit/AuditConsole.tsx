@@ -1,15 +1,13 @@
-import type { AuditConsoleProps } from './types'
+import type { AuditConsoleProps } from './lib/types'
 import { Suspense } from 'react'
 import AuditFilters from './AuditFilters'
 import AuditHeader from './AuditHeader'
+import RunDetail, { RunDetailSkeleton } from './detail/RunDetail'
+import RunDetailLoader from './detail/RunDetailLoader'
 import HealthCards from './HealthCards'
+import { filterRuns, getUniqueTables } from './lib/filtering'
+import { getSelectedRun } from './lib/runGrouping'
 import RecentRuns from './RecentRuns'
-import RunDetail, { RunDetailSkeleton } from './RunDetail'
-import RunDetailLoader from './RunDetailLoader'
-import {
-  filterRuns,
-  getSelectedRun,
-} from './utils'
 
 const RECENT_RUNS_PAGE_SIZE = 8
 
@@ -24,7 +22,9 @@ export default function AuditConsole({
     range: '7d',
     source: 'all',
     status: 'all',
+    table: '',
   })
+  const tables = getUniqueTables(visibleRuns)
   const filteredRuns = filterRuns(summaries, filters)
   const pageCount = Math.max(1, Math.ceil(filteredRuns.length / RECENT_RUNS_PAGE_SIZE))
   const selectedIndex = selectedKey === undefined
@@ -44,7 +44,7 @@ export default function AuditConsole({
       <div className="mx-auto max-w-500">
         <AuditHeader summaries={visibleRuns} />
         <HealthCards summaries={summaries} />
-        <AuditFilters filters={pageFilters} />
+        <AuditFilters filters={pageFilters} tables={tables} />
         <div className="mt-5 grid gap-5 lg:grid-cols-[minmax(260px,320px)_minmax(0,1fr)]">
           <RecentRuns
             filters={pageFilters}
@@ -56,13 +56,13 @@ export default function AuditConsole({
             total={filteredRuns.length}
           />
           {selectedRun === undefined
-            ? <RunDetail />
+            ? <RunDetail filters={pageFilters} />
             : (
                 <Suspense
                   fallback={<RunDetailSkeleton run={selectedRun} />}
                   key={selectedRun.detailKey}
                 >
-                  <RunDetailLoader run={selectedRun} />
+                  <RunDetailLoader filters={pageFilters} run={selectedRun} />
                 </Suspense>
               )}
         </div>

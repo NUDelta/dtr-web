@@ -1,22 +1,24 @@
-import type { AuditRun } from './types'
-import { ListChecks } from 'lucide-react'
-import LocalTime from './LocalTime'
+import type { AuditFilters, AuditRun } from '../lib/types'
+import { ListChecks, X } from 'lucide-react'
+import Link from 'next/link'
+import { buildAuditHref } from '../lib/filtering'
+import { formatDuration } from '../lib/format'
 import {
   getResultsSectionTitle,
   groupWorkflowResultEvents,
-} from './runResults'
-import { StatusBadge } from './status'
-import { STATUS_META } from './statusMeta'
-import {
-  formatDuration,
-  splitRunSummary,
-} from './utils'
+} from '../lib/runResults'
+import { splitRunSummary } from '../lib/runText'
+import { StatusBadge } from '../status'
+import { STATUS_META } from '../statusMeta'
+import LocalTime from './LocalTime'
 
 interface RunDetailProps {
+  filters: AuditFilters
   run?: AuditRun
 }
 
 export default function RunDetail({
+  filters,
   run,
 }: RunDetailProps) {
   const events = [...(run?.detail?.events ?? [])].sort((a, b) => a.timestamp - b.timestamp)
@@ -40,9 +42,14 @@ export default function RunDetail({
         : (
             <>
               <div className="border-b border-neutral-200 p-5">
-                <div className="flex flex-wrap items-center gap-3">
-                  <h2 className="text-2xl font-bold tracking-normal">{run.title}</h2>
-                  <StatusBadge status={run.status} />
+                <div className="flex items-start justify-between gap-4">
+                  <div className="flex min-w-0 flex-wrap items-center gap-3">
+                    <h2 className="break-words text-2xl font-bold tracking-normal">{run.title}</h2>
+                    <StatusBadge status={run.status} />
+                  </div>
+                  <Link aria-label="Clear selected run" className="shrink-0 rounded-md p-1 text-neutral-500 hover:bg-neutral-100 hover:text-neutral-950" href={buildAuditHref(filters, { run: undefined })}>
+                    <X size={22} aria-hidden="true" />
+                  </Link>
                 </div>
               </div>
               <div className="grid gap-5 border-b border-neutral-200 p-5 md:grid-cols-2">
@@ -78,8 +85,8 @@ export default function RunDetail({
                                 <Icon size={19} aria-hidden="true" />
                               </span>
                               <div className="min-w-0">
-                                <div className="flex flex-wrap items-center gap-2">
-                                  <h5 className="text-base font-bold tracking-normal">{group.title}</h5>
+                                <div className="flex min-w-0 flex-wrap items-center gap-2">
+                                  <h5 className="min-w-0 break-words text-base font-bold tracking-normal">{group.title}</h5>
                                   <StatusBadge status={group.status} />
                                   {group.metrics.map(metric => (
                                     <span className="shrink-0 rounded-md bg-neutral-100 px-2 py-1 text-xs font-semibold text-neutral-700" key={metric}>
@@ -88,9 +95,9 @@ export default function RunDetail({
                                   ))}
                                 </div>
                                 {group.issueDetail === undefined
-                                  ? <p className="mt-2 text-sm text-neutral-600">{group.detail}</p>
+                                  ? <p className="mt-2 break-words text-sm text-neutral-600">{group.detail}</p>
                                   : (
-                                      <p className="mt-2 text-sm text-neutral-600">
+                                      <p className="mt-2 break-words text-sm text-neutral-600">
                                         <strong className="font-semibold text-neutral-950">Post-refresh issue:</strong>
                                         {' '}
                                         {group.issueDetail}
@@ -140,7 +147,7 @@ export function RunDetailSkeleton({ run }: { run: AuditRun }) {
         </div>
         <p className="mt-2 text-sm text-neutral-600">Loading workflow details...</p>
       </div>
-      <div className="animate-pulse">
+      <div className="motion-safe:animate-pulse">
         <div className="grid gap-5 border-b border-neutral-200 p-5 md:grid-cols-2">
           <div className="space-y-3">
             <div className="h-4 w-24 rounded bg-neutral-200" />

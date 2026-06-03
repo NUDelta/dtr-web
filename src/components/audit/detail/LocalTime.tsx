@@ -4,7 +4,7 @@ import { useSyncExternalStore } from 'react'
 import {
   formatDateTime,
   formatTime,
-} from './format'
+} from '../lib/format'
 
 interface LocalTimeProps {
   mode: 'dateTime' | 'time'

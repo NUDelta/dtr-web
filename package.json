@@ -9,7 +9,7 @@
   },
   "scripts": {
     "dev": "next dev",
-    "build": "pnpm lint:ci && NODE_OPTIONS=--disable-warning=DEP0169 next build",
+    "build": "pnpm lint:ci && next build",
     "typecheck": "tsc --noEmit",
     "start": "next start -H 0.0.0.0 -p ${PORT:-8080}",
     "lint": "eslint .",

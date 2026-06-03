@@ -3,16 +3,9 @@ import type {
   WorkflowRunStatus,
   WorkflowRunSummary,
 } from './workflow-logs'
+import { getWorkflowSummaryTables } from './workflow-log-helpers'
 
 const REFRESH_GROUP_WINDOW_MS = 15 * 60 * 1000
-
-function getSummaryTables(summary: WorkflowRunSummary): string[] {
-  return Array.from(new Set([
-    ...summary.tableNames,
-    ...(summary.dueTables ?? []),
-    ...(summary.requestedTables ?? []),
-  ])).sort((a, b) => a.localeCompare(b))
-}
 
 function getGroupedStatus(summaries: WorkflowRunSummary[]): WorkflowRunStatus {
   const statuses = summaries.map(summary => summary.status)
@@ -64,7 +57,7 @@ function getGroupedRefreshSummaryText(summaries: WorkflowRunSummary[], tableCoun
 }
 
 function isSingleTableRefresh(summary: WorkflowRunSummary): boolean {
-  return getSummaryTables(summary).length === 1
+  return getWorkflowSummaryTables(summary).length === 1
 }
 
 function shouldGroupLegacyRefreshes(summaries: WorkflowRunSummary[]): boolean {
@@ -120,7 +113,7 @@ function groupRefreshSummaries(summaries: WorkflowRunSummary[]): WorkflowRunSumm
 
     const startedAt = Math.min(...group.map(summary => summary.startedAt))
     const endedAt = Math.max(...group.map(summary => summary.endedAt))
-    const tableNames = Array.from(new Set(group.flatMap(getSummaryTables))).sort((a, b) => a.localeCompare(b))
+    const tableNames = Array.from(new Set(group.flatMap(getWorkflowSummaryTables))).sort((a, b) => a.localeCompare(b))
     const detailKeys = group
       .sort((a, b) => a.startedAt - b.startedAt)
       .flatMap(summary => summary.detailKeys ?? [summary.detailKey])

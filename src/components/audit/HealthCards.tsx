@@ -1,5 +1,5 @@
 import type { LucideIcon } from 'lucide-react'
-import type { RunStatus } from './types'
+import type { RunStatus } from './lib/types'
 import type { WorkflowRunSummary } from '@/lib/audit/workflow-logs'
 import {
   AlertTriangle,
@@ -7,13 +7,10 @@ import {
   Settings,
   ShieldCheck,
 } from 'lucide-react'
+import { formatRelativeTime } from './lib/format'
+import { getLatestBySource, getOverallStatus } from './lib/runStatus'
 import { StatusBadge } from './status'
 import { STATUS_META } from './statusMeta'
-import {
-  formatRelativeTime,
-  getLatestBySource,
-  getOverallStatus,
-} from './utils'
 
 function HealthCard({
   detail,

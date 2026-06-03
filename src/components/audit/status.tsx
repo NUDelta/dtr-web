@@ -1,4 +1,4 @@
-import type { RunStatus } from './types'
+import type { RunStatus } from './lib/types'
 import { STATUS_META } from './statusMeta'
 
 export function StatusBadge({ status }: { status: RunStatus }) {

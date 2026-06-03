@@ -1,10 +1,11 @@
-import type { AuditRun } from './types'
+import type { AuditFilters, AuditRun } from '../lib/types'
 import type { WorkflowRunSummary } from '@/lib/audit/workflow-logs'
 import { readWorkflowRunDetails } from '@/lib/audit/workflow-log-reader'
 import { mergeWorkflowRunDetails } from '@/lib/audit/workflow-run-grouping'
 import RunDetail from './RunDetail'
 
 interface RunDetailLoaderProps {
+  filters: AuditFilters
   run?: WorkflowRunSummary
 }
 
@@ -24,7 +25,8 @@ async function loadRunDetail(run: WorkflowRunSummary | undefined): Promise<Audit
 }
 
 export default async function RunDetailLoader({
+  filters,
   run,
 }: RunDetailLoaderProps) {
-  return <RunDetail run={await loadRunDetail(run)} />
+  return <RunDetail filters={filters} run={await loadRunDetail(run)} />
 }

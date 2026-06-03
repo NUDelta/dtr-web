@@ -1,10 +1,10 @@
 import type { RunStatus } from './types'
 import type { OpsLogSourceId } from '@/lib/audit/workflow-logs'
+import { getEventStatus } from './runStatus'
 import {
-  getEventStatus,
+  formatWorkflowEventTables,
   getEventSummary,
-  getEventTables,
-} from './utils'
+} from './runText'
 
 interface WorkflowResultGroup {
   detail: string
@@ -143,7 +143,7 @@ function getResultGroupKey(sourceId: OpsLogSourceId, event: CacheLogEvent): stri
 
 function getGroupTitle(sourceId: OpsLogSourceId, events: CacheLogEvent[]): string {
   const first = events[0]
-  const tableLabel = Array.from(new Set(events.map(getEventTables).filter(table => table !== '-'))).join(', ')
+  const tableLabel = Array.from(new Set(events.map(formatWorkflowEventTables).filter(table => table !== '-'))).join(', ')
 
   if (tableLabel.length > 0) {
     return tableLabel

@@ -4,48 +4,14 @@ import type {
   WorkflowRunStatus,
   WorkflowRunSummary,
 } from './workflow-log-types'
+import {
+  getWorkflowEventStatus,
+  getWorkflowEventTables,
+} from './workflow-log-helpers'
 import { WORKFLOW_LOG_PREFIX } from './workflow-log-types'
 
 function getEventStatus(event: CacheLogEvent): WorkflowRunStatus {
-  if (event.kind === 'r2GcRunSuccess' && event.reason?.startsWith('last run ')) {
-    return 'skipped'
-  }
-
-  if (event.kind === 'refreshGuard') {
-    if (event.reason === 'refresh already in progress') {
-      return 'skipped'
-    }
-
-    return event.error === undefined ? 'success' : 'warning'
-  }
-
-  if (
-    event.kind.endsWith('Failure')
-    || event.kind.endsWith('Error')
-    || event.error !== undefined
-  ) {
-    return 'failure'
-  }
-
-  if (event.kind.endsWith('Start')) {
-    return 'running'
-  }
-
-  if (event.kind.endsWith('Skipped')) {
-    return 'skipped'
-  }
-
-  if (
-    event.capped === true
-    || (event.confirmedOrphanCount ?? 0) > 0
-    || (event.newOrphanCount ?? 0) > 0
-    || (event.missingTables?.length ?? 0) > 0
-    || (event.reason !== undefined && !event.kind.endsWith('Success'))
-  ) {
-    return 'warning'
-  }
-
-  return 'success'
+  return getWorkflowEventStatus(event)
 }
 
 function getOverallStatus(events: CacheLogEvent[]): WorkflowRunStatus {
@@ -96,7 +62,7 @@ function getSummaryText(sourceId: OpsLogSourceId, event: CacheLogEvent, events: 
   }
 
   if (sourceId === 'airtable-refresh') {
-    const tableCount = new Set(events.flatMap(getEventTables)).size
+    const tableCount = new Set(events.flatMap(getWorkflowEventTables)).size
     return `${event.recordCount ?? 0} records refreshed · ${tableCount} tables`
   }
 
@@ -118,14 +84,6 @@ function buildWorkflowLogKeys(sourceId: OpsLogSourceId, date: string, runId: str
   }
 }
 
-function getEventTables(event: CacheLogEvent): string[] {
-  return [
-    event.table,
-    ...(event.dueTables ?? []),
-    ...(event.requestedTables ?? []),
-  ].filter((table): table is string => typeof table === 'string' && table.length > 0)
-}
-
 function getGuardOwner(events: CacheLogEvent[]): string | undefined {
   const owner = events.find(event => typeof event.owner === 'string')?.owner
   return typeof owner === 'string' && owner.length > 0 ? owner : undefined
@@ -144,7 +102,7 @@ export function buildWorkflowRunSummary(
   const { summaryKey, detailKey } = buildWorkflowLogKeys(source.id, date, runId)
   const tableNames = Array.from(new Set(
     events
-      .flatMap(getEventTables),
+      .flatMap(getWorkflowEventTables),
   )).sort((a, b) => a.localeCompare(b))
   const guardOwner = getGuardOwner(events)
 

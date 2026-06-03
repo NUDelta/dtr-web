@@ -1,12 +1,10 @@
-import type { AuditFilters, AuditRun } from './types'
+import type { AuditFilters, AuditRun } from './lib/types'
 import { ChevronLeft, ChevronRight } from 'lucide-react'
 import Link from 'next/link'
-import LocalTime from './LocalTime'
+import LocalTime from './detail/LocalTime'
+import { buildAuditHref } from './lib/filtering'
+import { splitRunSummary } from './lib/runText'
 import { STATUS_META } from './statusMeta'
-import {
-  buildAuditHref,
-  splitRunSummary,
-} from './utils'
 
 interface RecentRunsProps {
   filters: AuditFilters

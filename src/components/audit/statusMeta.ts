@@ -1,5 +1,5 @@
 import type { LucideIcon } from 'lucide-react'
-import type { RunStatus } from './types'
+import type { RunStatus } from './lib/types'
 import {
   AlertTriangle,
   CheckCircle2,

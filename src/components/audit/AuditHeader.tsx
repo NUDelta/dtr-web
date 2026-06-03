@@ -1,6 +1,6 @@
 import type { WorkflowRunSummary } from '@/lib/audit/workflow-logs'
+import { getLastSevenDays } from './lib/runStatus'
 import { STATUS_META } from './statusMeta'
-import { getLastSevenDays } from './utils'
 
 interface AuditHeaderProps {
   summaries: WorkflowRunSummary[]

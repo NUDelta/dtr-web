@@ -1,3 +1,5 @@
+import { getWorkflowEventTables } from '@/lib/audit/workflow-log-helpers'
+
 const STATUS_SUMMARY_PATTERN = /\b(?:failure|failures|skipped|warning|warnings)\b/i
 const HTTP_STATUS_MESSAGES: Partial<Record<string, string>> = {
   400: 'Bad request. Check the workflow payload and parameters.',
@@ -169,7 +171,7 @@ export function getEventSummary(event: CacheLogEvent): string {
   }
 
   if (event.kind === 'refreshRunStart') {
-    return `Requested ${getEventTables(event)}`
+    return `Requested ${formatWorkflowEventTables(event)}`
   }
 
   if (event.kind === 'refreshRunSuccess') {
@@ -211,12 +213,7 @@ export function getEventSummary(event: CacheLogEvent): string {
   return event.affectedCount === undefined ? event.kind : `${event.affectedCount} affected`
 }
 
-export function getEventTables(event: CacheLogEvent): string {
-  const tables = Array.from(new Set([
-    event.table,
-    ...(event.dueTables ?? []),
-    ...(event.requestedTables ?? []),
-  ].filter((table): table is string => typeof table === 'string' && table.length > 0)))
-
+export function formatWorkflowEventTables(event: CacheLogEvent): string {
+  const tables = Array.from(new Set(getWorkflowEventTables(event)))
   return tables.length === 0 ? '-' : tables.join(', ')
 }

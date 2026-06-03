@@ -12,7 +12,8 @@ const REFRESH_STATE_KEY = 'airtable-refresh:state'
 const REFRESH_GUARD_KEY = 'airtable-refresh:guard'
 const DEFAULT_MIN_INTERVAL_HOURS = 12
 const REFRESH_INTERVAL_BUFFER_MS = 10 * 60 * 1000
-const REFRESH_GUARD_TTL_SECONDS = 15 * 60
+// A scheduled refresh can run five per-table calls at up to nine minutes each.
+const REFRESH_GUARD_TTL_SECONDS = 60 * 60
 
 type AirtableRefreshTable = typeof AIRTABLE_REFRESH_TABLES[number]
 
@@ -177,6 +178,14 @@ interface RefreshSlotClaim {
   reused: boolean
 }
 
+async function writeRefreshSlotGuard(owner: string): Promise<void> {
+  await writeKvJson(
+    REFRESH_GUARD_KEY,
+    { lockedAt: Date.now(), owner },
+    REFRESH_GUARD_TTL_SECONDS,
+  )
+}
+
 async function claimRefreshSlotBestEffort(
   requestedOwner: string = randomUUID(),
 ): Promise<RefreshSlotClaim | undefined> {
@@ -185,6 +194,7 @@ async function claimRefreshSlotBestEffort(
     try {
       const guard = JSON.parse(existingGuard) as { owner?: unknown }
       if (guard.owner === requestedOwner) {
+        await writeRefreshSlotGuard(requestedOwner)
         return { owner: requestedOwner, reused: true }
       }
     }
@@ -196,11 +206,7 @@ async function claimRefreshSlotBestEffort(
   // Cloudflare KV writes are not compare-and-set. GitHub Actions concurrency is
   // the authoritative schedule/manual-run serializer; this only reduces
   // accidental overlap from direct API retries.
-  await writeKvJson(
-    REFRESH_GUARD_KEY,
-    { lockedAt: Date.now(), owner: requestedOwner },
-    REFRESH_GUARD_TTL_SECONDS,
-  )
+  await writeRefreshSlotGuard(requestedOwner)
   return { owner: requestedOwner, reused: false }
 }
 

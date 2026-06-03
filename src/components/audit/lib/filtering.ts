@@ -1,13 +1,6 @@
 import type { AuditFilters, TimeRange } from './types'
 import type { WorkflowRunSummary } from '@/lib/audit/workflow-logs'
-
-export function getRunTables(summary: WorkflowRunSummary): string[] {
-  return Array.from(new Set([
-    ...summary.tableNames,
-    ...(summary.dueTables ?? []),
-    ...(summary.requestedTables ?? []),
-  ])).sort((a, b) => a.localeCompare(b))
-}
+import { getWorkflowSummaryTables } from '@/lib/audit/workflow-log-helpers'
 
 export function buildAuditHref(
   filters: AuditFilters,
@@ -17,6 +10,7 @@ export function buildAuditHref(
   const next = {
     source: filters.source,
     status: filters.status,
+    table: filters.table,
     range: filters.range,
     q: filters.q,
     page: filters.page,
@@ -59,7 +53,11 @@ export function filterRuns(
       return false
     }
 
-    const tableNames = getRunTables(summary)
+    const tableNames = getWorkflowSummaryTables(summary)
+
+    if (filters.table !== '' && !tableNames.includes(filters.table)) {
+      return false
+    }
 
     if (query.length === 0) {
       return true
@@ -74,4 +72,10 @@ export function filterRuns(
       ...tableNames,
     ].some(value => value?.toLowerCase().includes(query))
   })
+}
+
+export function getUniqueTables(summaries: WorkflowRunSummary[]): string[] {
+  return Array.from(new Set(
+    summaries.flatMap(getWorkflowSummaryTables),
+  )).sort((a, b) => a.localeCompare(b))
 }

@@ -131,6 +131,10 @@ export function getEventSummary(event: CacheLogEvent): string {
     return `${event.confirmedOrphanCount ?? 0} confirmed · ${event.newOrphanCount ?? 0} new orphan candidates`
   }
 
+  if (event.kind === 'workflowLogRetention') {
+    return `${event.deletedCount ?? 0} old logs deleted · ${event.scannedCount ?? 0} scanned`
+  }
+
   if (event.recordCount !== undefined) {
     return `${event.recordCount} records`
   }

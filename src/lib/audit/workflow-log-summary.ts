@@ -7,6 +7,10 @@ import type {
 import { WORKFLOW_LOG_PREFIX } from './workflow-log-types'
 
 function getEventStatus(event: CacheLogEvent): WorkflowRunStatus {
+  if (event.kind === 'r2GcRunSuccess' && event.reason?.startsWith('last run ')) {
+    return 'skipped'
+  }
+
   if (event.kind === 'refreshGuard') {
     if (event.reason === 'refresh already in progress') {
       return 'skipped'
@@ -32,8 +36,7 @@ function getEventStatus(event: CacheLogEvent): WorkflowRunStatus {
   }
 
   if (
-    event.kind === 'r2GcOrphanState'
-    || event.capped === true
+    event.capped === true
     || (event.confirmedOrphanCount ?? 0) > 0
     || (event.newOrphanCount ?? 0) > 0
     || (event.missingTables?.length ?? 0) > 0
@@ -48,7 +51,7 @@ function getEventStatus(event: CacheLogEvent): WorkflowRunStatus {
 function getOverallStatus(events: CacheLogEvent[]): WorkflowRunStatus {
   const statuses = events.map(getEventStatus)
   const hasRunSkipped = events.some(event => event.kind.endsWith('RunSkipped'))
-  const hasRunSuccess = events.some(event => event.kind.endsWith('RunSuccess'))
+  const hasRunSuccess = events.some(event => event.kind.endsWith('RunSuccess') && getEventStatus(event) === 'success')
 
   if (statuses.includes('failure')) {
     return 'failure'

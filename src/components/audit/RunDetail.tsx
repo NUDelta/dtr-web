@@ -1,15 +1,16 @@
-import type { AuditFilters, AuditRun, RunStatus } from './types'
+import type { AuditFilters, AuditRun } from './types'
 import { X } from 'lucide-react'
 import Link from 'next/link'
 import LocalTime from './LocalTime'
+import {
+  getResultsSectionTitle,
+  groupWorkflowResultEvents,
+} from './runResults'
 import { StatusBadge } from './status'
 import { STATUS_META } from './statusMeta'
 import {
   buildAuditHref,
   formatDuration,
-  getEventStatus,
-  getEventSummary,
-  getEventTables,
   getRunTables,
   splitRunSummary,
 } from './utils'
@@ -19,113 +20,15 @@ interface RunDetailProps {
   run?: AuditRun
 }
 
-interface TimelineGroup {
-  detail: string
-  durationMs?: number
-  elapsedMs: number
-  events: CacheLogEvent[]
-  issueDetail?: string
-  key: string
-  recordCount?: number
-  status: RunStatus
-  tableLabel: string
-  timestamp: number
-}
-
-function rankStatus(status: RunStatus): number {
-  if (status === 'failure') {
-    return 5
-  }
-
-  if (status === 'warning') {
-    return 4
-  }
-
-  if (status === 'success') {
-    return 3
-  }
-
-  if (status === 'skipped') {
-    return 2
-  }
-
-  return 1
-}
-
-function getGroupStatus(events: CacheLogEvent[]): RunStatus {
-  return events
-    .map(getEventStatus)
-    .sort((a, b) => rankStatus(b) - rankStatus(a))[0] ?? 'running'
-}
-
-function getGroupDetail(events: CacheLogEvent[]): string {
-  const sorted = [...events].sort((a, b) => rankStatus(getEventStatus(b)) - rankStatus(getEventStatus(a)))
-  const issue = sorted.find(event => getEventStatus(event) === 'failure')
-    ?? sorted.find(event => getEventStatus(event) === 'warning')
-  const success = events.findLast(event => getEventStatus(event) === 'success' && event.recordCount !== undefined)
-
-  if (issue !== undefined && success !== undefined) {
-    return getEventSummary(issue)
-  }
-
-  const primary = issue
-    ?? events.findLast(event => getEventStatus(event) === 'success')
-    ?? events.findLast(event => getEventStatus(event) === 'skipped')
-    ?? events.at(-1)
-
-  return primary === undefined ? 'No events recorded' : getEventSummary(primary)
-}
-
-function getPostRefreshIssue(events: CacheLogEvent[]): string | undefined {
-  const issue = [...events]
-    .sort((a, b) => rankStatus(getEventStatus(b)) - rankStatus(getEventStatus(a)))
-    .find(event => getEventStatus(event) === 'failure' || getEventStatus(event) === 'warning')
-  const success = events.findLast(event => getEventStatus(event) === 'success' && event.recordCount !== undefined)
-
-  return issue !== undefined && success !== undefined ? getEventSummary(issue) : undefined
-}
-
-function groupTimelineEvents(events: CacheLogEvent[], startedAt: number): TimelineGroup[] {
-  const groups = new Map<string, CacheLogEvent[]>()
-
-  for (const event of events) {
-    const key = event.runId ?? `${event.fullKey}:${event.timestamp}`
-    groups.set(key, [...(groups.get(key) ?? []), event])
-  }
-
-  return Array.from(groups.entries())
-    .map(([key, groupEvents]) => {
-      const sortedEvents = [...groupEvents].sort((a, b) => a.timestamp - b.timestamp)
-      const first = sortedEvents[0]
-      const last = sortedEvents.at(-1) ?? first
-      const status = getGroupStatus(sortedEvents)
-      const tableLabel = Array.from(new Set(sortedEvents.map(getEventTables).filter(table => table !== '-'))).join(', ')
-      const recordCount = sortedEvents.findLast(event => event.recordCount !== undefined)?.recordCount
-
-      return {
-        key,
-        events: sortedEvents,
-        issueDetail: getPostRefreshIssue(sortedEvents),
-        recordCount,
-        status,
-        tableLabel: tableLabel.length === 0 ? '-' : tableLabel,
-        timestamp: first?.timestamp ?? startedAt,
-        elapsedMs: Math.max(0, (first?.timestamp ?? startedAt) - startedAt),
-        durationMs: last?.durationMs ?? ((last?.timestamp ?? startedAt) - (first?.timestamp ?? startedAt)),
-        detail: getGroupDetail(sortedEvents),
-      }
-    })
-    .sort((a, b) => a.timestamp - b.timestamp)
-}
-
 export default function RunDetail({
   filters,
   run,
 }: RunDetailProps) {
   const events = [...(run?.detail?.events ?? [])].sort((a, b) => a.timestamp - b.timestamp)
-  const timelineGroups = run === undefined ? [] : groupTimelineEvents(events, run.startedAt)
+  const timelineGroups = run === undefined ? [] : groupWorkflowResultEvents(run.sourceId, events, run.startedAt)
   const tableNames = run === undefined ? [] : getRunTables(run)
   const summary = run === undefined ? undefined : splitRunSummary(run.summary)
+  const shouldShowTables = run?.sourceId !== 'r2-gc'
 
   return (
     <section className="overflow-hidden rounded-lg border border-neutral-200 bg-white shadow-sm">
@@ -164,23 +67,25 @@ export default function RunDetail({
                   <dd className="break-all font-mono text-xs">{run.runId}</dd>
                 </dl>
               </div>
-              <div className="border-b border-neutral-200 p-5 text-sm">
-                <h4 className="font-bold">Tables</h4>
-                {tableNames.length === 0
-                  ? <p className="mt-2 text-neutral-600">-</p>
-                  : (
-                      <ul className="mt-3 flex flex-wrap gap-2">
-                        {tableNames.map(table => (
-                          <li className="rounded-md border border-neutral-200 bg-neutral-50 px-2.5 py-1 text-neutral-700" key={table}>
-                            {table}
-                          </li>
-                        ))}
-                      </ul>
-                    )}
-              </div>
+              {shouldShowTables && (
+                <div className="border-b border-neutral-200 p-5 text-sm">
+                  <h4 className="font-bold">Tables</h4>
+                  {tableNames.length === 0
+                    ? <p className="mt-2 text-neutral-600">-</p>
+                    : (
+                        <ul className="mt-3 flex flex-wrap gap-2">
+                          {tableNames.map(table => (
+                            <li className="rounded-md border border-neutral-200 bg-neutral-50 px-2.5 py-1 text-neutral-700" key={table}>
+                              {table}
+                            </li>
+                          ))}
+                        </ul>
+                      )}
+                </div>
+              )}
               {timelineGroups.length > 0 && (
                 <div className="border-b border-neutral-200 p-5">
-                  <h4 className="font-bold">Table Results</h4>
+                  <h4 className="font-bold">{getResultsSectionTitle(run.sourceId)}</h4>
                   <ol className="mt-3 space-y-3">
                     {timelineGroups.map((group) => {
                       const meta = STATUS_META[group.status]
@@ -195,15 +100,13 @@ export default function RunDetail({
                               </span>
                               <div className="min-w-0">
                                 <div className="flex flex-wrap items-center gap-2">
-                                  <h5 className="text-base font-bold tracking-normal">{group.tableLabel}</h5>
+                                  <h5 className="text-base font-bold tracking-normal">{group.title}</h5>
                                   <StatusBadge status={group.status} />
-                                  {group.recordCount !== undefined && (
-                                    <span className="shrink-0 rounded-md bg-neutral-100 px-2 py-1 text-xs font-semibold text-neutral-700">
-                                      {group.recordCount}
-                                      {' '}
-                                      records
+                                  {group.metrics.map(metric => (
+                                    <span className="shrink-0 rounded-md bg-neutral-100 px-2 py-1 text-xs font-semibold text-neutral-700" key={metric}>
+                                      {metric}
                                     </span>
-                                  )}
+                                  ))}
                                 </div>
                                 {group.issueDetail === undefined
                                   ? <p className="mt-2 text-sm text-neutral-600">{group.detail}</p>

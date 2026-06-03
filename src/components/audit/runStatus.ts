@@ -12,6 +12,10 @@ export function getLatestBySource(
 }
 
 export function getEventStatus(event: CacheLogEvent): RunStatus {
+  if (event.kind === 'r2GcRunSuccess' && event.reason?.startsWith('last run ')) {
+    return 'skipped'
+  }
+
   if (event.kind === 'refreshGuard') {
     if (event.reason === 'refresh already in progress') {
       return 'skipped'
@@ -37,8 +41,7 @@ export function getEventStatus(event: CacheLogEvent): RunStatus {
   }
 
   if (
-    event.kind === 'r2GcOrphanState'
-    || event.capped === true
+    event.capped === true
     || (event.confirmedOrphanCount ?? 0) > 0
     || (event.newOrphanCount ?? 0) > 0
     || (event.missingTables?.length ?? 0) > 0

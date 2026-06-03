@@ -80,6 +80,8 @@ The cleanup job also removes workflow audit summary and detail objects older tha
 
 The internal audit page at `/audit` reads recent workflow summary objects from the backup R2 bucket by listing bounded date/workflow prefixes, defaulting to the last seven days.
 
+The audit page filters workflow runs by source, status, time range, and search text; it no longer maintains a separate table filter because refresh table details are grouped inside the selected run.
+
 When an operator opens a run, the audit page reads that run's detail object from R2; routine page loads do not scan the bucket or read every detail object.
 
 Table-by-table Airtable refresh calls remain separate summary/detail objects in R2, and the audit page groups nearby refresh objects into one visible cache refresh item at read time.

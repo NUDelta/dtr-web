@@ -1,27 +1,3 @@
-const EVENT_LABELS: Partial<Record<CacheKind, string>> = {
-  refreshRunStart: 'Run started',
-  refreshGuard: 'Refresh guard',
-  refreshTableStart: 'Table refresh started',
-  refreshTableSuccess: 'Table refreshed',
-  refreshTableFailure: 'Table refresh failed',
-  refreshStateWrite: 'Refresh state saved',
-  refreshRunSuccess: 'Run completed',
-  refreshRunSkipped: 'Run skipped',
-  refreshRunFailure: 'Run failed',
-  backupRunStart: 'Backup started',
-  backupRunSuccess: 'Backup completed',
-  backupRunSkipped: 'Backup skipped',
-  backupRunFailure: 'Backup failed',
-  backupTableSuccess: 'Table backed up',
-  backupLogArchive: 'Logs archived',
-  backupR2ReferenceFailure: 'R2 reference failed',
-  r2GcRunStart: 'R2 GC started',
-  r2GcRunSuccess: 'R2 GC completed',
-  r2GcRunFailure: 'R2 GC failed',
-  r2GcOrphanState: 'Orphan state updated',
-  workflowLogRetention: 'Log retention cleaned',
-}
-
 const STATUS_SUMMARY_PATTERN = /\b(?:failure|failures|skipped|warning|warnings)\b/i
 const HTTP_STATUS_MESSAGES: Partial<Record<string, string>> = {
   400: 'Bad request. Check the workflow payload and parameters.',
@@ -177,10 +153,6 @@ function getReadableDiagnostic(value: string): string {
   catch {
     return formatHttpDiagnostic(parsedError.status, parsedError.body)
   }
-}
-
-export function getEventLabel(event: CacheLogEvent): string {
-  return EVENT_LABELS[event.kind] ?? event.kind
 }
 
 export function getEventSummary(event: CacheLogEvent): string {

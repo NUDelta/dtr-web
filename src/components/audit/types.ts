@@ -13,7 +13,6 @@ export interface AuditFilters {
   page: number
   source: OpsLogSourceId | 'all'
   status: RunStatus | 'all'
-  table: string
   range: TimeRange
 }
 

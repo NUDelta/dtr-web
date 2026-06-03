@@ -24,7 +24,6 @@ export default function AuditConsole({
     range: '7d',
     source: 'all',
     status: 'all',
-    table: '',
   })
   const filteredRuns = filterRuns(summaries, filters)
   const pageCount = Math.max(1, Math.ceil(filteredRuns.length / RECENT_RUNS_PAGE_SIZE))

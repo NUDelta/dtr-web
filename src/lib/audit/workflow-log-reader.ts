@@ -148,6 +148,13 @@ async function readWorkflowSummary(key: string): Promise<WorkflowRunSummary | un
   return text === undefined ? undefined : parseWorkflowSummary(text)
 }
 
+/**
+ * Reads lightweight workflow summary objects for the audit page.
+ *
+ * This intentionally lists bounded date/workflow prefixes only and does not
+ * read detail objects; details are loaded lazily after an operator selects a
+ * specific run.
+ */
 export async function readRecentWorkflowRunSummaries(options: {
   days?: number
   limit?: number
@@ -174,7 +181,7 @@ export async function readRecentWorkflowRunSummaries(options: {
     .slice(0, safeLimit)
 }
 
-export async function readWorkflowRunDetail(
+async function readWorkflowRunDetail(
   detailKey: string | undefined,
 ): Promise<WorkflowRunDetail | undefined> {
   if (detailKey === undefined || !detailKey.startsWith('logs/details/')) {
@@ -185,6 +192,12 @@ export async function readWorkflowRunDetail(
   return text === undefined ? undefined : parseWorkflowDetail(text)
 }
 
+/**
+ * Reads one or more detail objects for a selected run.
+ *
+ * Grouped refresh rows can point at multiple per-table detail objects, while
+ * backup and cleanup rows normally point at a single detail object.
+ */
 export async function readWorkflowRunDetails(
   detailKeys: string[],
 ): Promise<WorkflowRunDetail[]> {

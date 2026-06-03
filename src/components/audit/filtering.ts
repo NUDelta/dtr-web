@@ -39,12 +39,6 @@ export function buildAuditHref(
   return query.length === 0 ? '/audit' : `/audit?${query}`
 }
 
-export function getUniqueTables(summaries: WorkflowRunSummary[]): string[] {
-  return Array.from(new Set(
-    summaries.flatMap(getRunTables),
-  )).sort((a, b) => a.localeCompare(b))
-}
-
 function isWithinRange(summary: WorkflowRunSummary, range: TimeRange): boolean {
   const days = range === '7d' ? 7 : range === '30d' ? 30 : 60
   return summary.endedAt >= Date.now() - days * 24 * 60 * 60 * 1000

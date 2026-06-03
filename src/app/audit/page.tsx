@@ -36,7 +36,6 @@ interface PageProps {
     run?: string
     source?: string
     status?: string
-    table?: string
   }>
 }
 
@@ -164,7 +163,6 @@ export default async function AuditPage({ searchParams }: PageProps) {
   const source = parseSource(params.source)
   const status = parseStatus(params.status)
   const range = parseRange(params.range)
-  const table = ''
   const q = params.q ?? ''
   const page = parsePage(params.page)
   const days = range === '7d' ? 7 : range === '30d' ? 30 : 60
@@ -178,7 +176,7 @@ export default async function AuditPage({ searchParams }: PageProps) {
     <>
       <AuditSessionRefresher enabled={shouldRefreshAuditSession(session)} />
       <AuditConsole
-        filters={{ q, page, range, source, status, table }}
+        filters={{ q, page, range, source, status }}
         selectedKey={selectedDetailKey}
         summaries={summaries}
       />

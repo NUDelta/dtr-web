@@ -6,7 +6,7 @@ import {
   getEventTables,
 } from './utils'
 
-export interface WorkflowResultGroup {
+interface WorkflowResultGroup {
   detail: string
   durationMs?: number
   elapsedMs: number

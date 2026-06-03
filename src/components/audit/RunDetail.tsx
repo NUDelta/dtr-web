@@ -1,6 +1,5 @@
-import type { AuditFilters, AuditRun } from './types'
-import { X } from 'lucide-react'
-import Link from 'next/link'
+import type { AuditRun } from './types'
+import { ListChecks } from 'lucide-react'
 import LocalTime from './LocalTime'
 import {
   getResultsSectionTitle,
@@ -9,44 +8,40 @@ import {
 import { StatusBadge } from './status'
 import { STATUS_META } from './statusMeta'
 import {
-  buildAuditHref,
   formatDuration,
-  getRunTables,
   splitRunSummary,
 } from './utils'
 
 interface RunDetailProps {
-  filters: AuditFilters
   run?: AuditRun
 }
 
 export default function RunDetail({
-  filters,
   run,
 }: RunDetailProps) {
   const events = [...(run?.detail?.events ?? [])].sort((a, b) => a.timestamp - b.timestamp)
   const timelineGroups = run === undefined ? [] : groupWorkflowResultEvents(run.sourceId, events, run.startedAt)
-  const tableNames = run === undefined ? [] : getRunTables(run)
   const summary = run === undefined ? undefined : splitRunSummary(run.summary)
-  const shouldShowTables = run?.sourceId !== 'r2-gc'
 
   return (
     <section className="overflow-hidden rounded-lg border border-neutral-200 bg-white shadow-sm">
-      <div className="flex items-center justify-between border-b border-neutral-200 p-4">
-        <h2 className="text-xl font-bold tracking-normal">Workflow Detail</h2>
-        <Link aria-label="Clear selected run" className="text-neutral-500 hover:text-neutral-950" href={buildAuditHref(filters, { run: undefined })}>
-          <X size={24} aria-hidden="true" />
-        </Link>
-      </div>
       {run === undefined
         ? (
-            <p className="p-6 text-sm text-neutral-600">Select a workflow run to inspect details.</p>
+            <div className="flex min-h-96 flex-col items-center justify-center p-8 text-center">
+              <span className="flex size-14 items-center justify-center rounded-full bg-neutral-100 text-neutral-600">
+                <ListChecks size={28} aria-hidden="true" />
+              </span>
+              <h2 className="mt-4 text-xl font-bold tracking-normal text-neutral-950">Select a workflow run</h2>
+              <p className="mt-2 max-w-sm text-sm leading-6 text-neutral-600">
+                Open a recent cache refresh, backup, or R2 cleanup run to inspect its result summary and raw log.
+              </p>
+            </div>
           )
         : (
             <>
               <div className="border-b border-neutral-200 p-5">
                 <div className="flex flex-wrap items-center gap-3">
-                  <h3 className="text-2xl font-bold tracking-normal">{run.title}</h3>
+                  <h2 className="text-2xl font-bold tracking-normal">{run.title}</h2>
                   <StatusBadge status={run.status} />
                 </div>
               </div>
@@ -64,25 +59,9 @@ export default function RunDetail({
                   <dt className="font-medium text-neutral-600">Duration</dt>
                   <dd>{formatDuration(run.durationMs)}</dd>
                   <dt className="font-medium text-neutral-600">Run ID</dt>
-                  <dd className="break-all font-mono text-xs">{run.runId}</dd>
+                  <dd className="break-all rounded-md bg-neutral-50 px-2 py-1 font-mono text-sm leading-relaxed text-neutral-950">{run.runId}</dd>
                 </dl>
               </div>
-              {shouldShowTables && (
-                <div className="border-b border-neutral-200 p-5 text-sm">
-                  <h4 className="font-bold">Tables</h4>
-                  {tableNames.length === 0
-                    ? <p className="mt-2 text-neutral-600">-</p>
-                    : (
-                        <ul className="mt-3 flex flex-wrap gap-2">
-                          {tableNames.map(table => (
-                            <li className="rounded-md border border-neutral-200 bg-neutral-50 px-2.5 py-1 text-neutral-700" key={table}>
-                              {table}
-                            </li>
-                          ))}
-                        </ul>
-                      )}
-                </div>
-              )}
               {timelineGroups.length > 0 && (
                 <div className="border-b border-neutral-200 p-5">
                   <h4 className="font-bold">{getResultsSectionTitle(run.sourceId)}</h4>
@@ -154,13 +133,9 @@ export default function RunDetail({
 export function RunDetailSkeleton({ run }: { run: AuditRun }) {
   return (
     <section className="overflow-hidden rounded-lg border border-neutral-200 bg-white shadow-sm">
-      <div className="flex items-center justify-between border-b border-neutral-200 p-4">
-        <h2 className="text-xl font-bold tracking-normal">Workflow Detail</h2>
-        <span className="size-6 rounded-md bg-neutral-100" aria-hidden="true" />
-      </div>
       <div className="border-b border-neutral-200 p-5">
         <div className="flex flex-wrap items-center gap-3">
-          <h3 className="text-2xl font-bold tracking-normal">{run.title}</h3>
+          <h2 className="text-2xl font-bold tracking-normal">{run.title}</h2>
           <StatusBadge status={run.status} />
         </div>
         <p className="mt-2 text-sm text-neutral-600">Loading workflow details...</p>
@@ -178,22 +153,18 @@ export function RunDetailSkeleton({ run }: { run: AuditRun }) {
             <div className="h-3 w-56 rounded bg-neutral-100" />
           </div>
         </div>
-        <div className="grid gap-4 border-b border-neutral-200 p-5 sm:grid-cols-2 lg:grid-cols-4">
-          {Array.from({ length: 4 }, (_, index) => (
-            <div className="space-y-3" key={index}>
-              <div className="h-3 w-20 rounded bg-neutral-200" />
-              <div className="h-6 w-16 rounded bg-neutral-100" />
-            </div>
-          ))}
-        </div>
         <div className="space-y-3 p-5">
-          <div className="h-4 w-20 rounded bg-neutral-200" />
-          {Array.from({ length: 5 }, (_, index) => (
-            <div className="grid gap-3 rounded-md border border-neutral-100 p-3 md:grid-cols-[1fr_96px_96px_1.5fr]" key={index}>
-              <div className="h-3 rounded bg-neutral-100" />
-              <div className="h-3 rounded bg-neutral-100" />
-              <div className="h-3 rounded bg-neutral-100" />
-              <div className="h-3 rounded bg-neutral-100" />
+          <div className="h-4 w-28 rounded bg-neutral-200" />
+          {Array.from({ length: 3 }, (_, index) => (
+            <div className="grid gap-3 rounded-lg border border-neutral-100 p-4 md:grid-cols-[1fr_160px]" key={index}>
+              <div className="space-y-3">
+                <div className="h-4 w-48 rounded bg-neutral-100" />
+                <div className="h-3 w-full rounded bg-neutral-100" />
+              </div>
+              <div className="space-y-2">
+                <div className="h-3 rounded bg-neutral-100" />
+                <div className="h-3 rounded bg-neutral-100" />
+              </div>
             </div>
           ))}
         </div>

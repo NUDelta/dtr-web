@@ -15,8 +15,11 @@ export function formatDateTime(timestamp: number | undefined): string {
   }
 
   return new Intl.DateTimeFormat('en-US', {
-    dateStyle: 'medium',
-    timeStyle: 'medium',
+    day: 'numeric',
+    hour: 'numeric',
+    minute: '2-digit',
+    month: 'short',
+    year: 'numeric',
   }).format(new Date(timestamp))
 }
 
@@ -44,12 +47,5 @@ export function formatDuration(durationMs: number | undefined): string {
     return '-'
   }
 
-  if (durationMs < 1000) {
-    return `${durationMs}ms`
-  }
-
-  const seconds = Math.round(durationMs / 1000)
-  return seconds < 60
-    ? `${seconds}s`
-    : `${Math.floor(seconds / 60)}m ${seconds % 60}s`
+  return `${(durationMs / 1000).toFixed(1)}s`
 }

@@ -57,13 +57,13 @@ export default function AuditConsole({
             total={filteredRuns.length}
           />
           {selectedRun === undefined
-            ? <RunDetail filters={pageFilters} />
+            ? <RunDetail />
             : (
                 <Suspense
                   fallback={<RunDetailSkeleton run={selectedRun} />}
                   key={selectedRun.detailKey}
                 >
-                  <RunDetailLoader filters={pageFilters} run={selectedRun} />
+                  <RunDetailLoader run={selectedRun} />
                 </Suspense>
               )}
         </div>

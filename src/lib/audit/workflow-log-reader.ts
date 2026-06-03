@@ -49,28 +49,43 @@ function isWorkflowSourceId(sourceId: string): sourceId is OpsLogSourceId {
   return OPS_LOG_SOURCES.some(source => source.id === sourceId)
 }
 
+function isWorkflowRunSummary(value: unknown): value is WorkflowRunSummary {
+  const parsed = value as Partial<WorkflowRunSummary>
+  return (
+    typeof value === 'object'
+    && value !== null
+    && parsed.schemaVersion === 1
+    && typeof parsed.sourceId === 'string'
+    && isWorkflowSourceId(parsed.sourceId)
+    && typeof parsed.runId === 'string'
+    && typeof parsed.key === 'string'
+    && typeof parsed.detailKey === 'string'
+    && typeof parsed.startedAt === 'number'
+    && typeof parsed.endedAt === 'number'
+    && typeof parsed.durationMs === 'number'
+    && typeof parsed.status === 'string'
+    && typeof parsed.title === 'string'
+    && typeof parsed.summary === 'string'
+    && Array.isArray(parsed.tableNames)
+  )
+}
+
+function isCacheLogEvent(value: unknown): value is CacheLogEvent {
+  const parsed = value as Partial<CacheLogEvent>
+  return (
+    typeof value === 'object'
+    && value !== null
+    && typeof parsed.kind === 'string'
+    && typeof parsed.fullKey === 'string'
+    && typeof parsed.timestamp === 'number'
+    && Number.isFinite(parsed.timestamp)
+  )
+}
+
 function parseWorkflowSummary(value: string): WorkflowRunSummary | undefined {
   try {
-    const parsed = JSON.parse(value) as Partial<WorkflowRunSummary>
-    if (
-      parsed.schemaVersion !== 1
-      || typeof parsed.sourceId !== 'string'
-      || !isWorkflowSourceId(parsed.sourceId)
-      || typeof parsed.runId !== 'string'
-      || typeof parsed.key !== 'string'
-      || typeof parsed.detailKey !== 'string'
-      || typeof parsed.startedAt !== 'number'
-      || typeof parsed.endedAt !== 'number'
-      || typeof parsed.durationMs !== 'number'
-      || typeof parsed.status !== 'string'
-      || typeof parsed.title !== 'string'
-      || typeof parsed.summary !== 'string'
-      || !Array.isArray(parsed.tableNames)
-    ) {
-      return undefined
-    }
-
-    return parsed as WorkflowRunSummary
+    const parsed = JSON.parse(value) as unknown
+    return isWorkflowRunSummary(parsed) ? parsed : undefined
   }
   catch {
     return undefined
@@ -82,13 +97,17 @@ function parseWorkflowDetail(value: string): WorkflowRunDetail | undefined {
     const parsed = JSON.parse(value) as Partial<WorkflowRunDetail>
     if (
       parsed.schemaVersion !== 1
-      || parsed.summary === undefined
+      || !isWorkflowRunSummary(parsed.summary)
       || !Array.isArray(parsed.events)
     ) {
       return undefined
     }
 
-    return parsed as WorkflowRunDetail
+    return {
+      schemaVersion: 1,
+      summary: parsed.summary,
+      events: parsed.events.filter(isCacheLogEvent),
+    }
   }
   catch {
     return undefined

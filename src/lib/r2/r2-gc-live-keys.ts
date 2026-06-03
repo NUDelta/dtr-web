@@ -14,6 +14,14 @@ function getAirtableCacheFullKey(tableName: string): string {
   return `${AIRTABLE_CACHE_KEY_PREFIX}:${getAirtableAllRecordsCacheKey(tableName)}`
 }
 
+function isCacheEnvelopeUsable(envelope: Partial<KvEnvelope<unknown>>, now = Date.now()): boolean {
+  const staleUntil = envelope.staleUntil ?? envelope.expiresAt
+  return (
+    staleUntil === undefined
+    || (Number.isFinite(staleUntil) && staleUntil > now)
+  )
+}
+
 function parseCachedRecords(text: string | undefined): AirtableCacheRecord[] | undefined {
   if (text === undefined) {
     return undefined
@@ -21,6 +29,10 @@ function parseCachedRecords(text: string | undefined): AirtableCacheRecord[] | u
 
   try {
     const envelope = JSON.parse(text) as Partial<KvEnvelope<unknown>>
+    if (!isCacheEnvelopeUsable(envelope)) {
+      return undefined
+    }
+
     const value: unknown = envelope.value
     if (!Array.isArray(value)) {
       return undefined

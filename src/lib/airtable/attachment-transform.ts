@@ -54,7 +54,7 @@ export async function transformAttachmentForCache(
       timestamp: Date.now(),
       error,
     })
-    return attachment
+    throw error
   }
 }
 

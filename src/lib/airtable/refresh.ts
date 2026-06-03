@@ -28,6 +28,7 @@ interface AirtableRefreshOptions {
   force?: boolean
   requestId?: string
   guardOwner?: string
+  releaseGuard?: boolean
 }
 
 function getErrorMessage(error: unknown): string {
@@ -224,6 +225,10 @@ async function releaseRefreshSlotBestEffort(owner: string): Promise<void> {
     REFRESH_GUARD_KEY,
     { account_id: CLOUDFLARE_ACCOUNT_ID },
   )
+}
+
+export async function releaseAirtableRefreshGuard(owner: string): Promise<void> {
+  await releaseRefreshSlotBestEffort(owner)
 }
 
 async function sleep(ms: number): Promise<void> {
@@ -450,26 +455,28 @@ export async function refreshAirtableRecordsCache(options: AirtableRefreshOption
     throw error
   }
   finally {
-    await releaseRefreshSlotBestEffort(refreshSlot.owner)
-      .then(() => {
-        workflowLog.add({
-          kind: 'refreshGuard',
-          requestedTables: tables,
-          reason: 'released refresh slot',
-          owner: refreshSlot.owner,
-          durationMs: Date.now() - runStartedAt,
+    if (options.releaseGuard !== false) {
+      await releaseRefreshSlotBestEffort(refreshSlot.owner)
+        .then(() => {
+          workflowLog.add({
+            kind: 'refreshGuard',
+            requestedTables: tables,
+            reason: 'released refresh slot',
+            owner: refreshSlot.owner,
+            durationMs: Date.now() - runStartedAt,
+          })
         })
-      })
-      .catch((error: unknown) => {
-        workflowLog.add({
-          kind: 'refreshGuard',
-          requestedTables: tables,
-          reason: getErrorMessage(error),
-          owner: refreshSlot.owner,
-          durationMs: Date.now() - runStartedAt,
-          error,
+        .catch((error: unknown) => {
+          workflowLog.add({
+            kind: 'refreshGuard',
+            requestedTables: tables,
+            reason: getErrorMessage(error),
+            owner: refreshSlot.owner,
+            durationMs: Date.now() - runStartedAt,
+            error,
+          })
         })
-      })
+    }
     await workflowLog.flush()
   }
 }

@@ -1,7 +1,8 @@
 import { Buffer } from 'node:buffer'
-import { createHmac, timingSafeEqual } from 'node:crypto'
+import { createHmac } from 'node:crypto'
 import process from 'node:process'
 import { cookies } from 'next/headers'
+import { isEqualSecret } from '@/constants/secrets'
 
 export const AUDIT_PATH = '/audit'
 export const AUDIT_AUTH_COOKIE = 'dtr_audit_auth'
@@ -18,16 +19,6 @@ interface AuditSessionPayload {
 export interface AuditSession {
   expiresAt: number
   remember: boolean
-}
-
-export function isEqualSecret(actual: string, expected: string): boolean {
-  const actualBuffer = Buffer.from(actual)
-  const expectedBuffer = Buffer.from(expected)
-
-  return (
-    actualBuffer.byteLength === expectedBuffer.byteLength
-    && timingSafeEqual(actualBuffer, expectedBuffer)
-  )
 }
 
 function signAuditPayload(payload: string, secret: string): string {

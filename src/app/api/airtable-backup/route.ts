@@ -1,6 +1,6 @@
 import { randomUUID } from 'node:crypto'
 import { NextResponse } from 'next/server'
-import { getCicdSecret } from '@/constants/secrets'
+import { getCicdSecret, isEqualSecret } from '@/constants/secrets'
 import { backupAirtableTables } from '@/lib/airtable/backup'
 
 interface AirtableBackupRequestBody {
@@ -40,7 +40,7 @@ export async function POST(req: Request) {
     }, { status: 500 })
   }
 
-  if (tokenFromHeader !== secret) {
+  if (!isEqualSecret(tokenFromHeader, secret)) {
     return NextResponse.json({
       ok: false,
       requestId: fallbackRequestId,

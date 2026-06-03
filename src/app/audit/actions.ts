@@ -1,10 +1,9 @@
 'use server'
 
 import { redirect } from 'next/navigation'
-import { getOpsSecret } from '@/constants/secrets'
+import { getOpsSecret, isEqualSecret } from '@/constants/secrets'
 import {
   AUDIT_PATH,
-  isEqualSecret,
   readAuditSession,
   setAuditSessionCookie,
   shouldRefreshAuditSession,

@@ -1,4 +1,26 @@
+import { Buffer } from 'node:buffer'
+import { timingSafeEqual } from 'node:crypto'
 import { getEnvValue } from './utils'
+
+/**
+ * Compares two secret strings without leaking early-exit timing differences.
+ *
+ * This should be used for bearer-style route tokens and internal operator
+ * tokens before granting access to privileged maintenance surfaces.
+ *
+ * @param actual - User-supplied token value.
+ * @param expected - Server-configured token value.
+ * @returns `true` only when both strings match exactly.
+ */
+export function isEqualSecret(actual: string, expected: string): boolean {
+  const actualBuffer = Buffer.from(actual)
+  const expectedBuffer = Buffer.from(expected)
+
+  return (
+    actualBuffer.byteLength === expectedBuffer.byteLength
+    && timingSafeEqual(actualBuffer, expectedBuffer)
+  )
+}
 
 /**
  * Shared secret for machine-triggered maintenance endpoints.

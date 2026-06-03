@@ -1,7 +1,7 @@
 import { headers } from 'next/headers'
 import { NextResponse } from 'next/server'
 import { R2_GC_ORPHAN_GRACE_DAYS } from '@/constants/r2'
-import { getCicdSecret } from '@/constants/secrets'
+import { getCicdSecret, isEqualSecret } from '@/constants/secrets'
 import { maybeRunR2CleanupFromISR } from '@/lib/r2/r2-gc'
 
 export async function POST(req: Request) {
@@ -11,7 +11,7 @@ export async function POST(req: Request) {
   if (secret === undefined) {
     return NextResponse.json({ ok: false, error: 'cron secret is not configured' }, { status: 500 })
   }
-  if (tokenFromHeader !== secret) {
+  if (!isEqualSecret(tokenFromHeader, secret)) {
     return NextResponse.json({ ok: false, error: 'unauthorized' }, { status: 401 })
   }
   const body = await req.json().catch(() => ({})) as unknown

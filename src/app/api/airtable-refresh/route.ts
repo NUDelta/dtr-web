@@ -1,6 +1,6 @@
 import { randomUUID } from 'node:crypto'
 import { NextResponse } from 'next/server'
-import { getCicdSecret } from '@/constants/secrets'
+import { getCicdSecret, isEqualSecret } from '@/constants/secrets'
 import { refreshAirtableRecordsCache } from '@/lib/airtable/refresh'
 
 interface AirtableRefreshRequestBody {
@@ -35,7 +35,7 @@ export async function POST(req: Request) {
     }, { status: 500 })
   }
 
-  if (tokenFromHeader !== secret) {
+  if (!isEqualSecret(tokenFromHeader, secret)) {
     return NextResponse.json({ ok: false, requestId, error: 'unauthorized' }, { status: 401 })
   }
 

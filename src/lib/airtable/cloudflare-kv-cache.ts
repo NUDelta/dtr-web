@@ -70,52 +70,6 @@ function isCloudflareErrorWithStatus(
   )
 }
 
-async function extendLegacyEnvelopeTtl<T>(
-  options: {
-    client: CloudflareApiKvCacheStoreOptions['client']
-    accountId: string
-    namespaceId: string
-    fullKey: string
-    envelope: KvEnvelope<T>
-    staleUntil: number
-    expirationTtl: number
-    logger?: CacheLogger
-  },
-): Promise<void> {
-  const {
-    client,
-    accountId,
-    namespaceId,
-    fullKey,
-    envelope,
-    staleUntil,
-    expirationTtl,
-    logger,
-  } = options
-
-  const upgradedEnvelope: KvEnvelope<T> = {
-    ...envelope,
-    freshUntil: envelope.freshUntil ?? envelope.expiresAt,
-    staleUntil,
-  }
-
-  await client.kv.namespaces.values.update(namespaceId, fullKey, {
-    account_id: accountId,
-    value: JSON.stringify(upgradedEnvelope),
-    expiration_ttl: expirationTtl,
-  })
-
-  safeLog(logger, {
-    kind: 'set',
-    fullKey,
-    timestamp: Date.now(),
-    ttlMs: expirationTtl * 1000,
-    expiresAt: upgradedEnvelope.freshUntil,
-    freshUntil: upgradedEnvelope.freshUntil,
-    staleUntil,
-  })
-}
-
 /**
  * Create an AirtableCacheStore backed by Cloudflare KV via the public API.
  *
@@ -191,29 +145,6 @@ export function createCloudflareApiKvCacheStore(
         return undefined
       }
 
-      if (
-        envelope.staleUntil === undefined
-        && staleUntil !== undefined
-        && staleTtlMs > 0
-      ) {
-        const expirationTtl = Math.max(
-          Math.round((staleUntil - Date.now()) / 1000),
-          minCloudflareTtlSeconds,
-        )
-        if (expirationTtl > 0) {
-          await extendLegacyEnvelopeTtl({
-            client,
-            accountId,
-            namespaceId,
-            fullKey,
-            envelope,
-            staleUntil,
-            expirationTtl,
-            logger,
-          })
-        }
-      }
-
       return envelope.value
     },
 
@@ -284,55 +215,14 @@ export function createCloudflareApiKvCacheStore(
 
     async deleteByPrefix(prefix: string): Promise<void> {
       const fullPrefix = withOptionalPrefix(keyPrefix, prefix)
-      const timestamp = Date.now()
-      let cursor: string | undefined
-      let totalDeleted = 0
-
-      // Paginate through all keys that start with the given prefix
-      // and delete them in batches.
-      for (;;) {
-        // cloudflare-typescript:
-        // client.kv.namespaces.keys.list(namespaceId, params?, options?)
-        const page = await client.kv.namespaces.keys.list(namespaceId, {
-          account_id: accountId,
-          prefix: fullPrefix,
-          ...(cursor !== undefined ? { cursor } : {}),
-        })
-
-        const result = page.result ?? []
-        if (!Array.isArray(result) || result.length === 0) {
-          break
-        }
-
-        const keyNames = result
-          .map(entry => entry.name)
-          .filter((name): name is string => typeof name === 'string')
-
-        if (keyNames.length > 0) {
-          // Prefer the non-deprecated bulk_delete on namespaces:
-          // client.kv.namespaces.bulkDelete(namespaceId, params?, options?)
-          await client.kv.namespaces.bulkDelete(namespaceId, {
-            account_id: accountId,
-            // Body is the array of key strings to delete.
-            body: keyNames,
-          })
-          totalDeleted += keyNames.length
-        }
-
-        const nextCursor = page.result_info?.cursor
-        if (typeof nextCursor !== 'string' || nextCursor.length === 0) {
-          break
-        }
-
-        cursor = nextCursor
-      }
 
       safeLog(logger, {
         kind: 'deleteByPrefix',
         key: prefix,
         fullKey: fullPrefix,
-        timestamp,
-        affectedCount: totalDeleted,
+        timestamp: Date.now(),
+        affectedCount: 0,
+        reason: 'remote prefix deletes are disabled to protect Workers KV write quota',
       })
     },
 

@@ -1,16 +1,19 @@
 'use server'
 
+import type { AirtableRow } from './attachment-transform'
 import Airtable from 'ts-airtable'
-import { CloudflareClient } from '@/lib/cloudflare'
 import {
   AIRTABLE_API_KEY,
   AIRTABLE_BASE_ID,
+} from '@/constants/airtable'
+import {
   CLOUDFLARE_ACCOUNT_ID,
   CLOUDFLARE_KV_NAMESPACE_ID,
-  SKIP_REMOTE_DATA,
-} from '@/lib/consts'
-import { createKvLogger } from '@/lib/kv-logger'
+} from '@/constants/cloudflare'
+import { SKIP_REMOTE_DATA } from '@/constants/runtime'
+import { CloudflareClient } from '@/lib/cloudflare'
 import { safeLog } from '@/lib/logger'
+import { transformRowsAttachmentsForCache } from './attachment-transform'
 import {
   createCloudflareApiKvCacheStore,
   runWithAirtableCacheBypass,
@@ -22,13 +25,21 @@ import {
   getAirtableListCachePrefix,
 } from './config'
 
-const logger = createKvLogger({
-  client: CloudflareClient,
-  accountId: CLOUDFLARE_ACCOUNT_ID,
-  namespaceId: CLOUDFLARE_KV_NAMESPACE_ID,
-  keyPrefix: 'airtable-log',
-  logTtlSeconds: 60 * 60 * 24 * 180, // keep 180 days of logs
-})
+const logger: CacheLogger = {
+  log(event) {
+    if (event.error === undefined) {
+      return
+    }
+
+    console.error('[airtable-cache]', {
+      kind: event.kind,
+      key: event.key,
+      fullKey: event.fullKey,
+      table: event.table,
+      error: event.error instanceof Error ? event.error.message : String(event.error),
+    })
+  },
+}
 
 const store = createCloudflareApiKvCacheStore({
   client: CloudflareClient,
@@ -76,14 +87,9 @@ function getBase() {
   return Airtable.base(AIRTABLE_BASE_ID)
 }
 
-interface Row<TFields = Record<string, unknown>> {
-  id: string
-  fields: TFields
-}
-
 export async function fetchAirtableRecords<TFields = Record<string, unknown>>(
   tableName: string,
-): Promise<Row<TFields>[]> {
+): Promise<AirtableRow<TFields>[]> {
   if (SKIP_REMOTE_DATA) {
     return []
   }
@@ -100,12 +106,13 @@ export async function fetchAirtableRecords<TFields = Record<string, unknown>>(
 async function fetchAndCacheRecords<TFields = Record<string, unknown>>(
   tableName: string,
   options: { strictCacheWrite: boolean },
-): Promise<Row<TFields>[]> {
+): Promise<AirtableRow<TFields>[]> {
   const rows = await fetchAirtableRecords<TFields>(tableName)
+  const transformedRows = await transformRowsAttachmentsForCache(tableName, rows, logger)
 
   const cacheKey = getAirtableAllRecordsCacheKey(tableName)
   try {
-    await setRecordsCache(cacheKey, rows, AIRTABLE_RECORDS_FRESH_TTL_MS)
+    await setRecordsCache(cacheKey, transformedRows, AIRTABLE_RECORDS_FRESH_TTL_MS)
   }
   catch (error) {
     safeLog(logger, {
@@ -122,7 +129,7 @@ async function fetchAndCacheRecords<TFields = Record<string, unknown>>(
     }
   }
 
-  return rows
+  return transformedRows
 }
 
 /**
@@ -137,13 +144,13 @@ async function fetchAndCacheRecords<TFields = Record<string, unknown>>(
  */
 export async function getCachedRecords<TFields = Record<string, unknown>>(
   tableName: string,
-): Promise<Row<TFields>[]> {
+): Promise<AirtableRow<TFields>[]> {
   if (SKIP_REMOTE_DATA) {
     return []
   }
 
   const cacheKey = getAirtableAllRecordsCacheKey(tableName)
-  const cached = await getFromRecordsCache<Row<TFields>[]>(cacheKey).catch((error: unknown) => {
+  const cached = await getFromRecordsCache<AirtableRow<TFields>[]>(cacheKey).catch((error: unknown) => {
     safeLog(logger, {
       kind: 'get',
       key: cacheKey,
@@ -158,12 +165,20 @@ export async function getCachedRecords<TFields = Record<string, unknown>>(
     return cached
   }
 
-  return fetchAndCacheRecords<TFields>(tableName, { strictCacheWrite: false })
+  console.error('[airtable-cache]', {
+    kind: 'get',
+    key: cacheKey,
+    fullKey: `airtable-cache:${cacheKey}`,
+    table: tableName,
+    reason: 'cache miss on public read; scheduled refresh is responsible for repopulating KV',
+  })
+
+  return []
 }
 
 export async function refreshCachedRecords<TFields = Record<string, unknown>>(
   tableName: string,
-): Promise<Row<TFields>[]> {
+): Promise<AirtableRow<TFields>[]> {
   if (SKIP_REMOTE_DATA) {
     return []
   }

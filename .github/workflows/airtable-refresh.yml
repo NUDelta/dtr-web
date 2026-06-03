@@ -14,10 +14,60 @@ jobs:
     steps:
       - name: Refresh Airtable cache
         run: |
-          curl --fail-with-body -sS -X POST \
-            -H "x-cron-token: $AIRTABLE_REFRESH_SECRET" \
-            -H "content-type: application/json" \
-            -d '{"minIntervalHours":11}' \
-            "https://dtr.northwestern.edu/api/airtable-refresh"
+          set -euo pipefail
+
+          tables=(
+            "People"
+            "Projects"
+            "SIGs"
+            "Project Images"
+            "Project Publications"
+          )
+          failed_tables=()
+
+          for table in "${tables[@]}"; do
+            echo "::group::Refresh Airtable table: ${table}"
+            response_file="$(mktemp)"
+            payload="{\"minIntervalHours\":11,\"tables\":[\"${table}\"]}"
+            started_at="$(date -u +%s)"
+
+            echo "started_at_utc=$(date -u --iso-8601=seconds)"
+            echo "payload=${payload}"
+
+            curl_exit=0
+            http_status="$(
+              curl --fail-with-body -sS \
+                --connect-timeout 30 \
+                --max-time 540 \
+                -o "${response_file}" \
+                -w "%{http_code}" \
+                -X POST \
+                -H "x-cron-token: $CICD_SECRET" \
+                -H "content-type: application/json" \
+                -d "${payload}" \
+                "https://dtr.northwestern.edu/api/airtable-refresh"
+            )" || curl_exit=$?
+
+            finished_at="$(date -u +%s)"
+            echo "finished_at_utc=$(date -u --iso-8601=seconds)"
+            echo "duration_seconds=$((finished_at - started_at))"
+            echo "http_status=${http_status}"
+            echo "curl_exit=${curl_exit}"
+            echo "response_body:"
+            cat "${response_file}"
+            echo
+            rm -f "${response_file}"
+            echo "::endgroup::"
+
+            if [ "${curl_exit}" -ne 0 ]; then
+              failed_tables+=("${table} (curl_exit=${curl_exit}, http_status=${http_status})")
+            fi
+          done
+
+          if [ "${#failed_tables[@]}" -gt 0 ]; then
+            echo "Airtable refresh failed for ${#failed_tables[@]} table(s):"
+            printf ' - %s\n' "${failed_tables[@]}"
+            exit 1
+          fi
         env:
-          AIRTABLE_REFRESH_SECRET: ${{ secrets.AIRTABLE_REFRESH_SECRET || secrets.R2_CRON_SECRET }}
+          CICD_SECRET: ${{ secrets.CICD_SECRET }}

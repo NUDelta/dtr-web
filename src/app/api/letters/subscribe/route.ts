@@ -1,9 +1,11 @@
 import type { LetterSubscribeResponse } from '@/lib/letters/subscribe'
 import { NextResponse } from 'next/server'
-import { LETTER_SUBSCRIBE_APPS_SCRIPT_URL } from '@/lib/consts'
+import { LETTER_SUBSCRIBE_APPS_SCRIPT_URL } from '@/constants/letters'
 import { letterSubscribePayloadSchema } from '@/lib/letters/subscribe'
+import { getRequestIp, verifyTurnstileToken } from '@/lib/turnstile'
 
 const GENERIC_SUBSCRIBE_ERROR = 'Unable to subscribe right now. Please try again in a moment.'
+const TURNSTILE_ERROR = 'Complete the verification challenge and try again.'
 
 export async function POST(request: Request) {
   const body = await request.json().catch(() => null) as unknown
@@ -18,8 +20,22 @@ export async function POST(request: Request) {
     return NextResponse.json(response, { status: 400 })
   }
 
+  const turnstile = await verifyTurnstileToken(
+    parsed.data.turnstileToken,
+    getRequestIp(request),
+  )
+
+  if (!turnstile.success) {
+    const response: LetterSubscribeResponse = {
+      ok: false,
+      error: TURNSTILE_ERROR,
+    }
+
+    return NextResponse.json(response, { status: 403 })
+  }
+
   if (LETTER_SUBSCRIBE_APPS_SCRIPT_URL.length === 0) {
-    console.error('[letters/subscribe] Missing LETTER_SUBSCRIBE_APPS_SCRIPT_URL environment variable')
+    console.error('[letters/subscribe] Missing letter subscription endpoint configuration')
 
     const response: LetterSubscribeResponse = {
       ok: false,

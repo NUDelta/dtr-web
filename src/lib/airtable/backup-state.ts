@@ -1,9 +1,9 @@
 import { randomUUID } from 'node:crypto'
-import { CloudflareClient } from '@/lib/cloudflare'
 import {
   CLOUDFLARE_ACCOUNT_ID,
   CLOUDFLARE_KV_NAMESPACE_ID,
-} from '@/lib/consts'
+} from '@/constants/cloudflare'
+import { CloudflareClient } from '@/lib/cloudflare'
 
 const BACKUP_STATE_KEY = 'airtable-backup:state'
 const BACKUP_GUARD_KEY = 'airtable-backup:guard'
@@ -14,6 +14,7 @@ export interface AirtableBackupFile {
   table: string
   key: string
   records: number
+  r2Attachments?: number
 }
 
 export interface AirtableBackupState {

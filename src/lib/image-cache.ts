@@ -2,12 +2,23 @@
 
 import type { Attachment } from 'ts-airtable'
 import { Buffer } from 'node:buffer'
-import { r2Head, r2Put, r2PutTags } from '@/lib/r2'
+import { buildR2PublicUrl, r2Delete, r2Get, r2Head, R2ObjectNotFoundError, r2Put } from '@/lib/r2'
 import { transcodeBufferToOptimizedImages } from '@/utils/image-convert'
 
 /** Maximum bounding box for width/height when transcoding. */
 const MAX_DIMENSION = 2400
 const FILE_EXTENSION_PATTERN = /\.[^.]+$/
+const UNSAFE_OBJECT_KEY_CHARS = /[^\w.-]+/g
+const ORIGINAL_CACHE_CONTROL = 'public, max-age=31536000, immutable'
+
+function sanitizeObjectKeyPart(value: string, fallback: string): string {
+  const sanitized = value
+    .split(/[?#]/)[0]
+    .replace(UNSAFE_OBJECT_KEY_CHARS, '-')
+    .replace(/^-+|-+$/g, '')
+
+  return sanitized.length > 0 ? sanitized : fallback
+}
 
 /**
  * Normalize filename and attach requested extension.
@@ -21,8 +32,15 @@ export async function buildImageObjectKey(
   filename: string,
   format: ImageFormat,
 ): Promise<string> {
-  const base = filename.replace(FILE_EXTENSION_PATTERN, '') || 'image'
+  const base = sanitizeObjectKeyPart(filename.replace(FILE_EXTENSION_PATTERN, ''), 'image')
   return `images/${attId}/${variant}/${base}.${format}`
+}
+
+export async function buildOriginalImageObjectKey(
+  attId: string,
+  filename: string,
+): Promise<string> {
+  return `images/${attId}/original/${sanitizeObjectKeyPart(filename, 'image')}`
 }
 
 /**
@@ -38,10 +56,44 @@ export async function buildImageUrl(
   variant: ImageVariant,
   filename: string,
 ): Promise<string> {
-  const encodedId = encodeURIComponent(attId)
-  const encodedVariant = encodeURIComponent(variant)
-  const encodedName = encodeURIComponent(filename || 'image')
-  return `/api/images/${encodedId}/${encodedVariant}/${encodedName}`
+  const key = await buildImageObjectKey(attId, variant, filename || 'image', 'webp')
+  return buildR2PublicUrl(key)
+}
+
+async function readR2ObjectAsBuffer(key: string): Promise<Buffer | undefined> {
+  try {
+    await r2Head(key)
+    const obj = await r2Get(key)
+    const stream = obj.Body.transformToWebStream()
+    if (stream === null) {
+      return undefined
+    }
+
+    return Buffer.from(await new Response(stream).arrayBuffer())
+  }
+  catch (error) {
+    if (error instanceof R2ObjectNotFoundError) {
+      return undefined
+    }
+
+    throw error
+  }
+}
+
+async function fetchAttachmentOriginal(
+  src: string,
+): Promise<{ buffer: Buffer, contentType?: string }> {
+  const upstream = await fetch(src)
+  if (!upstream.ok) {
+    throw new Error(`Failed to fetch attachment from Airtable: ${upstream.status}`)
+  }
+
+  const contentType = upstream.headers.get('content-type') ?? undefined
+
+  return {
+    buffer: Buffer.from(await upstream.arrayBuffer()),
+    contentType,
+  }
 }
 
 /**
@@ -51,18 +103,17 @@ export async function buildImageUrl(
  * This is safe to call from **server-only** code (cache store, API routes, RSC).
  *
  * Behaviour:
- * - If either WebP or AVIF already exists in R2, this is a cheap HEAD check
- *   and we just return the URL.
+ * - If WebP already exists in R2, this is a cheap HEAD check and we return it.
  * - Otherwise, we:
- *   1. Fetch the original Airtable URL (short-lived signed URL)
+ *   1. Read a prior original fallback from R2, or fetch the Airtable URL
  *   2. Downscale & transcode to AVIF + WebP
- *   3. Store both in R2 with long-lived cache headers
- *   4. Return the stable `/api/images/...` URL
+ *   3. Store optimized variants in R2 with long-lived cache headers
+ *   4. If transcoding fails, store the original bytes in R2 and return that URL
  */
 export async function ensureImageInR2(
   attachment: Attachment,
   variant: ImageVariant = 'full',
-): Promise<{ url: string, webpKey: string, avifKey: string }> {
+): Promise<{ url: string, webpKey: string, avifKey: string, originalKey?: string }> {
   const attId = attachment.id
   const filename = attachment.filename || 'image'
   const src = attachment.url
@@ -71,9 +122,10 @@ export async function ensureImageInR2(
     throw new Error('Attachment is missing id or url')
   }
 
-  const [webpKey, avifKey] = await Promise.all([
+  const [webpKey, avifKey, originalKey] = await Promise.all([
     buildImageObjectKey(attId, variant, filename, 'webp'),
     buildImageObjectKey(attId, variant, filename, 'avif'),
+    buildOriginalImageObjectKey(attId, filename),
   ])
 
   // Fast path: already cached in R2?
@@ -82,50 +134,54 @@ export async function ensureImageInR2(
     return { url: await buildImageUrl(attId, variant, filename), webpKey, avifKey }
   }
   catch {}
-  try {
-    await r2Head(avifKey)
-    return { url: await buildImageUrl(attId, variant, filename), webpKey, avifKey }
-  }
-  catch {}
 
-  // Cache miss -> fetch from Airtable, transcode and upload.
-  const upstream = await fetch(src)
-  if (!upstream.ok) {
-    throw new Error(`Failed to fetch attachment from Airtable: ${upstream.status}`)
+  let original = await readR2ObjectAsBuffer(originalKey)
+  const originalWasCached = original !== undefined
+  let originalContentType = attachment.type
+
+  if (original === undefined) {
+    const fetched = await fetchAttachmentOriginal(src)
+    original = fetched.buffer
+    originalContentType = fetched.contentType ?? originalContentType
   }
 
-  const original = Buffer.from(await upstream.arrayBuffer())
-  const { avif, webp } = await transcodeBufferToOptimizedImages(original, {
+  const { avif, webp, converted } = await transcodeBufferToOptimizedImages(original, {
     maxDimension: MAX_DIMENSION,
   })
+
+  if (!converted) {
+    if (!originalWasCached) {
+      await r2Put(
+        originalKey,
+        original,
+        originalContentType,
+        ORIGINAL_CACHE_CONTROL,
+      )
+    }
+
+    return {
+      url: buildR2PublicUrl(originalKey),
+      webpKey,
+      avifKey,
+      originalKey,
+    }
+  }
 
   await Promise.all([
     r2Put(webpKey, webp, 'image/webp', 'public, max-age=31536000, immutable'),
     r2Put(avifKey, avif, 'image/avif', 'public, max-age=31536000, immutable'),
   ])
 
-  await Promise.all([
-    touchLastAccess(webpKey),
-    touchLastAccess(avifKey),
-  ])
+  if (originalWasCached) {
+    try {
+      await r2Delete(originalKey)
+    }
+    catch {}
+  }
 
   return {
     url: await buildImageUrl(attId, variant, filename),
     webpKey,
     avifKey,
-  }
-}
-
-/** Best-effort access tracking via object tag `last-access=YYYY-MM-DD`. */
-async function touchLastAccess(key: string) {
-  try {
-    const today = new Date()
-    const y = today.getUTCFullYear()
-    const m = String(today.getUTCMonth() + 1).padStart(2, '0')
-    const d = String(today.getUTCDate()).padStart(2, '0')
-    await r2PutTags(key, { 'last-access': `${y}-${m}-${d}` })
-  }
-  catch {
-    // non-fatal
   }
 }

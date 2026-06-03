@@ -1,4 +1,6 @@
 import type { useLetterSubscribe } from './useLetterSubscribe'
+import TurnstileWidget from '@/components/shared/TurnstileWidget'
+import { TURNSTILE_SITE_KEY } from '@/constants/cloudflare'
 import { getErrorMessage } from './utils'
 
 interface LetterSubscribeInlineFormProps {
@@ -20,6 +22,9 @@ export default function LetterSubscribeInlineForm({
     inputRef,
     open,
     submitError,
+    turnstileResetSignal,
+    turnstileToken,
+    updateTurnstileToken,
   } = subscribe
 
   return (
@@ -33,10 +38,10 @@ export default function LetterSubscribeInlineForm({
       }}
       aria-hidden={!open}
       className={[
-        'items-center gap-2 overflow-hidden',
+        'gap-2 overflow-visible',
         'sm:flex sm:transition-opacity sm:duration-300 sm:ease-in-out',
         open
-          ? 'flex flex-1 sm:flex-none sm:max-w-xs sm:opacity-100 pointer-events-auto'
+          ? 'flex w-full max-w-[300px] flex-col items-stretch sm:opacity-100 pointer-events-auto'
           : 'hidden sm:max-w-0 sm:opacity-0 pointer-events-none',
       ].join(' ')}
     >
@@ -67,50 +72,71 @@ export default function LetterSubscribeInlineForm({
             : undefined
 
           return (
-            <div className="relative flex min-w-0 flex-1">
-              <label htmlFor={emailId} className="sr-only">
-                Email address
-              </label>
+            <div className="flex w-full flex-col gap-2">
+              <div className="flex w-full flex-col gap-1">
+                <label htmlFor={emailId} className="sr-only">
+                  Email address
+                </label>
 
-              <input
-                ref={inputRef}
-                id={emailId}
-                name={field.name}
-                type="email"
-                autoComplete="email"
-                autoCapitalize="none"
-                inputMode="email"
-                spellCheck={false}
-                value={field.state.value}
-                onBlur={field.handleBlur}
-                onChange={(event) => {
-                  if (submitError !== null) {
-                    clearSubmitError()
-                  }
-                  field.handleChange(event.target.value)
-                }}
-                aria-invalid={hasFieldError ? true : undefined}
-                aria-describedby={describedBy}
-                placeholder="your@email.com"
-                className={`w-44 min-w-0 text-sm px-2.5 py-1 border rounded-md outline-none transition-shadow focus:border-yellow-400 focus:ring-2 focus:ring-yellow-300/40 ${
-                  hasFieldError
-                    ? 'border-red-300 focus:border-red-400 focus:ring-red-200/60'
-                    : 'border-slate-300'
-                }`}
-              />
+                <input
+                  ref={inputRef}
+                  id={emailId}
+                  name={field.name}
+                  type="email"
+                  autoComplete="email"
+                  autoCapitalize="none"
+                  inputMode="email"
+                  spellCheck={false}
+                  value={field.state.value}
+                  onBlur={field.handleBlur}
+                  onChange={(event) => {
+                    if (submitError !== null) {
+                      clearSubmitError()
+                    }
+                    field.handleChange(event.target.value)
+                  }}
+                  aria-invalid={hasFieldError ? true : undefined}
+                  aria-describedby={describedBy}
+                  placeholder="your@email.com"
+                  className={`w-full min-w-0 text-sm px-2.5 py-1 border rounded-md outline-none transition-shadow focus:border-yellow-400 focus:ring-2 focus:ring-yellow-300/40 ${
+                    hasFieldError
+                      ? 'border-red-300 focus:border-red-400 focus:ring-red-200/60'
+                      : 'border-slate-300'
+                  }`}
+                />
 
-              {hasFieldError && (
-                <p
-                  id={fieldErrorId}
-                  className="absolute top-full left-0 mt-1 rounded bg-white/95 px-1 text-[11px] text-red-500 shadow-sm"
-                >
-                  {fieldError}
-                </p>
-              )}
+                {hasFieldError && (
+                  <p
+                    id={fieldErrorId}
+                    className="px-1 text-[11px] leading-tight text-red-500"
+                  >
+                    {fieldError}
+                  </p>
+                )}
+
+                {submitError !== null && (
+                  <p
+                    id={formMessageId}
+                    role="alert"
+                    className="px-1 text-[11px] leading-tight text-red-500"
+                  >
+                    {submitError}
+                  </p>
+                )}
+              </div>
             </div>
           )
         }}
       </form.Field>
+
+      <TurnstileWidget
+        action="letter-subscribe"
+        className="h-[65px] w-full overflow-hidden rounded-md"
+        onTokenChange={updateTurnstileToken}
+        resetSignal={turnstileResetSignal}
+        siteKey={TURNSTILE_SITE_KEY}
+        size="normal"
+      />
 
       <form.Subscribe selector={state => ({
         canSubmit: state.canSubmit,
@@ -119,14 +145,17 @@ export default function LetterSubscribeInlineForm({
       })}
       >
         {({ canSubmit, email, isSubmitting }) => {
-          const submitDisabled = email.trim().length === 0 || !canSubmit || isSubmitting
+          const submitDisabled = email.trim().length === 0
+            || turnstileToken.length === 0
+            || !canSubmit
+            || isSubmitting
 
           return (
-            <>
+            <div className="flex w-full items-center justify-end gap-2">
               <button
                 type="submit"
                 disabled={submitDisabled}
-                className="text-sm px-3 py-1 bg-yellow-400 hover:bg-yellow-500 text-slate-900 font-semibold rounded-md whitespace-nowrap transition-colors disabled:opacity-50 disabled:cursor-not-allowed disabled:hover:bg-yellow-400 cursor-pointer border-none"
+                className="text-sm px-3 py-1.5 bg-yellow-400 hover:bg-yellow-500 text-slate-900 font-semibold rounded-md whitespace-nowrap transition-colors disabled:opacity-50 disabled:cursor-not-allowed disabled:hover:bg-yellow-400 cursor-pointer border-none"
               >
                 {isSubmitting ? 'Sending…' : 'Subscribe'}
               </button>
@@ -139,20 +168,10 @@ export default function LetterSubscribeInlineForm({
               >
                 ✕
               </button>
-            </>
+            </div>
           )
         }}
       </form.Subscribe>
-
-      {submitError !== null && (
-        <p
-          id={formMessageId}
-          role="alert"
-          className="sr-only"
-        >
-          {submitError}
-        </p>
-      )}
     </form>
   )
 }

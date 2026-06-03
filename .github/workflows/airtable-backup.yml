@@ -20,11 +20,62 @@ jobs:
     steps:
       - name: Back up Airtable to R2
         run: |
-          curl --fail-with-body -sS -X POST \
-            -H "x-cron-token: $AIRTABLE_BACKUP_SECRET" \
-            -H "content-type: application/json" \
-            -d "{\"force\":${AIRTABLE_BACKUP_FORCE}}" \
-            "https://dtr.northwestern.edu/api/airtable-backup"
+          set -euo pipefail
+
+          echo "::group::Back up Airtable to R2"
+          response_file="$(mktemp)"
+          request_id="backup-${GITHUB_RUN_ID}-${GITHUB_RUN_ATTEMPT}"
+          payload="{\"force\":${AIRTABLE_BACKUP_FORCE},\"requestId\":\"${request_id}\"}"
+          started_at="$(date -u +%s)"
+
+          echo "started_at_utc=$(date -u --iso-8601=seconds)"
+          echo "request_id=${request_id}"
+          echo "payload=${payload}"
+
+          curl_exit=0
+          http_status="$(
+            curl --fail-with-body -sS \
+              --connect-timeout 30 \
+              --max-time 900 \
+              -o "${response_file}" \
+              -w "%{http_code}" \
+              -X POST \
+              -H "x-cron-token: $CICD_SECRET" \
+              -H "content-type: application/json" \
+              -d "${payload}" \
+              "https://dtr.northwestern.edu/api/airtable-backup"
+          )" || curl_exit=$?
+
+          finished_at="$(date -u +%s)"
+          duration_seconds=$((finished_at - started_at))
+          echo "finished_at_utc=$(date -u --iso-8601=seconds)"
+          echo "duration_seconds=${duration_seconds}"
+          echo "http_status=${http_status}"
+          echo "curl_exit=${curl_exit}"
+          echo "response_body:"
+          cat "${response_file}"
+          echo
+          echo "::endgroup::"
+
+          {
+            echo "## Airtable Backup"
+            echo
+            echo "- Request ID: ${request_id}"
+            echo "- Status: ${http_status}"
+            echo "- Duration: ${duration_seconds}s"
+            echo "- Curl exit: ${curl_exit}"
+            echo
+            echo '```json'
+            cat "${response_file}"
+            echo
+            echo '```'
+          } >> "$GITHUB_STEP_SUMMARY"
+
+          rm -f "${response_file}"
+
+          if [ "${curl_exit}" -ne 0 ]; then
+            exit "${curl_exit}"
+          fi
         env:
-          AIRTABLE_BACKUP_SECRET: ${{ secrets.AIRTABLE_BACKUP_SECRET }}
+          CICD_SECRET: ${{ secrets.CICD_SECRET }}
           AIRTABLE_BACKUP_FORCE: ${{ inputs.force || false }}

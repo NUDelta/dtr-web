@@ -1,4 +1,4 @@
-import { AIRTABLE_BASE_ID } from '@/lib/consts'
+import { AIRTABLE_BASE_ID } from '@/constants/airtable'
 
 /** Airtable records are refreshed by cron every 12 hours. */
 export const AIRTABLE_RECORDS_FRESH_TTL_MS = 1000 * 60 * 60 * 12

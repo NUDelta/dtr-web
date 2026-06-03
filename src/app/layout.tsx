@@ -6,7 +6,7 @@ import Footer from '@/components/shared/Footer'
 import Header from '@/components/shared/Header'
 import PopupAnnouncement from '@/components/shared/PopupAnnouncement'
 import RouterTransition from '@/components/shared/RouterTransition'
-import { feedFileName, siteUrl } from '@/lib/consts'
+import { feedFileName, siteUrl } from '@/constants/site'
 import './globals.css'
 
 const lato = Lato({

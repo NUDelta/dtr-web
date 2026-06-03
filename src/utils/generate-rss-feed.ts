@@ -4,8 +4,8 @@ import fs from 'node:fs'
 import path from 'node:path'
 import process from 'node:process'
 import RSS from 'rss'
+import { feedFileName, siteUrl } from '@/constants/site'
 import annualLetters from '@/lib/annual-letters'
-import { feedFileName, siteUrl } from '@/lib/consts'
 
 const generateRssFeed = async (): Promise<void> => {
   const feedOptions: RSS.FeedOptions = {

@@ -35,25 +35,26 @@ We use [DigitalOcean's App Platform](https://www.digitalocean.com/products/app-p
 - [TailwindCSS](https://tailwindcss.com/)
 - [Typescript](https://www.typescriptlang.org/)
 - [Airtable](https://airtable.com/) and [Airtable TS](https://airtable.zla.app) for content management
-- [Cloudflare R2](https://developers.cloudflare.com/r2/) for image storage and caching
-- [Cloudflare Workers KV](https://developers.cloudflare.com/workers/runtime-apis/workers-kv/) for data caching
+- [Cloudflare R2](https://developers.cloudflare.com/r2/) for image storage, backups, and workflow audit logs
+- [Cloudflare Workers KV](https://developers.cloudflare.com/workers/runtime-apis/workers-kv/) for Airtable records cache and small maintenance state
 - [Docker](https://www.docker.com/) for containerization in production
 
 ## Caching Architecture
 
 The website implements a two-tier caching system to minimize Airtable API usage:
 
-1. **Data Caching**: Airtable table data is cached using [Airtable TS](https://airtable.zla.app)'s built-in caching interface and an injected Cloudflare KV Cache Store. A scheduled GitHub Action refreshes the cache every 12 hours, while stale KV data remains available as a fallback during Airtable/API failures.
-2. **Image Caching**: Images are downloaded once from Airtable, transformed into modern optimized formats (e.g., WebP, AVIF), and cached in Cloudflare R2 Bucket with hash-based invalidation and long-term caching headers.
+1. **Data Caching**: Airtable table data is cached in Cloudflare Workers KV through an injected Cloudflare KV Cache Store. A scheduled GitHub Action refreshes the cache every 12 hours, while stale KV data remains available as a fallback during Airtable/API failures. Public reads are cache-only; cache misses do not call Airtable or write KV. KV is reserved for Airtable records cache and small state such as refresh guards and R2 orphan tracking.
+2. **Image Caching**: Images are downloaded once from Airtable, transformed into modern optimized formats (e.g., WebP, AVIF), cached in Cloudflare R2, and served from the source-controlled R2 public URL in `src/constants`.
 
-The Airtable refresh endpoint requires `AIRTABLE_REFRESH_SECRET` in production.
-If it is not set, the endpoint falls back to `R2_CRON_SECRET`.
-The weekly Airtable backup endpoint requires `AIRTABLE_BACKUP_SECRET`.
+Cron-triggered endpoints require `CICD_SECRET` in production.
+Internal ops pages require `OPS_SECRET`.
 
 ## Production Environment
 
-DigitalOcean runtime env must include Airtable credentials, Cloudflare KV credentials, R2 credentials, `AIRTABLE_REFRESH_SECRET` or `R2_CRON_SECRET` for the refresh endpoint, and `AIRTABLE_BACKUP_SECRET` for the backup endpoint.
+DigitalOcean runtime env must include Airtable and Cloudflare API credentials, `CICD_SECRET` for GitHub Actions / cron-triggered endpoints, `OPS_SECRET` for internal ops pages, `TURNSTILE_SECRET_KEY` for bot protection, and `LETTER_SUBSCRIBE_APPS_SCRIPT_URL` for newsletter submissions. Stable non-secret values such as Airtable base ID, Cloudflare account/KV IDs, R2 bucket names, the R2 public URL, R2 cleanup default, and Turnstile site key live in `src/constants`.
 
-GitHub repository secrets must include `AIRTABLE_REFRESH_SECRET` for the Airtable refresh workflow, `AIRTABLE_BACKUP_SECRET` for the Airtable backup workflow, and `R2_CRON_SECRET` for the R2 cleanup workflow. If `AIRTABLE_REFRESH_SECRET` is omitted, the Airtable workflow can fall back to `R2_CRON_SECRET`, but using separate secrets is preferred.
+GitHub repository secrets should include `CICD_SECRET`.
 
-Airtable backups require `R2_BACKUP_BUCKET`, a private R2 bucket that is not exposed through the image cache route or public bucket access. The backup endpoint skips repeat runs for the same UTC date unless the manual workflow is dispatched with `force`.
+Airtable backups use the private backup bucket configured in `src/constants/r2.ts`. Runtime image cache objects stay in the runtime R2 bucket under the `images/` prefix and are served through the configured public R2 URL. Backups only include table data plus any cached R2 image keys/public URLs already referenced by those records; they do not duplicate image objects into the backup bucket. The backup endpoint skips repeat runs for the same UTC date unless the manual workflow is dispatched with `force`.
+
+The internal automation audit page at `/audit` uses `OPS_SECRET`, is marked `noindex` through page metadata, and shows CI-driven workflow logs from the backup R2 bucket. Workflow logs use append-free per-run summary objects under `logs/summaries/{workflow}/{date}/` and detail objects under `logs/details/{workflow}/{date}/`; R2 cleanup removes workflow log objects older than 60 days.

@@ -1,45 +1,101 @@
-import type { Buffer } from 'node:buffer'
-import {
-  DeleteObjectCommand,
-  GetObjectCommand,
-  GetObjectTaggingCommand,
-  HeadObjectCommand,
-  ListObjectsV2Command,
-  PutObjectCommand,
-  PutObjectTaggingCommand,
-  S3Client,
-} from '@aws-sdk/client-s3'
-import {
-  R2_ACCESS_KEY_ID,
-  R2_BUCKET,
-  R2_ENDPOINT,
-  R2_SECRET_ACCESS_KEY,
-  SKIP_REMOTE_DATA,
-} from '@/lib/consts'
+import { Buffer } from 'node:buffer'
+import { CLOUDFLARE_ACCOUNT_ID } from '@/constants/cloudflare'
+import { R2_BUCKET, R2_BUCKET_PUBLIC_URL } from '@/constants/r2'
+import { SKIP_REMOTE_DATA } from '@/constants/runtime'
+import { CloudflareClient } from '@/lib/cloudflare'
 
-if (!SKIP_REMOTE_DATA && (!R2_ENDPOINT || !R2_ACCESS_KEY_ID || !R2_SECRET_ACCESS_KEY || !R2_BUCKET)) {
+if (!SKIP_REMOTE_DATA && (!CLOUDFLARE_ACCOUNT_ID || !R2_BUCKET)) {
   // We intentionally don't throw here to keep dev ergonomics;
   // the route will return a 500 with a clear error message when needed.
-  console.error('[ERROR] R2 configuration environment variables are missing.')
+  console.error('[ERROR] R2 configuration is missing.')
 }
 
-export const r2Client = new S3Client({
-  region: 'auto',
-  endpoint: R2_ENDPOINT, // e.g., https://<accountid>.r2.cloudflarestorage.com
-  credentials: R2_ACCESS_KEY_ID && R2_SECRET_ACCESS_KEY
-    ? {
-        accessKeyId: R2_ACCESS_KEY_ID,
-        secretAccessKey: R2_SECRET_ACCESS_KEY,
+interface R2Body {
+  transformToString: (encoding?: BufferEncoding) => Promise<string>
+  transformToWebStream: () => ReadableStream<Uint8Array> | null
+}
+
+interface R2GetResponse {
+  Body: R2Body
+  ContentType?: string
+  ETag?: string
+}
+
+interface R2ListObject {
+  Key?: string
+  Size?: number
+}
+
+interface R2ListResponse {
+  Contents?: R2ListObject[]
+  NextContinuationToken?: string
+}
+
+export class R2ObjectNotFoundError extends Error {
+  constructor(key: string) {
+    super(`R2 object not found: ${key}`)
+    this.name = 'R2ObjectNotFoundError'
+  }
+}
+
+function getObjectParams() {
+  return { account_id: CLOUDFLARE_ACCOUNT_ID }
+}
+
+export function buildR2PublicUrl(key: string): string {
+  const encodedKey = key.split('/').map(encodeURIComponent).join('/')
+  return `${R2_BUCKET_PUBLIC_URL}/${encodedKey}`
+}
+
+function toBody(response: Response): R2Body {
+  return {
+    async transformToString(encoding = 'utf-8') {
+      if (encoding !== 'utf-8' && encoding !== 'utf8') {
+        const bytes = new Uint8Array(await response.arrayBuffer())
+        return Buffer.from(bytes).toString(encoding)
       }
-    : undefined,
-})
+
+      return response.text()
+    },
+    transformToWebStream() {
+      return response.body
+    },
+  }
+}
 
 export async function r2Head(key: string) {
-  return r2Client.send(new HeadObjectCommand({ Bucket: R2_BUCKET, Key: key }))
+  const page = await CloudflareClient.r2.buckets.objects.list(
+    R2_BUCKET,
+    {
+      ...getObjectParams(),
+      prefix: key,
+      per_page: 1,
+    },
+  )
+  const object = page.result.find(item => item.key === key)
+  if (object === undefined) {
+    throw new R2ObjectNotFoundError(key)
+  }
+
+  return object
 }
 
-export async function r2Get(key: string) {
-  return r2Client.send(new GetObjectCommand({ Bucket: R2_BUCKET, Key: key }))
+export async function r2Get(key: string): Promise<R2GetResponse> {
+  return r2GetFromBucket(R2_BUCKET, key)
+}
+
+export async function r2GetFromBucket(bucket: string, key: string): Promise<R2GetResponse> {
+  const response = await CloudflareClient.r2.buckets.objects.get(
+    bucket,
+    key,
+    getObjectParams(),
+  )
+
+  return {
+    Body: toBody(response),
+    ContentType: response.headers.get('content-type') ?? undefined,
+    ETag: response.headers.get('etag') ?? undefined,
+  }
 }
 
 export async function r2Put(
@@ -48,15 +104,7 @@ export async function r2Put(
   contentType: string,
   cacheControl = 'public, max-age=31536000, immutable',
 ) {
-  return r2Client.send(
-    new PutObjectCommand({
-      Bucket: R2_BUCKET,
-      Key: key,
-      Body: body,
-      ContentType: contentType,
-      CacheControl: cacheControl,
-    }),
-  )
+  return r2PutToBucket(R2_BUCKET, key, body, contentType, cacheControl)
 }
 
 export async function r2PutToBucket(
@@ -66,48 +114,58 @@ export async function r2PutToBucket(
   contentType: string,
   cacheControl = 'public, max-age=31536000, immutable',
 ) {
-  return r2Client.send(
-    new PutObjectCommand({
-      Bucket: bucket,
-      Key: key,
-      Body: body,
-      ContentType: contentType,
-      CacheControl: cacheControl,
-    }),
+  return CloudflareClient.r2.buckets.objects.upload(
+    bucket,
+    key,
+    body,
+    getObjectParams(),
+    {
+      headers: {
+        'Cache-Control': cacheControl,
+        'Content-Type': contentType,
+      },
+    },
   )
 }
 
-export async function r2PutTags(key: string, tags: Record<string, string>) {
-  const TagSet = Object.entries(tags).map(([Key, Value]) => ({ Key, Value }))
-  return r2Client.send(
-    new PutObjectTaggingCommand({
-      Bucket: R2_BUCKET,
-      Key: key,
-      Tagging: { TagSet },
-    }),
-  )
+export async function r2List(prefix: string, continuationToken?: string): Promise<R2ListResponse> {
+  return r2ListFromBucket(R2_BUCKET, prefix, continuationToken)
 }
 
-export async function r2GetTags(key: string) {
-  return r2Client.send(
-    new GetObjectTaggingCommand({
-      Bucket: R2_BUCKET,
-      Key: key,
-    }),
+export async function r2ListFromBucket(
+  bucket: string,
+  prefix: string,
+  continuationToken?: string,
+): Promise<R2ListResponse> {
+  const page = await CloudflareClient.r2.buckets.objects.list(
+    bucket,
+    {
+      ...getObjectParams(),
+      cursor: continuationToken,
+      prefix,
+      per_page: 1000,
+    },
   )
-}
 
-export async function r2List(prefix: string, continuationToken?: string) {
-  return r2Client.send(
-    new ListObjectsV2Command({
-      Bucket: R2_BUCKET,
-      Prefix: prefix,
-      ContinuationToken: continuationToken,
-      MaxKeys: 1000,
-    }),
-  )
+  const cursor = page.result_info.cursor
+
+  return {
+    Contents: page.result.map(item => ({
+      Key: item.key,
+      Size: item.size,
+    })),
+    NextContinuationToken: typeof cursor === 'string' && cursor.length > 0 ? cursor : undefined,
+  }
 }
 
 export async function r2Delete(key: string) {
-  return r2Client.send(new DeleteObjectCommand({ Bucket: R2_BUCKET, Key: key }))
+  return r2DeleteFromBucket(R2_BUCKET, key)
+}
+
+export async function r2DeleteFromBucket(bucket: string, key: string) {
+  return CloudflareClient.r2.buckets.objects.delete(
+    bucket,
+    key,
+    getObjectParams(),
+  )
 }

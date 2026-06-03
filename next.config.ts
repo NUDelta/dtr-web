@@ -38,6 +38,11 @@ const nextConfig: NextConfig = {
         hostname: 'v5.airtableusercontent.com',
         pathname: '**',
       },
+      {
+        protocol: 'https',
+        hostname: 'r2.dtr-web.pairresearch.io',
+        pathname: '**',
+      },
     ],
     unoptimized: true,
   },

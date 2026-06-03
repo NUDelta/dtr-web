@@ -1,3 +1,5 @@
+type Cloudflare = import('cloudflare').Cloudflare
+
 /**
  * Small envelope stored in KV so we can enforce TTL in userland even if
  * Cloudflare's expiration_ttl is not applied or not supported by the client.

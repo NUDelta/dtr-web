@@ -1,7 +1,8 @@
 name: r2-gc
 on:
   schedule:
-    - cron: '0 8 * * 1' # Mondays 08:00 UTC
+    # Fridays 08:00 UTC. Backup runs Tuesday, so weekly R2 maintenance is separated.
+    - cron: '0 8 * * 5'
   workflow_dispatch: {}
 
 concurrency:

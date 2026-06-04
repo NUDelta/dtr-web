@@ -2,6 +2,7 @@ import type { RunStatus } from './types'
 import type { OpsLogSourceId } from '@/lib/audit/workflow-logs'
 import { getEventStatus } from './runStatus'
 import {
+  formatBytes,
   formatWorkflowEventTables,
   getEventSummary,
 } from './runText'
@@ -172,21 +173,34 @@ function getMetricChips(sourceId: OpsLogSourceId, events: CacheLogEvent[]): stri
   }
 
   if (sourceId === 'airtable-refresh') {
-    return primary.recordCount === undefined ? [] : [`${primary.recordCount} records`]
+    return [
+      primary.recordCount === undefined ? undefined : `${primary.recordCount} records`,
+      primary.updatedCount === undefined ? undefined : `${primary.updatedCount} updated`,
+      primary.createdCount === undefined ? undefined : `${primary.createdCount} new`,
+      primary.changedCount === undefined ? undefined : `${primary.changedCount} changed`,
+      primary.removedCount === undefined || primary.removedCount === 0 ? undefined : `${primary.removedCount} removed`,
+    ].filter((value): value is string => value !== undefined)
   }
 
   if (sourceId === 'airtable-backup') {
     return [
       primary.recordCount === undefined ? undefined : `${primary.recordCount} records`,
+      primary.updatedCount === undefined ? undefined : `${primary.updatedCount} updated`,
+      primary.createdCount === undefined ? undefined : `${primary.createdCount} new`,
+      primary.changedCount === undefined ? undefined : `${primary.changedCount} changed`,
+      primary.removedCount === undefined || primary.removedCount === 0 ? undefined : `${primary.removedCount} removed`,
       primary.affectedCount === undefined ? undefined : `${primary.affectedCount} R2 refs`,
+      primary.sizeBytes === undefined ? undefined : formatBytes(primary.sizeBytes),
     ].filter((value): value is string => value !== undefined)
   }
 
   if (sourceId === 'r2-gc') {
     return [
       primary.scannedCount === undefined ? undefined : `${primary.scannedCount} scanned`,
+      primary.scannedBytes === undefined || primary.scannedBytes === 0 ? undefined : `${formatBytes(primary.scannedBytes)} scanned`,
       primary.liveCount === undefined ? undefined : `${primary.liveCount} live`,
       primary.deletedCount === undefined ? undefined : `${primary.deletedCount} deleted`,
+      primary.deletedBytes === undefined || primary.deletedBytes === 0 ? undefined : `${formatBytes(primary.deletedBytes)} deleted`,
       primary.newOrphanCount === undefined ? undefined : `${primary.newOrphanCount} new`,
       primary.confirmedOrphanCount === undefined ? undefined : `${primary.confirmedOrphanCount} confirmed`,
       primary.recoveredOrphanCount === undefined || primary.recoveredOrphanCount === 0 ? undefined : `${primary.recoveredOrphanCount} recovered`,

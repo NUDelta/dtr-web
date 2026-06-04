@@ -1,3 +1,4 @@
+import type { AirtableRecordHashMap } from './record-change-summary'
 import { randomUUID } from 'node:crypto'
 import {
   CLOUDFLARE_ACCOUNT_ID,
@@ -7,6 +8,10 @@ import { createWorkflowLogRun } from '@/lib/audit/workflow-logs'
 import { CloudflareClient } from '@/lib/cloudflare'
 import { refreshCachedRecords } from './airtable'
 import { AIRTABLE_REFRESH_TABLES } from './config'
+import {
+  buildAirtableRecordHashes,
+  summarizeAirtableRecordChanges,
+} from './record-change-summary'
 
 const REFRESH_STATE_KEY = 'airtable-refresh:state'
 const REFRESH_GUARD_KEY = 'airtable-refresh:guard'
@@ -21,6 +26,7 @@ interface AirtableRefreshState {
   lastSuccessAt?: number
   tables?: string[]
   lastSuccessAtByTable: Partial<Record<AirtableRefreshTable, number>>
+  recordHashesByTable: Partial<Record<AirtableRefreshTable, AirtableRecordHashMap>>
 }
 
 interface AirtableRefreshOptions {
@@ -102,6 +108,7 @@ async function readRefreshState(): Promise<AirtableRefreshState | undefined> {
   try {
     const state = JSON.parse(text) as Partial<AirtableRefreshState>
     const lastSuccessAtByTable: Partial<Record<AirtableRefreshTable, number>> = {}
+    const recordHashesByTable: Partial<Record<AirtableRefreshTable, AirtableRecordHashMap>> = {}
 
     if (state.lastSuccessAtByTable !== undefined) {
       for (const [table, timestamp] of Object.entries(state.lastSuccessAtByTable)) {
@@ -112,6 +119,22 @@ async function readRefreshState(): Promise<AirtableRefreshState | undefined> {
         ) {
           lastSuccessAtByTable[table] = timestamp
         }
+      }
+    }
+
+    if (state.recordHashesByTable !== undefined) {
+      for (const [table, hashes] of Object.entries(state.recordHashesByTable)) {
+        if (!isRefreshTable(table) || typeof hashes !== 'object' || hashes === null) {
+          continue
+        }
+
+        recordHashesByTable[table] = Object.fromEntries(
+          Object.entries(hashes)
+            .filter((entry): entry is [string, string] => (
+              typeof entry[0] === 'string'
+              && typeof entry[1] === 'string'
+            )),
+        )
       }
     }
 
@@ -130,7 +153,12 @@ async function readRefreshState(): Promise<AirtableRefreshState | undefined> {
     }
 
     if (Object.keys(lastSuccessAtByTable).length > 0) {
-      return { lastSuccessAt: state.lastSuccessAt, tables: state.tables, lastSuccessAtByTable }
+      return {
+        lastSuccessAt: state.lastSuccessAt,
+        tables: state.tables,
+        lastSuccessAtByTable,
+        recordHashesByTable,
+      }
     }
   }
   catch {
@@ -356,6 +384,9 @@ export async function refreshAirtableRecordsCache(options: AirtableRefreshOption
     const lastSuccessAtByTable = {
       ...(state?.lastSuccessAtByTable ?? {}),
     }
+    const recordHashesByTable = {
+      ...(state?.recordHashesByTable ?? {}),
+    }
     let lastSuccessAt = state?.lastSuccessAt ?? Date.now()
 
     for (const table of dueTables) {
@@ -386,7 +417,13 @@ export async function refreshAirtableRecordsCache(options: AirtableRefreshOption
 
       lastSuccessAt = Date.now()
       lastSuccessAtByTable[table] = lastSuccessAt
-      refreshed.push({ table, records: records.length })
+      const recordHashes = buildAirtableRecordHashes(records)
+      const changeSummary = summarizeAirtableRecordChanges(
+        recordHashesByTable[table],
+        recordHashes,
+      )
+      recordHashesByTable[table] = recordHashes
+      refreshed.push({ table, records: records.length, ...changeSummary })
 
       workflowLog.add({
         kind: 'refreshTableSuccess',
@@ -395,6 +432,7 @@ export async function refreshAirtableRecordsCache(options: AirtableRefreshOption
         dueTables,
         durationMs: Date.now() - tableStartedAt,
         recordCount: records.length,
+        ...changeSummary,
       })
 
       const stateWriteStartedAt = Date.now()
@@ -402,6 +440,7 @@ export async function refreshAirtableRecordsCache(options: AirtableRefreshOption
         lastSuccessAt,
         tables: refreshed.map(result => result.table),
         lastSuccessAtByTable,
+        recordHashesByTable,
       }
 
       try {
@@ -438,6 +477,10 @@ export async function refreshAirtableRecordsCache(options: AirtableRefreshOption
       dueTables,
       durationMs: Date.now() - runStartedAt,
       recordCount: refreshed.reduce((total, result) => total + result.records, 0),
+      createdCount: refreshed.reduce((total, result) => total + result.createdCount, 0),
+      changedCount: refreshed.reduce((total, result) => total + result.changedCount, 0),
+      removedCount: refreshed.reduce((total, result) => total + result.removedCount, 0),
+      updatedCount: refreshed.reduce((total, result) => total + result.updatedCount, 0),
     })
 
     return {

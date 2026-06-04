@@ -15,6 +15,11 @@ export interface AirtableBackupFile {
   key: string
   records: number
   r2Attachments?: number
+  createdCount?: number
+  changedCount?: number
+  removedCount?: number
+  updatedCount?: number
+  sizeBytes?: number
 }
 
 export interface AirtableBackupState {
@@ -22,6 +27,30 @@ export interface AirtableBackupState {
   backupDate: string
   manifestKey: string
   tables: AirtableBackupFile[]
+  recordHashesByTable?: Record<string, Record<string, string>>
+}
+
+function parseRecordHashesByTable(value: unknown): Record<string, Record<string, string>> | undefined {
+  if (typeof value !== 'object' || value === null) {
+    return undefined
+  }
+
+  const hashesByTable: Record<string, Record<string, string>> = {}
+  for (const [table, hashes] of Object.entries(value as Record<string, unknown>)) {
+    if (typeof hashes !== 'object' || hashes === null) {
+      continue
+    }
+
+    hashesByTable[table] = Object.fromEntries(
+      Object.entries(hashes as Record<string, unknown>)
+        .filter((entry): entry is [string, string] => (
+          typeof entry[0] === 'string'
+          && typeof entry[1] === 'string'
+        )),
+    )
+  }
+
+  return Object.keys(hashesByTable).length > 0 ? hashesByTable : undefined
 }
 
 function isCloudflareErrorWithStatus(
@@ -89,6 +118,7 @@ export async function readBackupState(): Promise<AirtableBackupState | undefined
         backupDate: state.backupDate,
         manifestKey: state.manifestKey,
         tables: state.tables,
+        recordHashesByTable: parseRecordHashesByTable(state.recordHashesByTable),
       }
     }
   }

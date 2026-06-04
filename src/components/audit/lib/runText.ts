@@ -24,6 +24,23 @@ const HTTP_STATUS_MESSAGES: Partial<Record<string, string>> = {
   530: 'Cloudflare returned an origin or routing error. Check the error detail and Cloudflare logs.',
 }
 const MAX_DIAGNOSTIC_DETAIL_LENGTH = 180
+const BYTE_UNITS = ['B', 'KB', 'MB', 'GB'] as const
+
+export function formatBytes(value: number): string {
+  if (!Number.isFinite(value) || value <= 0) {
+    return '0 B'
+  }
+
+  let size = value
+  let unitIndex = 0
+  while (size >= 1024 && unitIndex < BYTE_UNITS.length - 1) {
+    size /= 1024
+    unitIndex++
+  }
+
+  const formatted = size >= 10 || unitIndex === 0 ? size.toFixed(0) : size.toFixed(1)
+  return `${formatted} ${BYTE_UNITS[unitIndex]}`
+}
 
 export function splitRunSummary(summary: string): {
   detail?: string
@@ -165,6 +182,10 @@ function formatR2GcStats(event: CacheLogEvent): string {
     `${event.newOrphanCount ?? 0} new orphan candidates`,
   ]
 
+  if ((event.deletedBytes ?? 0) > 0) {
+    parts.push(`${formatBytes(event.deletedBytes ?? 0)} deleted`)
+  }
+
   if ((event.confirmedOrphanCount ?? 0) > 0) {
     parts.push(`${event.confirmedOrphanCount} confirmed orphan candidates`)
   }
@@ -194,7 +215,10 @@ export function getEventSummary(event: CacheLogEvent): string {
   }
 
   if (event.kind === 'refreshTableSuccess') {
-    return `${event.recordCount ?? 0} records refreshed`
+    return [
+      `${event.recordCount ?? 0} records refreshed`,
+      event.updatedCount === undefined ? undefined : `${event.updatedCount} updated`,
+    ].filter((part): part is string => part !== undefined).join(' · ')
   }
 
   if (event.kind === 'refreshRunStart') {
@@ -202,7 +226,10 @@ export function getEventSummary(event: CacheLogEvent): string {
   }
 
   if (event.kind === 'refreshRunSuccess') {
-    return `${event.recordCount ?? 0} records refreshed`
+    return [
+      `${event.recordCount ?? 0} records refreshed`,
+      event.updatedCount === undefined ? undefined : `${event.updatedCount} updated`,
+    ].filter((part): part is string => part !== undefined).join(' · ')
   }
 
   if (event.kind === 'refreshTableStart') {
@@ -214,11 +241,21 @@ export function getEventSummary(event: CacheLogEvent): string {
   }
 
   if (event.kind === 'backupTableSuccess') {
-    return `${event.recordCount ?? 0} records backed up · ${event.affectedCount ?? 0} R2 references`
+    return [
+      `${event.recordCount ?? 0} records backed up`,
+      event.updatedCount === undefined ? undefined : `${event.updatedCount} updated`,
+      `${event.affectedCount ?? 0} R2 references`,
+      event.sizeBytes === undefined ? undefined : formatBytes(event.sizeBytes),
+    ].filter((part): part is string => part !== undefined).join(' · ')
   }
 
   if (event.kind === 'backupRunSuccess') {
-    return `${event.recordCount ?? 0} records backed up · ${event.affectedCount ?? 0} tables`
+    return [
+      `${event.recordCount ?? 0} records backed up`,
+      event.updatedCount === undefined ? undefined : `${event.updatedCount} updated`,
+      `${event.affectedCount ?? 0} tables`,
+      event.sizeBytes === undefined ? undefined : formatBytes(event.sizeBytes),
+    ].filter((part): part is string => part !== undefined).join(' · ')
   }
 
   if (event.kind === 'r2GcOrphanState') {

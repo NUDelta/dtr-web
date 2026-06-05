@@ -38,26 +38,15 @@ function sanitizeObjectKeyPart(value: string, fallback: string): string {
   return `${sanitized.slice(0, MAX_OBJECT_KEY_PART_LENGTH - hash.length - 1)}-${hash}`
 }
 
-function sanitizeObjectKeyPartWithChangeHash(value: string, fallback: string): string {
-  const sanitized = sanitizeObjectKeyPart(value, fallback)
-  if (sanitized === value) {
-    return sanitized
-  }
-
-  // Preserve collision resistance for identity-like segments after lossy cleanup.
-  const hash = createHash('sha256').update(value).digest('hex').slice(0, 10)
-  return sanitizeObjectKeyPart(`${sanitized}-${hash}`, fallback)
-}
-
 /**
  * Normalize filename and attach requested extension.
  * Stored objects:
- * - images/{safeAttId}/{safeVariant}/{basename}.webp
- * - images/{safeAttId}/{safeVariant}/{basename}.avif
+ * - images/{attId}/{variant}/{basename}.webp
+ * - images/{attId}/{variant}/{basename}.avif
  *
- * Attachment ids are expected to be stable Airtable ids. If Airtable ever
- * returns path-unsafe characters, sanitizing the id keeps the URL immutable
- * without letting those characters create nested prefixes.
+ * Airtable attachment ids and internal variant names are trusted identity
+ * segments. Only filenames are normalized because they are user-facing and can
+ * contain spaces, punctuation, query/hash fragments, or very long names.
  */
 export async function buildImageObjectKey(
   attId: string,
@@ -65,18 +54,15 @@ export async function buildImageObjectKey(
   filename: string,
   format: ImageFormat,
 ): Promise<string> {
-  const safeAttId = sanitizeObjectKeyPartWithChangeHash(attId, 'attachment')
-  const safeVariant = sanitizeObjectKeyPartWithChangeHash(variant, 'full')
   const base = sanitizeObjectKeyPart(filename.replace(FILE_EXTENSION_PATTERN, ''), 'image')
-  return `images/${safeAttId}/${safeVariant}/${base}.${format}`
+  return `images/${attId}/${variant}/${base}.${format}`
 }
 
 export async function buildOriginalImageObjectKey(
   attId: string,
   filename: string,
 ): Promise<string> {
-  const safeAttId = sanitizeObjectKeyPartWithChangeHash(attId, 'attachment')
-  return `images/${safeAttId}/original/${sanitizeObjectKeyPart(filename, 'image')}`
+  return `images/${attId}/original/${sanitizeObjectKeyPart(filename, 'image')}`
 }
 
 /**

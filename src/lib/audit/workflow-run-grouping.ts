@@ -47,7 +47,7 @@ function getGroupedRefreshSummaryText(summaries: WorkflowRunSummary[], tableCoun
   ]
 
   if (summaries.some(summary => summary.updatedCount !== undefined)) {
-    parts.push(`${updatedCount} updated`)
+    parts.push(`${updatedCount} data changes`)
   }
 
   if (skippedCount > 0) {

@@ -175,7 +175,7 @@ function getMetricChips(sourceId: OpsLogSourceId, events: CacheLogEvent[]): stri
   if (sourceId === 'airtable-refresh') {
     return [
       primary.recordCount === undefined ? undefined : `${primary.recordCount} records`,
-      primary.updatedCount === undefined ? undefined : `${primary.updatedCount} updated`,
+      primary.updatedCount === undefined ? undefined : `${primary.updatedCount} data changes`,
       primary.createdCount === undefined ? undefined : `${primary.createdCount} new`,
       primary.changedCount === undefined ? undefined : `${primary.changedCount} changed`,
       primary.removedCount === undefined || primary.removedCount === 0 ? undefined : `${primary.removedCount} removed`,
@@ -185,7 +185,7 @@ function getMetricChips(sourceId: OpsLogSourceId, events: CacheLogEvent[]): stri
   if (sourceId === 'airtable-backup') {
     return [
       primary.recordCount === undefined ? undefined : `${primary.recordCount} records`,
-      primary.updatedCount === undefined ? undefined : `${primary.updatedCount} updated`,
+      primary.updatedCount === undefined ? undefined : `${primary.updatedCount} data changes`,
       primary.createdCount === undefined ? undefined : `${primary.createdCount} new`,
       primary.changedCount === undefined ? undefined : `${primary.changedCount} changed`,
       primary.removedCount === undefined || primary.removedCount === 0 ? undefined : `${primary.removedCount} removed`,

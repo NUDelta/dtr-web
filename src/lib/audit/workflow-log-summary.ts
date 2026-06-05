@@ -90,7 +90,7 @@ function getUpdateSummaryText(event: CacheLogEvent): string | undefined {
   }
 
   const parts = [
-    `${event.updatedCount} updated`,
+    `${event.updatedCount} data changes`,
     event.createdCount === undefined ? undefined : `${event.createdCount} new`,
     event.changedCount === undefined ? undefined : `${event.changedCount} changed`,
     event.removedCount === undefined || event.removedCount === 0 ? undefined : `${event.removedCount} removed`,

@@ -65,11 +65,12 @@ export default function HealthCards({
   const refreshMetric = [
     `${refreshTables} tables`,
     `${refreshLatest?.recordCount ?? 0} records refreshed`,
-    refreshLatest?.updatedCount === undefined ? undefined : `${refreshLatest.updatedCount} updated`,
+    refreshLatest?.updatedCount === undefined ? undefined : `${refreshLatest.updatedCount} data changes`,
   ].filter((part): part is string => part !== undefined).join(' · ')
   const backupMetric = [
     `${backupLatest?.affectedCount ?? 0} tables`,
-    backupLatest?.updatedCount === undefined ? undefined : `${backupLatest.updatedCount} updated`,
+    `${backupLatest?.recordCount ?? 0} records backed up`,
+    backupLatest?.updatedCount === undefined ? undefined : `${backupLatest.updatedCount} data changes`,
     backupLatest?.sizeBytes === undefined ? undefined : formatBytes(backupLatest.sizeBytes),
   ].filter((part): part is string => part !== undefined).join(' · ')
   const r2Metric = [

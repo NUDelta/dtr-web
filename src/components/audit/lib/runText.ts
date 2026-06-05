@@ -201,7 +201,7 @@ export function getEventSummary(event: CacheLogEvent): string {
   if (event.kind === 'refreshTableSuccess') {
     return [
       `${event.recordCount ?? 0} records refreshed`,
-      event.updatedCount === undefined ? undefined : `${event.updatedCount} updated`,
+      event.updatedCount === undefined ? undefined : `${event.updatedCount} data changes`,
     ].filter((part): part is string => part !== undefined).join(' · ')
   }
 
@@ -212,7 +212,7 @@ export function getEventSummary(event: CacheLogEvent): string {
   if (event.kind === 'refreshRunSuccess') {
     return [
       `${event.recordCount ?? 0} records refreshed`,
-      event.updatedCount === undefined ? undefined : `${event.updatedCount} updated`,
+      event.updatedCount === undefined ? undefined : `${event.updatedCount} data changes`,
     ].filter((part): part is string => part !== undefined).join(' · ')
   }
 
@@ -227,7 +227,7 @@ export function getEventSummary(event: CacheLogEvent): string {
   if (event.kind === 'backupTableSuccess') {
     return [
       `${event.recordCount ?? 0} records backed up`,
-      event.updatedCount === undefined ? undefined : `${event.updatedCount} updated`,
+      event.updatedCount === undefined ? undefined : `${event.updatedCount} data changes`,
       `${event.affectedCount ?? 0} R2 references`,
       event.sizeBytes === undefined ? undefined : formatBytes(event.sizeBytes),
     ].filter((part): part is string => part !== undefined).join(' · ')
@@ -236,7 +236,7 @@ export function getEventSummary(event: CacheLogEvent): string {
   if (event.kind === 'backupRunSuccess') {
     return [
       `${event.recordCount ?? 0} records backed up`,
-      event.updatedCount === undefined ? undefined : `${event.updatedCount} updated`,
+      event.updatedCount === undefined ? undefined : `${event.updatedCount} data changes`,
       `${event.affectedCount ?? 0} tables`,
       event.sizeBytes === undefined ? undefined : formatBytes(event.sizeBytes),
     ].filter((part): part is string => part !== undefined).join(' · ')

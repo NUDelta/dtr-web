@@ -78,6 +78,7 @@ export default function HealthCards({
     `${r2Latest?.deletedCount ?? 0} deleted`,
     r2Latest?.deletedBytes === undefined || r2Latest.deletedBytes === 0 ? undefined : formatBytes(r2Latest.deletedBytes),
     (r2Latest?.deleteFailureCount ?? 0) > 0 ? `${r2Latest?.deleteFailureCount} delete failures` : undefined,
+    r2Latest?.capped === true ? 'delete cap reached' : undefined,
   ].filter((part): part is string => part !== undefined).join(' · ')
   const workflowCount = [refreshLatest, backupLatest, r2Latest].filter(Boolean).length
 

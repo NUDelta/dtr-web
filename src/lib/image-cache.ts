@@ -38,6 +38,17 @@ function sanitizeObjectKeyPart(value: string, fallback: string): string {
   return `${sanitized.slice(0, MAX_OBJECT_KEY_PART_LENGTH - hash.length - 1)}-${hash}`
 }
 
+function sanitizeObjectKeyPartWithChangeHash(value: string, fallback: string): string {
+  const sanitized = sanitizeObjectKeyPart(value, fallback)
+  if (sanitized === value) {
+    return sanitized
+  }
+
+  // Preserve collision resistance for identity-like segments after lossy cleanup.
+  const hash = createHash('sha256').update(value).digest('hex').slice(0, 10)
+  return sanitizeObjectKeyPart(`${sanitized}-${hash}`, fallback)
+}
+
 /**
  * Normalize filename and attach requested extension.
  * Stored objects:
@@ -54,8 +65,8 @@ export async function buildImageObjectKey(
   filename: string,
   format: ImageFormat,
 ): Promise<string> {
-  const safeAttId = sanitizeObjectKeyPart(attId, 'attachment')
-  const safeVariant = sanitizeObjectKeyPart(variant, 'full')
+  const safeAttId = sanitizeObjectKeyPartWithChangeHash(attId, 'attachment')
+  const safeVariant = sanitizeObjectKeyPartWithChangeHash(variant, 'full')
   const base = sanitizeObjectKeyPart(filename.replace(FILE_EXTENSION_PATTERN, ''), 'image')
   return `images/${safeAttId}/${safeVariant}/${base}.${format}`
 }
@@ -64,7 +75,7 @@ export async function buildOriginalImageObjectKey(
   attId: string,
   filename: string,
 ): Promise<string> {
-  const safeAttId = sanitizeObjectKeyPart(attId, 'attachment')
+  const safeAttId = sanitizeObjectKeyPartWithChangeHash(attId, 'attachment')
   return `images/${safeAttId}/original/${sanitizeObjectKeyPart(filename, 'image')}`
 }
 

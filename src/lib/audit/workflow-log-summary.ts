@@ -75,6 +75,10 @@ function getR2GcSummaryText(event: CacheLogEvent): string {
     parts.push(`${event.deleteFailureCount} delete failures`)
   }
 
+  if (event.capped === true) {
+    parts.push('delete cap reached')
+  }
+
   if ((event.confirmedOrphanCount ?? 0) > 0) {
     parts.push(`${event.confirmedOrphanCount} confirmed orphan candidates`)
   }
@@ -84,6 +88,27 @@ function getR2GcSummaryText(event: CacheLogEvent): string {
   }
 
   return parts.join(' · ')
+}
+
+function getR2GcSecondaryIssueText(primary: CacheLogEvent, events: CacheLogEvent[]): string | undefined {
+  const issue = events.find(event => event !== primary && getEventStatus(event) === 'failure')
+    ?? events.find(event => event !== primary && getEventStatus(event) === 'warning')
+
+  if (issue === undefined) {
+    return undefined
+  }
+
+  if (issue.kind === 'workflowLogRetention') {
+    if (issue.reason !== undefined) {
+      return `workflow log retention failed: ${issue.reason}`
+    }
+
+    if (issue.capped === true) {
+      return 'workflow log retention capped'
+    }
+  }
+
+  return issue.reason ?? `${issue.kind} warning`
 }
 
 function getUpdateSummaryText(event: CacheLogEvent): string | undefined {
@@ -104,7 +129,10 @@ function getUpdateSummaryText(event: CacheLogEvent): string | undefined {
 function getSummaryText(sourceId: OpsLogSourceId, event: CacheLogEvent, events: CacheLogEvent[]): string {
   if (event.reason !== undefined) {
     if (sourceId === 'r2-gc') {
-      return getR2GcSummaryText(event)
+      return [
+        getR2GcSummaryText(event),
+        getR2GcSecondaryIssueText(event, events),
+      ].filter((part): part is string => part !== undefined).join(' · ')
     }
 
     return event.reason
@@ -128,7 +156,10 @@ function getSummaryText(sourceId: OpsLogSourceId, event: CacheLogEvent, events: 
     ].filter((part): part is string => part !== undefined).join(' · ')
   }
 
-  return getR2GcSummaryText(event)
+  return [
+    getR2GcSummaryText(event),
+    getR2GcSecondaryIssueText(event, events),
+  ].filter((part): part is string => part !== undefined).join(' · ')
 }
 
 function getObjectDate(timestamp: number): string {

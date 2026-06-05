@@ -1,3 +1,4 @@
+import { formatBytes } from '@/lib/audit/format-bytes'
 import { getWorkflowEventTables } from '@/lib/audit/workflow-log-helpers'
 
 const STATUS_SUMMARY_PATTERN = /\b(?:failure|failures|skipped|warning|warnings)\b/i
@@ -24,23 +25,6 @@ const HTTP_STATUS_MESSAGES: Partial<Record<string, string>> = {
   530: 'Cloudflare returned an origin or routing error. Check the error detail and Cloudflare logs.',
 }
 const MAX_DIAGNOSTIC_DETAIL_LENGTH = 180
-const BYTE_UNITS = ['B', 'KB', 'MB', 'GB'] as const
-
-export function formatBytes(value: number): string {
-  if (!Number.isFinite(value) || value <= 0) {
-    return '0 B'
-  }
-
-  let size = value
-  let unitIndex = 0
-  while (size >= 1024 && unitIndex < BYTE_UNITS.length - 1) {
-    size /= 1024
-    unitIndex++
-  }
-
-  const formatted = size >= 10 || unitIndex === 0 ? size.toFixed(0) : size.toFixed(1)
-  return `${formatted} ${BYTE_UNITS[unitIndex]}`
-}
 
 export function splitRunSummary(summary: string): {
   detail?: string

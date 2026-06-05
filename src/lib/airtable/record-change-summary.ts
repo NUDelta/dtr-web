@@ -34,9 +34,13 @@ function sortJsonValue(value: unknown): unknown {
   )
 }
 
+function stableStringify(value: unknown): string {
+  return JSON.stringify(sortJsonValue(value)) ?? 'null'
+}
+
 function hashRecordFields(fields: unknown): string {
   return createHash('sha256')
-    .update(JSON.stringify(sortJsonValue(fields)))
+    .update(stableStringify(fields))
     .digest('hex')
 }
 

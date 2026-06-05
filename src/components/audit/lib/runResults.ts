@@ -1,8 +1,8 @@
 import type { RunStatus } from './types'
 import type { OpsLogSourceId } from '@/lib/audit/workflow-logs'
+import { formatBytes } from '@/lib/audit/format-bytes'
 import { getEventStatus } from './runStatus'
 import {
-  formatBytes,
   formatWorkflowEventTables,
   getEventSummary,
 } from './runText'

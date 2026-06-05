@@ -7,9 +7,9 @@ import {
   Settings,
   ShieldCheck,
 } from 'lucide-react'
+import { formatBytes } from '@/lib/audit/format-bytes'
 import { formatRelativeTime } from './lib/format'
 import { getLatestBySource, getOverallStatus } from './lib/runStatus'
-import { formatBytes } from './lib/runText'
 import { StatusBadge } from './status'
 import { STATUS_META } from './statusMeta'
 

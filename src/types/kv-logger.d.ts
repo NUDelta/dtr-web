@@ -158,6 +158,10 @@ interface CacheLogEvent {
    */
   deletedBytes?: number
   /**
+   * Number of object deletes that failed and will be retried later.
+   */
+  deleteFailureCount?: number
+  /**
    * Number of archived log entries.
    */
   logCount?: number

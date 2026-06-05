@@ -158,32 +158,16 @@ function getReadableDiagnostic(value: string): string {
   }
 }
 
-function formatR2GcStats(event: CacheLogEvent): string {
-  const parts = [
-    `${event.scannedCount ?? 0} scanned`,
-    `${event.liveCount ?? 0} live`,
-    `${event.deletedCount ?? 0} deleted`,
-    `${event.newOrphanCount ?? 0} new orphan candidates`,
-  ]
-
-  if ((event.deletedBytes ?? 0) > 0) {
-    parts.push(`${formatBytes(event.deletedBytes ?? 0)} deleted`)
-  }
-
-  if ((event.confirmedOrphanCount ?? 0) > 0) {
-    parts.push(`${event.confirmedOrphanCount} confirmed orphan candidates`)
-  }
-
-  if (event.reason !== undefined) {
-    parts.push(getReadableDiagnostic(event.reason))
-  }
-
-  return parts.join(' · ')
-}
-
 export function getEventSummary(event: CacheLogEvent): string {
   if (event.kind === 'r2GcRunSuccess') {
-    return formatR2GcStats(event)
+    const parts = [
+      `${event.deletedCount ?? 0} deleted`,
+      event.deletedBytes === undefined || event.deletedBytes === 0 ? undefined : `${formatBytes(event.deletedBytes)} deleted`,
+      (event.deleteFailureCount ?? 0) > 0 ? `${event.deleteFailureCount} delete failures` : undefined,
+      event.capped === true ? 'delete cap reached' : undefined,
+    ].filter((part): part is string => part !== undefined)
+
+    return parts.join(' · ')
   }
 
   if (event.kind === 'r2GcRunSkipped') {
@@ -243,7 +227,12 @@ export function getEventSummary(event: CacheLogEvent): string {
   }
 
   if (event.kind === 'r2GcOrphanState') {
-    return `${event.confirmedOrphanCount ?? 0} confirmed · ${event.newOrphanCount ?? 0} new orphan candidates`
+    return [
+      `${event.newOrphanCount ?? 0} new orphan candidates`,
+      `${event.confirmedOrphanCount ?? 0} confirmed`,
+      (event.recoveredOrphanCount ?? 0) > 0 ? `${event.recoveredOrphanCount} recovered` : undefined,
+      (event.prunedOrphanCount ?? 0) > 0 ? `${event.prunedOrphanCount} pruned` : undefined,
+    ].filter((part): part is string => part !== undefined).join(' · ')
   }
 
   if (event.kind === 'workflowLogRetention') {

@@ -64,13 +64,15 @@ function getR2GcSummaryText(event: CacheLogEvent): string {
 
   const parts = [
     `${event.scannedCount ?? 0} scanned`,
+    event.scannedBytes === undefined || event.scannedBytes === 0 ? undefined : `${formatBytes(event.scannedBytes)} scanned`,
     `${event.liveCount ?? 0} live`,
     `${event.deletedCount ?? 0} deleted`,
+    event.deletedBytes === undefined || event.deletedBytes === 0 ? undefined : `${formatBytes(event.deletedBytes)} deleted`,
     `${event.newOrphanCount ?? 0} new orphan candidates`,
-  ]
+  ].filter((part): part is string => part !== undefined)
 
-  if ((event.deletedBytes ?? 0) > 0) {
-    parts.push(`${formatBytes(event.deletedBytes ?? 0)} deleted`)
+  if ((event.deleteFailureCount ?? 0) > 0) {
+    parts.push(`${event.deleteFailureCount} delete failures`)
   }
 
   if ((event.confirmedOrphanCount ?? 0) > 0) {
@@ -190,6 +192,7 @@ export function buildWorkflowRunSummary(
     deletedCount: primary.deletedCount,
     scannedBytes: primary.scannedBytes,
     deletedBytes: primary.deletedBytes,
+    deleteFailureCount: primary.deleteFailureCount,
     logCount: events.length,
     reason: primary.reason,
     bucket: primary.bucket,

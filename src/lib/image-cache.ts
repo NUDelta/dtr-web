@@ -128,7 +128,7 @@ async function fetchAttachmentOriginal(
  * This is safe to call from **server-only** code (cache store, API routes, RSC).
  *
  * Behaviour:
- * - If WebP already exists in R2, this is a cheap HEAD check and we return it.
+ * - If WebP and AVIF already exist in R2, cheap HEAD checks return the WebP URL.
  * - Otherwise, we:
  *   1. Read a prior original fallback from R2, or fetch the Airtable URL
  *   2. Downscale & transcode to AVIF + WebP

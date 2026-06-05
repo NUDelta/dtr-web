@@ -32,6 +32,7 @@ function getGroupedStatus(summaries: WorkflowRunSummary[]): WorkflowRunStatus {
 
 function getGroupedRefreshSummaryText(summaries: WorkflowRunSummary[], tableCount: number): string {
   const recordCount = summaries.reduce((total, summary) => total + (summary.recordCount ?? 0), 0)
+  const updatedCount = summaries.reduce((total, summary) => total + (summary.updatedCount ?? 0), 0)
   const skippedCount = summaries.filter(summary => (
     summary.status === 'skipped'
     || summary.reason === 'refresh already in progress'
@@ -45,6 +46,10 @@ function getGroupedRefreshSummaryText(summaries: WorkflowRunSummary[], tableCoun
     `${recordCount} records`,
   ]
 
+  if (summaries.some(summary => summary.updatedCount !== undefined)) {
+    parts.push(`${updatedCount} data changes`)
+  }
+
   if (skippedCount > 0) {
     parts.push(`${skippedCount} skipped`)
   }
@@ -54,6 +59,15 @@ function getGroupedRefreshSummaryText(summaries: WorkflowRunSummary[], tableCoun
   }
 
   return parts.join(' · ')
+}
+
+function sumOptionalMetric(
+  summaries: WorkflowRunSummary[],
+  read: (summary: WorkflowRunSummary) => number | undefined,
+): number | undefined {
+  return summaries.some(summary => read(summary) !== undefined)
+    ? summaries.reduce((total, summary) => total + (read(summary) ?? 0), 0)
+    : undefined
 }
 
 function isSingleTableRefresh(summary: WorkflowRunSummary): boolean {
@@ -133,6 +147,11 @@ function groupRefreshSummaries(summaries: WorkflowRunSummary[]): WorkflowRunSumm
       requestedTables: tableNames,
       dueTables: tableNames,
       recordCount: group.reduce((total, summary) => total + (summary.recordCount ?? 0), 0),
+      createdCount: sumOptionalMetric(group, summary => summary.createdCount),
+      changedCount: sumOptionalMetric(group, summary => summary.changedCount),
+      removedCount: sumOptionalMetric(group, summary => summary.removedCount),
+      updatedCount: sumOptionalMetric(group, summary => summary.updatedCount),
+      sizeBytes: sumOptionalMetric(group, summary => summary.sizeBytes),
       logCount: group.reduce((total, summary) => total + summary.logCount, 0),
       reason: undefined,
     }]

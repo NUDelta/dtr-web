@@ -31,8 +31,15 @@ export interface WorkflowRunSummary {
   dueTables?: string[]
   guardOwner?: string
   recordCount?: number
+  createdCount?: number
+  changedCount?: number
+  removedCount?: number
+  updatedCount?: number
+  sizeBytes?: number
   affectedCount?: number
   deletedCount?: number
+  scannedBytes?: number
+  deletedBytes?: number
   logCount: number
   reason?: string
   bucket?: string

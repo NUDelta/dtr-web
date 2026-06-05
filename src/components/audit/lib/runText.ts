@@ -1,3 +1,4 @@
+import { formatBytes } from '@/lib/audit/format-bytes'
 import { getWorkflowEventTables } from '@/lib/audit/workflow-log-helpers'
 
 const STATUS_SUMMARY_PATTERN = /\b(?:failure|failures|skipped|warning|warnings)\b/i
@@ -165,6 +166,10 @@ function formatR2GcStats(event: CacheLogEvent): string {
     `${event.newOrphanCount ?? 0} new orphan candidates`,
   ]
 
+  if ((event.deletedBytes ?? 0) > 0) {
+    parts.push(`${formatBytes(event.deletedBytes ?? 0)} deleted`)
+  }
+
   if ((event.confirmedOrphanCount ?? 0) > 0) {
     parts.push(`${event.confirmedOrphanCount} confirmed orphan candidates`)
   }
@@ -194,7 +199,10 @@ export function getEventSummary(event: CacheLogEvent): string {
   }
 
   if (event.kind === 'refreshTableSuccess') {
-    return `${event.recordCount ?? 0} records refreshed`
+    return [
+      `${event.recordCount ?? 0} records refreshed`,
+      event.updatedCount === undefined ? undefined : `${event.updatedCount} data changes`,
+    ].filter((part): part is string => part !== undefined).join(' · ')
   }
 
   if (event.kind === 'refreshRunStart') {
@@ -202,7 +210,10 @@ export function getEventSummary(event: CacheLogEvent): string {
   }
 
   if (event.kind === 'refreshRunSuccess') {
-    return `${event.recordCount ?? 0} records refreshed`
+    return [
+      `${event.recordCount ?? 0} records refreshed`,
+      event.updatedCount === undefined ? undefined : `${event.updatedCount} data changes`,
+    ].filter((part): part is string => part !== undefined).join(' · ')
   }
 
   if (event.kind === 'refreshTableStart') {
@@ -214,11 +225,21 @@ export function getEventSummary(event: CacheLogEvent): string {
   }
 
   if (event.kind === 'backupTableSuccess') {
-    return `${event.recordCount ?? 0} records backed up · ${event.affectedCount ?? 0} R2 references`
+    return [
+      `${event.recordCount ?? 0} records backed up`,
+      event.updatedCount === undefined ? undefined : `${event.updatedCount} data changes`,
+      `${event.affectedCount ?? 0} R2 references`,
+      event.sizeBytes === undefined ? undefined : formatBytes(event.sizeBytes),
+    ].filter((part): part is string => part !== undefined).join(' · ')
   }
 
   if (event.kind === 'backupRunSuccess') {
-    return `${event.recordCount ?? 0} records backed up · ${event.affectedCount ?? 0} tables`
+    return [
+      `${event.recordCount ?? 0} records backed up`,
+      event.updatedCount === undefined ? undefined : `${event.updatedCount} data changes`,
+      `${event.affectedCount ?? 0} tables`,
+      event.sizeBytes === undefined ? undefined : formatBytes(event.sizeBytes),
+    ].filter((part): part is string => part !== undefined).join(' · ')
   }
 
   if (event.kind === 'r2GcOrphanState') {

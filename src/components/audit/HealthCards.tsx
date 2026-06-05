@@ -7,6 +7,7 @@ import {
   Settings,
   ShieldCheck,
 } from 'lucide-react'
+import { formatBytes } from '@/lib/audit/format-bytes'
 import { formatRelativeTime } from './lib/format'
 import { getLatestBySource, getOverallStatus } from './lib/runStatus'
 import { StatusBadge } from './status'
@@ -61,6 +62,22 @@ export default function HealthCards({
     ?? refreshLatest?.requestedTables?.length
     ?? refreshLatest?.tableNames.length
     ?? 0
+  const refreshMetric = [
+    `${refreshTables} tables`,
+    `${refreshLatest?.recordCount ?? 0} records refreshed`,
+    refreshLatest?.updatedCount === undefined ? undefined : `${refreshLatest.updatedCount} data changes`,
+  ].filter((part): part is string => part !== undefined).join(' · ')
+  const backupMetric = [
+    `${backupLatest?.affectedCount ?? 0} tables`,
+    `${backupLatest?.recordCount ?? 0} records backed up`,
+    backupLatest?.updatedCount === undefined ? undefined : `${backupLatest.updatedCount} data changes`,
+    backupLatest?.sizeBytes === undefined ? undefined : formatBytes(backupLatest.sizeBytes),
+  ].filter((part): part is string => part !== undefined).join(' · ')
+  const r2Metric = [
+    `${orphanCandidates} orphan candidates`,
+    `${r2Latest?.deletedCount ?? 0} deleted`,
+    r2Latest?.deletedBytes === undefined ? undefined : formatBytes(r2Latest.deletedBytes),
+  ].filter((part): part is string => part !== undefined).join(' · ')
   const workflowCount = [refreshLatest, backupLatest, r2Latest].filter(Boolean).length
 
   return (
@@ -68,21 +85,21 @@ export default function HealthCards({
       <HealthCard
         detail={refreshLatest === undefined ? 'No refresh run in range' : `Last run ${formatRelativeTime(refreshLatest.endedAt)}`}
         icon={Database}
-        metric={`${refreshTables} tables · ${refreshLatest?.recordCount ?? 0} records refreshed`}
+        metric={refreshMetric}
         status={refreshLatest?.status ?? 'skipped'}
         title="Cache Refresh"
       />
       <HealthCard
         detail={r2Latest === undefined ? 'No cleanup run in range' : `Last cleanup ${formatRelativeTime(r2Latest.endedAt)}`}
         icon={AlertTriangle}
-        metric={`${orphanCandidates} orphan candidates · ${r2Latest?.deletedCount ?? 0} deleted`}
+        metric={r2Metric}
         status={r2Latest?.status ?? 'skipped'}
         title="R2 Cleanup"
       />
       <HealthCard
         detail={backupLatest === undefined ? 'No backup run in range' : `Last backup ${formatRelativeTime(backupLatest.endedAt)}`}
         icon={ShieldCheck}
-        metric={`${backupLatest?.affectedCount ?? 0} tables · ${backupLatest?.recordCount ?? 0} records backed up`}
+        metric={backupMetric}
         status={backupLatest?.status ?? 'skipped'}
         title="Backups"
       />

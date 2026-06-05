@@ -1,3 +1,5 @@
+import type { AirtableRecordHashMap } from './record-change-summary'
+import { Buffer } from 'node:buffer'
 import { randomUUID } from 'node:crypto'
 import { R2_BACKUP_BUCKET } from '@/constants/r2'
 import { SKIP_REMOTE_DATA } from '@/constants/runtime'
@@ -13,6 +15,10 @@ import {
   writeBackupState,
 } from './backup-state'
 import { AIRTABLE_REFRESH_TABLES } from './config'
+import {
+  buildAirtableRecordHashes,
+  summarizeAirtableRecordChanges,
+} from './record-change-summary'
 
 const AIRTABLE_BACKUP_PREFIX = 'backups/airtable'
 const DEFAULT_MIN_INTERVAL_HOURS = 24
@@ -249,8 +255,9 @@ export async function backupAirtableTables(options: AirtableBackupOptions = {}) 
     force: options.force === true,
   })
 
+  let previousState = await readBackupState()
   if (options.force !== true) {
-    const skipped = getSkippedBackup(await readBackupState(), backupDate, minIntervalHours)
+    const skipped = getSkippedBackup(previousState, backupDate, minIntervalHours)
     if (skipped !== undefined) {
       workflowLog.add({
         kind: 'backupRunSkipped',
@@ -293,10 +300,15 @@ export async function backupAirtableTables(options: AirtableBackupOptions = {}) 
 
   const backupPrefix = `${AIRTABLE_BACKUP_PREFIX}/${backupDate}`
   const files = []
+  const recordHashesByTable: Record<string, AirtableRecordHashMap> = {
+    ...(previousState?.recordHashesByTable ?? {}),
+  }
 
   try {
+    previousState = await readBackupState()
+    Object.assign(recordHashesByTable, previousState?.recordHashesByTable ?? {})
     if (options.force !== true) {
-      const skipped = getSkippedBackup(await readBackupState(), backupDate, minIntervalHours)
+      const skipped = getSkippedBackup(previousState, backupDate, minIntervalHours)
       if (skipped !== undefined) {
         workflowLog.add({
           kind: 'backupRunSkipped',
@@ -320,15 +332,30 @@ export async function backupAirtableTables(options: AirtableBackupOptions = {}) 
     for (const table of tables) {
       const records = await fetchAirtableRecords(table)
       const r2Attachments = await collectR2AttachmentReferences(records, workflowLog)
+      const recordHashes = buildAirtableRecordHashes(records)
+      const changeSummary = summarizeAirtableRecordChanges(
+        previousState?.recordHashesByTable?.[table],
+        recordHashes,
+      )
+      recordHashesByTable[table] = recordHashes
       const key = `${backupPrefix}/${getTableSlug(table)}.json`
+      const body = JSON.stringify({ backedUpAt, table, records, r2Attachments }, null, 2)
+      const sizeBytes = Buffer.byteLength(body)
       await r2PutToBucket(
         R2_BACKUP_BUCKET,
         key,
-        JSON.stringify({ backedUpAt, table, records, r2Attachments }, null, 2),
+        body,
         'application/json',
         'no-store',
       )
-      files.push({ table, key, records: records.length, r2Attachments: r2Attachments.length })
+      files.push({
+        table,
+        key,
+        records: records.length,
+        r2Attachments: r2Attachments.length,
+        sizeBytes,
+        ...changeSummary,
+      })
       workflowLog.add({
         kind: 'backupTableSuccess',
         table,
@@ -337,15 +364,19 @@ export async function backupAirtableTables(options: AirtableBackupOptions = {}) 
         bucket: R2_BACKUP_BUCKET,
         recordCount: records.length,
         affectedCount: r2Attachments.length,
+        sizeBytes,
+        ...changeSummary,
       })
       await sleep(TABLE_BACKUP_DELAY_MS)
     }
 
     const manifestKey = `${backupPrefix}/manifest.json`
+    const manifestBody = JSON.stringify({ backedUpAt, backupDate, tables: files }, null, 2)
+    const manifestSizeBytes = Buffer.byteLength(manifestBody)
     await r2PutToBucket(
       R2_BACKUP_BUCKET,
       manifestKey,
-      JSON.stringify({ backedUpAt, backupDate, tables: files }, null, 2),
+      manifestBody,
       'application/json',
       'no-store',
     )
@@ -355,6 +386,7 @@ export async function backupAirtableTables(options: AirtableBackupOptions = {}) 
       backupDate,
       manifestKey,
       tables: files,
+      recordHashesByTable,
     })
 
     workflowLog.add({
@@ -366,6 +398,11 @@ export async function backupAirtableTables(options: AirtableBackupOptions = {}) 
       durationMs: Date.now() - runStartedAt,
       recordCount: files.reduce((total, file) => total + file.records, 0),
       affectedCount: files.length,
+      createdCount: files.reduce((total, file) => total + (file.createdCount ?? 0), 0),
+      changedCount: files.reduce((total, file) => total + (file.changedCount ?? 0), 0),
+      removedCount: files.reduce((total, file) => total + (file.removedCount ?? 0), 0),
+      updatedCount: files.reduce((total, file) => total + (file.updatedCount ?? 0), 0),
+      sizeBytes: files.reduce((total, file) => total + (file.sizeBytes ?? 0), manifestSizeBytes),
     })
 
     return {

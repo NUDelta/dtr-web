@@ -1,6 +1,6 @@
 import { AIRTABLE_BASE_ID } from '@/constants/airtable'
 
-/** Airtable records are refreshed by cron every 12 hours. */
+/** Fresh window for scheduled Airtable refreshes at 01:00 and 13:00 fixed UTC-6 Chicago time. */
 export const AIRTABLE_RECORDS_FRESH_TTL_MS = 1000 * 60 * 60 * 12
 /** Keep stale data available so Airtable outages do not break public pages. */
 export const AIRTABLE_RECORDS_STALE_TTL_MS = 1000 * 60 * 60 * 24 * 30

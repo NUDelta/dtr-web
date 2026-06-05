@@ -4,6 +4,7 @@ import type {
   WorkflowRunStatus,
   WorkflowRunSummary,
 } from './workflow-log-types'
+import { formatBytes } from './format-bytes'
 import {
   getWorkflowEventStatus,
   getWorkflowEventTables,
@@ -68,6 +69,10 @@ function getR2GcSummaryText(event: CacheLogEvent): string {
     `${event.newOrphanCount ?? 0} new orphan candidates`,
   ]
 
+  if ((event.deletedBytes ?? 0) > 0) {
+    parts.push(`${formatBytes(event.deletedBytes ?? 0)} deleted`)
+  }
+
   if ((event.confirmedOrphanCount ?? 0) > 0) {
     parts.push(`${event.confirmedOrphanCount} confirmed orphan candidates`)
   }
@@ -75,6 +80,21 @@ function getR2GcSummaryText(event: CacheLogEvent): string {
   if (event.reason !== undefined) {
     parts.push(event.reason)
   }
+
+  return parts.join(' · ')
+}
+
+function getUpdateSummaryText(event: CacheLogEvent): string | undefined {
+  if (event.updatedCount === undefined) {
+    return undefined
+  }
+
+  const parts = [
+    `${event.updatedCount} data changes`,
+    event.createdCount === undefined ? undefined : `${event.createdCount} new`,
+    event.changedCount === undefined ? undefined : `${event.changedCount} changed`,
+    event.removedCount === undefined || event.removedCount === 0 ? undefined : `${event.removedCount} removed`,
+  ].filter((part): part is string => part !== undefined)
 
   return parts.join(' · ')
 }
@@ -90,11 +110,20 @@ function getSummaryText(sourceId: OpsLogSourceId, event: CacheLogEvent, events: 
 
   if (sourceId === 'airtable-refresh') {
     const tableCount = new Set(events.flatMap(getWorkflowEventTables)).size
-    return `${event.recordCount ?? 0} records refreshed · ${tableCount} tables`
+    return [
+      `${event.recordCount ?? 0} records refreshed`,
+      `${tableCount} tables`,
+      getUpdateSummaryText(event),
+    ].filter((part): part is string => part !== undefined).join(' · ')
   }
 
   if (sourceId === 'airtable-backup') {
-    return `${event.recordCount ?? 0} records backed up · ${event.affectedCount ?? 0} tables`
+    return [
+      `${event.recordCount ?? 0} records backed up`,
+      `${event.affectedCount ?? 0} tables`,
+      getUpdateSummaryText(event),
+      event.sizeBytes === undefined ? undefined : formatBytes(event.sizeBytes),
+    ].filter((part): part is string => part !== undefined).join(' · ')
   }
 
   return getR2GcSummaryText(event)
@@ -152,8 +181,15 @@ export function buildWorkflowRunSummary(
     dueTables: primary.dueTables,
     guardOwner,
     recordCount: primary.recordCount,
+    createdCount: primary.createdCount,
+    changedCount: primary.changedCount,
+    removedCount: primary.removedCount,
+    updatedCount: primary.updatedCount,
+    sizeBytes: primary.sizeBytes,
     affectedCount: primary.affectedCount,
     deletedCount: primary.deletedCount,
+    scannedBytes: primary.scannedBytes,
+    deletedBytes: primary.deletedBytes,
     logCount: events.length,
     reason: primary.reason,
     bucket: primary.bucket,

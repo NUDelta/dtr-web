@@ -35,7 +35,9 @@ interface GCOptions {
 
 interface R2CleanupResult {
   scanned: number
+  scannedBytes: number
   deleted: number
+  deletedBytes: number
   capped: boolean
   live: number
   newOrphans: number
@@ -114,7 +116,9 @@ export async function runR2CleanupOnce(opts: GCOptions = {}): Promise<R2CleanupR
   if (missingTables.length > 0) {
     return {
       scanned: 0,
+      scannedBytes: 0,
       deleted: 0,
+      deletedBytes: 0,
       capped: false,
       live: liveKeys.size,
       newOrphans: 0,
@@ -131,7 +135,9 @@ export async function runR2CleanupOnce(opts: GCOptions = {}): Promise<R2CleanupR
   const seenObjectKeys = new Set<string>()
   let token: string | undefined
   let scanned = 0
+  let scannedBytes = 0
   let deleted = 0
+  let deletedBytes = 0
   let newOrphans = 0
   let confirmedOrphans = 0
   let recoveredOrphans = 0
@@ -148,8 +154,10 @@ export async function runR2CleanupOnce(opts: GCOptions = {}): Promise<R2CleanupR
       }
 
       const key = obj.Key
+      const sizeBytes = obj.Size ?? 0
       seenObjectKeys.add(key)
       scanned++
+      scannedBytes += sizeBytes
 
       if (liveKeys.has(key)) {
         if (orphanState.orphans[key] !== undefined) {
@@ -182,6 +190,7 @@ export async function runR2CleanupOnce(opts: GCOptions = {}): Promise<R2CleanupR
         await r2Delete(key)
         delete orphanState.orphans[key]
         deleted++
+        deletedBytes += sizeBytes
         if (deleted >= maxDeletePerRun) {
           capped = true
           break
@@ -210,7 +219,9 @@ export async function runR2CleanupOnce(opts: GCOptions = {}): Promise<R2CleanupR
 
   return {
     scanned,
+    scannedBytes,
     deleted,
+    deletedBytes,
     capped,
     live: liveKeys.size,
     newOrphans,
@@ -299,7 +310,9 @@ export async function maybeRunR2CleanupFromISR(opts: GCOptions = {}) {
       bucket: R2_BUCKET,
       liveCount: res.live,
       scannedCount: res.scanned,
+      scannedBytes: res.scannedBytes,
       deletedCount: res.deleted,
+      deletedBytes: res.deletedBytes,
       newOrphanCount: res.newOrphans,
       confirmedOrphanCount: res.confirmedOrphans,
       recoveredOrphanCount: res.recoveredOrphans,
@@ -314,7 +327,9 @@ export async function maybeRunR2CleanupFromISR(opts: GCOptions = {}) {
       prefix,
       durationMs: Date.now() - runStartedAt,
       scannedCount: res.scanned,
+      scannedBytes: res.scannedBytes,
       deletedCount: res.deleted,
+      deletedBytes: res.deletedBytes,
       liveCount: res.live,
       newOrphanCount: res.newOrphans,
       confirmedOrphanCount: res.confirmedOrphans,

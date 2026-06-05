@@ -94,6 +94,26 @@ interface CacheLogEvent {
    */
   recordCount?: number
   /**
+   * Number of records or objects newly present compared with the prior snapshot.
+   */
+  createdCount?: number
+  /**
+   * Number of existing records whose cache-visible payload changed.
+   */
+  changedCount?: number
+  /**
+   * Number of records or objects removed compared with the prior snapshot.
+   */
+  removedCount?: number
+  /**
+   * Total cache-visible updates: created + changed + removed.
+   */
+  updatedCount?: number
+  /**
+   * Serialized object size in bytes for backup/log payload diagnostics.
+   */
+  sizeBytes?: number
+  /**
    * Refresh freshness interval used by the caller.
    */
   minIntervalHours?: number
@@ -126,9 +146,17 @@ interface CacheLogEvent {
    */
   scannedCount?: number
   /**
+   * Total bytes represented by scanned objects.
+   */
+  scannedBytes?: number
+  /**
    * Number of objects/log entries deleted or archived.
    */
   deletedCount?: number
+  /**
+   * Total bytes represented by deleted objects.
+   */
+  deletedBytes?: number
   /**
    * Number of archived log entries.
    */

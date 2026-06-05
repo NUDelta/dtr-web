@@ -2,6 +2,7 @@
 
 import type { Attachment } from 'ts-airtable'
 import { Buffer } from 'node:buffer'
+import { createHash } from 'node:crypto'
 import { buildR2PublicUrl, r2Delete, r2Get, r2Head, R2ObjectNotFoundError, r2Put } from '@/lib/r2'
 import { transcodeBufferToOptimizedImages } from '@/utils/image-convert'
 
@@ -9,22 +10,43 @@ import { transcodeBufferToOptimizedImages } from '@/utils/image-convert'
 const MAX_DIMENSION = 2400
 const FILE_EXTENSION_PATTERN = /\.[^.]+$/
 const UNSAFE_OBJECT_KEY_CHARS = /[^\w.-]+/g
+const MAX_OBJECT_KEY_PART_LENGTH = 180
 const ORIGINAL_CACHE_CONTROL = 'public, max-age=31536000, immutable'
 
+/**
+ * Keep every semantic R2 key segment path-safe and URL-stable.
+ *
+ * Object keys are later URL-encoded segment-by-segment, so this normalization is
+ * mostly about avoiding accidental path separators, query strings, and hash
+ * fragments in the stored key itself.
+ */
 function sanitizeObjectKeyPart(value: string, fallback: string): string {
   const sanitized = value
     .split(/[?#]/)[0]
     .replace(UNSAFE_OBJECT_KEY_CHARS, '-')
     .replace(/^-+|-+$/g, '')
 
-  return sanitized.length > 0 ? sanitized : fallback
+  if (sanitized.length === 0) {
+    return fallback
+  }
+
+  if (sanitized.length <= MAX_OBJECT_KEY_PART_LENGTH) {
+    return sanitized
+  }
+
+  const hash = createHash('sha256').update(sanitized).digest('hex').slice(0, 10)
+  return `${sanitized.slice(0, MAX_OBJECT_KEY_PART_LENGTH - hash.length - 1)}-${hash}`
 }
 
 /**
  * Normalize filename and attach requested extension.
  * Stored objects:
- * - images/{attId}/{variant}/{basename}.webp
- * - images/{attId}/{variant}/{basename}.avif
+ * - images/{safeAttId}/{safeVariant}/{basename}.webp
+ * - images/{safeAttId}/{safeVariant}/{basename}.avif
+ *
+ * Attachment ids are expected to be stable Airtable ids. If Airtable ever
+ * returns path-unsafe characters, sanitizing the id keeps the URL immutable
+ * without letting those characters create nested prefixes.
  */
 export async function buildImageObjectKey(
   attId: string,
@@ -32,15 +54,18 @@ export async function buildImageObjectKey(
   filename: string,
   format: ImageFormat,
 ): Promise<string> {
+  const safeAttId = sanitizeObjectKeyPart(attId, 'attachment')
+  const safeVariant = sanitizeObjectKeyPart(variant, 'full')
   const base = sanitizeObjectKeyPart(filename.replace(FILE_EXTENSION_PATTERN, ''), 'image')
-  return `images/${attId}/${variant}/${base}.${format}`
+  return `images/${safeAttId}/${safeVariant}/${base}.${format}`
 }
 
 export async function buildOriginalImageObjectKey(
   attId: string,
   filename: string,
 ): Promise<string> {
-  return `images/${attId}/original/${sanitizeObjectKeyPart(filename, 'image')}`
+  const safeAttId = sanitizeObjectKeyPart(attId, 'attachment')
+  return `images/${safeAttId}/original/${sanitizeObjectKeyPart(filename, 'image')}`
 }
 
 /**
@@ -128,12 +153,17 @@ export async function ensureImageInR2(
     buildOriginalImageObjectKey(attId, filename),
   ])
 
-  // Fast path: already cached in R2?
+  // Fast path: both optimized variants are already cached in R2.
   try {
     await r2Head(webpKey)
+    await r2Head(avifKey)
     return { url: await buildImageUrl(attId, variant, filename), webpKey, avifKey }
   }
-  catch {}
+  catch (error) {
+    if (!(error instanceof R2ObjectNotFoundError)) {
+      throw error
+    }
+  }
 
   let original = await readR2ObjectAsBuffer(originalKey)
   const originalWasCached = original !== undefined

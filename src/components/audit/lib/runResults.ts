@@ -195,16 +195,28 @@ function getMetricChips(sourceId: OpsLogSourceId, events: CacheLogEvent[]): stri
   }
 
   if (sourceId === 'r2-gc') {
+    if (primary.kind === 'workflowLogRetention') {
+      return [
+        primary.deletedCount === undefined ? undefined : `${primary.deletedCount} deleted`,
+        primary.scannedCount === undefined ? undefined : `${primary.scannedCount} scanned`,
+        primary.capped === true ? 'capped' : undefined,
+      ].filter((value): value is string => value !== undefined)
+    }
+
+    if (primary.kind === 'r2GcOrphanState') {
+      return [
+        primary.newOrphanCount === undefined ? undefined : `${primary.newOrphanCount} new`,
+        primary.confirmedOrphanCount === undefined ? undefined : `${primary.confirmedOrphanCount} confirmed`,
+        primary.recoveredOrphanCount === undefined || primary.recoveredOrphanCount === 0 ? undefined : `${primary.recoveredOrphanCount} recovered`,
+        primary.prunedOrphanCount === undefined || primary.prunedOrphanCount === 0 ? undefined : `${primary.prunedOrphanCount} pruned`,
+      ].filter((value): value is string => value !== undefined)
+    }
+
     return [
-      primary.scannedCount === undefined ? undefined : `${primary.scannedCount} scanned`,
-      primary.scannedBytes === undefined || primary.scannedBytes === 0 ? undefined : `${formatBytes(primary.scannedBytes)} scanned`,
-      primary.liveCount === undefined ? undefined : `${primary.liveCount} live`,
       primary.deletedCount === undefined ? undefined : `${primary.deletedCount} deleted`,
       primary.deletedBytes === undefined || primary.deletedBytes === 0 ? undefined : `${formatBytes(primary.deletedBytes)} deleted`,
-      primary.newOrphanCount === undefined ? undefined : `${primary.newOrphanCount} new`,
-      primary.confirmedOrphanCount === undefined ? undefined : `${primary.confirmedOrphanCount} confirmed`,
-      primary.recoveredOrphanCount === undefined || primary.recoveredOrphanCount === 0 ? undefined : `${primary.recoveredOrphanCount} recovered`,
-      primary.prunedOrphanCount === undefined || primary.prunedOrphanCount === 0 ? undefined : `${primary.prunedOrphanCount} pruned`,
+      primary.deleteFailureCount === undefined || primary.deleteFailureCount === 0 ? undefined : `${primary.deleteFailureCount} failed`,
+      primary.capped === true ? 'capped' : undefined,
     ].filter((value): value is string => value !== undefined)
   }
 

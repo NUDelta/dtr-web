@@ -124,12 +124,13 @@ export default async function IndividualProjectPage({
 
       {/* Banner Image */}
       {project.banner_image !== null && (
-        <div className="relative mb-6 aspect-video w-full overflow-hidden rounded-xl">
+        <div className="mb-6 flex w-full items-center justify-center overflow-hidden rounded-xl border border-neutral-200 bg-neutral-50">
           <AdaptiveImage
             src={project.banner_image}
             alt={`${project.name} banner`}
             sizes="(max-width: 768px) 100vw, 864px"
-            className="absolute inset-0 h-full w-full object-cover"
+            pictureClassName="contents"
+            className="block max-h-[70vh] max-w-full object-contain"
           />
         </div>
       )}
@@ -148,13 +149,14 @@ export default async function IndividualProjectPage({
           <h2 id="figures" className="mb-3 text-2xl font-bold">Figures</h2>
           <div className="grid grid-cols-1 gap-6 md:grid-cols-2">
             {project.images.explainerImages.map((img, i) => (
-              <figure key={img.url} className="rounded-xl border border-neutral-200 bg-white p-3">
-                <div className="relative aspect-video w-full overflow-hidden rounded-lg">
+              <figure key={img.url} className="rounded-xl border border-neutral-200 bg-white p-3 shadow-sm">
+                <div className="flex w-full items-center justify-center overflow-hidden rounded-lg bg-neutral-50">
                   <AdaptiveImage
                     src={img.url}
                     alt={`${project.name} image ${i + 1}`}
                     sizes="(max-width: 768px) 100vw, 416px"
-                    className="absolute inset-0 h-full w-full object-cover"
+                    pictureClassName="contents"
+                    className="block max-h-[70vh] max-w-full object-contain"
                   />
                 </div>
                 {img.description?.trim() && (

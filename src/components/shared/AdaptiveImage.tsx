@@ -2,6 +2,11 @@ import type { StaticImageData } from 'next/image'
 import type { ImgHTMLAttributes } from 'react'
 import { R2_BUCKET_PUBLIC_URL } from '@/constants/r2'
 
+const LOCAL_FORMAT_DIRECTORIES = [
+  '/images/home-carousel/',
+  '/images/how-we-work/',
+] as const
+
 export interface AdaptiveImageProps
   extends Omit<ImgHTMLAttributes<HTMLImageElement>, 'src'> {
   /**
@@ -30,6 +35,13 @@ export interface AdaptiveImageProps
    * When true, only the explicitly provided avifSrc/webpSrc will be used.
    */
   disableAutoFormats?: boolean
+
+  /**
+   * Optional className for the wrapping `<picture>` element.
+   * Use this when the layout needs the picture wrapper to be block-level,
+   * flex-aware, or visually absent with `contents`.
+   */
+  pictureClassName?: string
 }
 
 /**
@@ -57,7 +69,7 @@ function inferFormatSrc(baseSrc: string, folder: string, ext: string): string {
 }
 
 function shouldInferLocalFormats(baseSrc: string): boolean {
-  return baseSrc.startsWith('/images/')
+  return LOCAL_FORMAT_DIRECTORIES.some(directory => baseSrc.startsWith(directory))
 }
 
 function normalizeImageSrc(baseSrc: string): string {
@@ -99,7 +111,8 @@ function inferR2SiblingSources(baseSrc: string): {
  * Picture-based image component that serves AVIF and WebP when available.
  *
  * Supported automatic layouts:
- * - public static assets: `/images/foo.png` -> `/images/avif/foo.avif`
+ * - public static assets in optimized directories:
+ *   `/images/home-carousel/foo.jpg` -> `/images/home-carousel/avif/foo.avif`
  * - R2 optimized assets: `.../images/{attId}/full/foo.webp` -> sibling AVIF
  */
 export const AdaptiveImage = ({
@@ -107,6 +120,7 @@ export const AdaptiveImage = ({
   avifSrc,
   webpSrc,
   disableAutoFormats,
+  pictureClassName,
   loading = 'lazy',
   decoding = 'async',
   ...imgProps
@@ -134,7 +148,7 @@ export const AdaptiveImage = ({
         : undefined)
 
   return (
-    <picture>
+    <picture className={pictureClassName}>
       {/* Highest priority: AVIF */}
       {effectiveAvif !== undefined && <source srcSet={effectiveAvif} type="image/avif" />}
 

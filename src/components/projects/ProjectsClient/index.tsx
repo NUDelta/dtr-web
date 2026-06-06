@@ -7,10 +7,9 @@ import { useProjectsDirectory } from './useProjectsDirectory'
 
 interface ProjectsClientProps {
   sigs: SIG[]
-  bannerImages: Record<string, string>
 }
 
-const ProjectsClient = ({ sigs, bannerImages }: ProjectsClientProps) => {
+const ProjectsClient = ({ sigs }: ProjectsClientProps) => {
   const {
     status,
     setStatus,
@@ -111,7 +110,6 @@ const ProjectsClient = ({ sigs, bannerImages }: ProjectsClientProps) => {
                     key={sig.id}
                     sig={sig}
                     currentStatus={status}
-                    bannerImages={bannerImages}
                   />
                 ))
               )}

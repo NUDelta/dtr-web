@@ -9,7 +9,6 @@ import ProjectPreviewCard from './ProjectPreviewCard'
 interface SIGSectionProps {
   sig: SIGDirectoryItem
   currentStatus: DirectoryStatus
-  bannerImages: Record<string, string>
 }
 
 const revealTransition = {
@@ -20,9 +19,8 @@ const revealTransition = {
 const SIGSection = ({
   sig,
   currentStatus,
-  bannerImages,
 }: SIGSectionProps) => {
-  const banner = bannerImages[sig.name] ?? sig.banner_image ?? undefined
+  const banner = sig.banner_image?.trim()
   const primaryProjects = currentStatus === 'Active' ? sig.activeProjects : sig.inactiveProjects
   const hasInactiveProjects = currentStatus === 'Active' && sig.inactiveProjects.length > 0
   const [inactiveProjectsOverride, setInactiveProjectsOverride] = useState<boolean | null>(null)
@@ -30,7 +28,7 @@ const SIGSection = ({
 
   return (
     <article id={`sig-${sig.id}`} className="scroll-mt-24 overflow-hidden rounded-[28px] border border-neutral-200 bg-white shadow-sm">
-      {banner && (
+      {banner !== undefined && banner.length > 0 && (
         <div className="relative aspect-16/6 overflow-hidden border-b border-neutral-200">
           <AdaptiveImage
             src={banner}

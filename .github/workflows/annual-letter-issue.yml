@@ -24,7 +24,6 @@ jobs:
       || (
         github.event.issue.pull_request == null
         && startsWith(github.event.issue.title, '[Annual Letter]:')
-        && contains(fromJSON('["OWNER","MEMBER","COLLABORATOR"]'), github.event.issue.author_association)
       )
     runs-on: ubuntu-latest
     timeout-minutes: 10
@@ -42,29 +41,64 @@ jobs:
       - name: 🛠️ Setup Node.js
         uses: actions/setup-node@v4
         with:
-          node-version: 24
+          node-version: lts/*
 
-      - name: 🔎 Resolve issue payload
+      - name: 🔎 Validate and resolve issue payload
+        id: issue
         env:
           GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
           ISSUE_NUMBER: ${{ github.event.issue.number || inputs.issue_number }}
+          EVENT_NAME: ${{ github.event_name }}
+          REPOSITORY: ${{ github.repository }}
+          TRIGGERING_ACTOR: ${{ github.triggering_actor }}
         run: |
-          if [ "${{ github.event_name }}" = "workflow_dispatch" ]; then
-            gh issue view "$ISSUE_NUMBER" --json body,number,title > annual-letter-issue.json
-            echo "ANNUAL_LETTER_ISSUE_PATH=annual-letter-issue.json" >> "$GITHUB_ENV"
-          else
-            echo "ANNUAL_LETTER_ISSUE_PATH=$GITHUB_EVENT_PATH" >> "$GITHUB_ENV"
+          skip_issue_event() {
+            echo "should_run=false" >> "$GITHUB_OUTPUT"
+            echo "::notice::$1"
+          }
+
+          reject() {
+            if [ "$EVENT_NAME" = "workflow_dispatch" ]; then
+              echo "::error::$1"
+              exit 1
+            fi
+
+            skip_issue_event "$1"
+            exit 0
+          }
+
+          permission="$(gh api "repos/${REPOSITORY}/collaborators/${TRIGGERING_ACTOR}/permission" --jq '.permission' 2>/dev/null || echo none)"
+          case "$permission" in
+            admin|maintain) ;;
+            *) reject "Annual letter automation requires admin or maintain repository permission. ${TRIGGERING_ACTOR} has ${permission}." ;;
+          esac
+
+          gh issue view "$ISSUE_NUMBER" --json body,number,title,labels > annual-letter-issue.json
+
+          title="$(node -e "const fs=require('node:fs'); const issue=JSON.parse(fs.readFileSync('annual-letter-issue.json','utf8')); console.log(issue.title || '')")"
+          if [ "${title#\[Annual Letter\]:}" = "$title" ]; then
+            reject "Issue #${ISSUE_NUMBER} is not an Annual Letter issue."
           fi
 
+          if ! node -e "const fs=require('node:fs'); const issue=JSON.parse(fs.readFileSync('annual-letter-issue.json','utf8')); process.exit(issue.labels?.some(label => label.name === 'content-updating') ? 0 : 1)"; then
+            reject "Issue #${ISSUE_NUMBER} is missing the content-updating label."
+          fi
+
+          echo "ANNUAL_LETTER_ISSUE_PATH=annual-letter-issue.json" >> "$GITHUB_ENV"
+          echo "should_run=true" >> "$GITHUB_OUTPUT"
+
       - name: 📝 Generate annual letter changes
+        if: steps.issue.outputs.should_run == 'true'
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         run: node scripts/annual-letter-from-issue.ts
 
       - name: 🔎 Show generated changes
+        if: steps.issue.outputs.should_run == 'true'
         run: git diff --stat
 
       - name: 🌿 Commit and open PR
+        if: steps.issue.outputs.should_run == 'true'
         env:
           GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
           ISSUE_NUMBER: ${{ github.event.issue.number || inputs.issue_number }}

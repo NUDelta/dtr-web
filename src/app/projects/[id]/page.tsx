@@ -1,11 +1,10 @@
 import type { Metadata } from 'next'
 import { ArrowLeft } from 'lucide-react'
 import dynamic from 'next/dynamic'
-import Image from 'next/image'
 import Link from 'next/link'
 import { notFound } from 'next/navigation'
 import TeamMembers from '@/components/projects/TeamMembers'
-import { MarkdownContents } from '@/components/shared'
+import { AdaptiveImage, MarkdownContents } from '@/components/shared'
 import { getAllProjectIds, getProjects } from '@/lib/airtable/project'
 import generateRssFeed from '@/utils/generate-rss-feed'
 
@@ -15,6 +14,17 @@ const ProjectPublications = dynamic(
 const ProjectVideo = dynamic(
   async () => (await import('@/components/projects/ProjectVideo')).default,
 )
+
+const SITE_URL = 'https://dtr.northwestern.edu'
+
+function toAbsoluteSiteUrl(pathOrUrl: string): string {
+  try {
+    return new URL(pathOrUrl).toString()
+  }
+  catch {
+    return new URL(pathOrUrl.replace(/^\/+/, ''), `${SITE_URL}/`).toString()
+  }
+}
 
 export async function generateStaticParams() {
   await generateRssFeed() // regenerate RSS at build
@@ -40,7 +50,9 @@ export async function generateMetadata({
     return { title: `Project ${id} not found | DTR` }
   }
 
-  const ogImage = project.banner_image ?? undefined
+  const ogImage = project.banner_image !== null
+    ? toAbsoluteSiteUrl(project.banner_image)
+    : undefined
 
   return {
     title: `${project.name} | DTR`,
@@ -87,7 +99,7 @@ export default async function IndividualProjectPage({
     'description': project.description,
     'url': `https://dtr.northwestern.edu/projects/${project.id}`,
     'image': project.banner_image !== null
-      ? `https://dtr.northwestern.edu/${project.banner_image}`
+      ? toAbsoluteSiteUrl(project.banner_image)
       : undefined,
   }
 
@@ -113,13 +125,11 @@ export default async function IndividualProjectPage({
       {/* Banner Image */}
       {project.banner_image !== null && (
         <div className="relative mb-6 aspect-video w-full overflow-hidden rounded-xl">
-          <Image
+          <AdaptiveImage
             src={project.banner_image}
             alt={`${project.name} banner`}
-            fill
             sizes="(max-width: 768px) 100vw, 864px"
-            className="object-cover"
-            priority={false}
+            className="absolute inset-0 h-full w-full object-cover"
           />
         </div>
       )}
@@ -140,12 +150,11 @@ export default async function IndividualProjectPage({
             {project.images.explainerImages.map((img, i) => (
               <figure key={img.url} className="rounded-xl border border-neutral-200 bg-white p-3">
                 <div className="relative aspect-video w-full overflow-hidden rounded-lg">
-                  <Image
+                  <AdaptiveImage
                     src={img.url}
                     alt={`${project.name} image ${i + 1}`}
-                    fill
                     sizes="(max-width: 768px) 100vw, 416px"
-                    className="object-cover"
+                    className="absolute inset-0 h-full w-full object-cover"
                   />
                 </div>
                 {img.description?.trim() && (

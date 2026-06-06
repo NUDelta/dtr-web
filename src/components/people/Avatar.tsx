@@ -12,8 +12,10 @@ interface AvatarProps {
 
 const Avatar = ({ src, alt, size, fill = false }: AvatarProps) => {
   const placeholder = '/images/default-pic.png'
+  const placeholderWebp = '/images/default-pic.webp'
   const [failedSrc, setFailedSrc] = useState<string | null>(null)
   const imageSrc = src !== null && src !== failedSrc ? src : placeholder
+  const isPlaceholder = imageSrc === placeholder
   const handleError = () => {
     if (src !== null) {
       setFailedSrc(src)
@@ -28,6 +30,8 @@ const Avatar = ({ src, alt, size, fill = false }: AvatarProps) => {
         sizes="(max-width: 640px) 100vw, (max-width: 1024px) 50vw, 25vw"
         className="absolute inset-0 h-full w-full object-cover"
         loading="lazy"
+        webpSrc={isPlaceholder ? placeholderWebp : undefined}
+        disableAutoFormats={isPlaceholder}
         onError={handleError}
       />
     )
@@ -46,6 +50,8 @@ const Avatar = ({ src, alt, size, fill = false }: AvatarProps) => {
           : '(max-width: 640px) 128px, 160px'
       }
       loading="lazy"
+      webpSrc={isPlaceholder ? placeholderWebp : undefined}
+      disableAutoFormats={isPlaceholder}
       onError={handleError}
     />
   )

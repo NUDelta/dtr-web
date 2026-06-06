@@ -7,6 +7,10 @@ const socialLinks = [
     label: 'Twitter/X',
     href: 'https://x.com/DTR_DeltaLab',
   },
+  {
+    label: 'GitHub',
+    href: 'https://github.com/NUDelta/dtr-web',
+  },
 ] as const
 
 export default function Footer() {

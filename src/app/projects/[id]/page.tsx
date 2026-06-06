@@ -3,8 +3,9 @@ import { ArrowLeft } from 'lucide-react'
 import dynamic from 'next/dynamic'
 import Link from 'next/link'
 import { notFound } from 'next/navigation'
+import ProjectMediaImage from '@/components/projects/ProjectMediaImage'
 import TeamMembers from '@/components/projects/TeamMembers'
-import { AdaptiveImage, MarkdownContents } from '@/components/shared'
+import { MarkdownContents } from '@/components/shared'
 import { getAllProjectIds, getProjects } from '@/lib/airtable/project'
 import generateRssFeed from '@/utils/generate-rss-feed'
 
@@ -124,14 +125,13 @@ export default async function IndividualProjectPage({
 
       {/* Banner Image */}
       {project.banner_image !== null && (
-        <div className="relative mb-6 aspect-video w-full overflow-hidden rounded-xl">
-          <AdaptiveImage
-            src={project.banner_image}
-            alt={`${project.name} banner`}
-            sizes="(max-width: 768px) 100vw, 864px"
-            className="absolute inset-0 h-full w-full object-cover"
-          />
-        </div>
+        <ProjectMediaImage
+          src={project.banner_image}
+          alt={`${project.name} banner`}
+          sizes="(max-width: 768px) 100vw, 864px"
+          containerClassName="mb-6 flex w-full items-center justify-center overflow-hidden rounded-xl border border-neutral-200 bg-neutral-50"
+          imageClassName="block max-h-[70vh] max-w-full object-contain"
+        />
       )}
 
       {/* Description */}
@@ -148,15 +148,14 @@ export default async function IndividualProjectPage({
           <h2 id="figures" className="mb-3 text-2xl font-bold">Figures</h2>
           <div className="grid grid-cols-1 gap-6 md:grid-cols-2">
             {project.images.explainerImages.map((img, i) => (
-              <figure key={img.url} className="rounded-xl border border-neutral-200 bg-white p-3">
-                <div className="relative aspect-video w-full overflow-hidden rounded-lg">
-                  <AdaptiveImage
-                    src={img.url}
-                    alt={`${project.name} image ${i + 1}`}
-                    sizes="(max-width: 768px) 100vw, 416px"
-                    className="absolute inset-0 h-full w-full object-cover"
-                  />
-                </div>
+              <figure key={img.url} className="rounded-xl border border-neutral-200 bg-white p-3 shadow-sm">
+                <ProjectMediaImage
+                  src={img.url}
+                  alt={`${project.name} image ${i + 1}`}
+                  sizes="(max-width: 768px) 100vw, 416px"
+                  containerClassName="flex w-full items-center justify-center overflow-hidden rounded-lg bg-neutral-50"
+                  imageClassName="block max-h-[70vh] max-w-full object-contain"
+                />
                 {img.description?.trim() && (
                   <figcaption className="mt-2 text-sm text-neutral-700">
                     <MarkdownContents content={`Figure ${i + 1}: ${img.description}`} />

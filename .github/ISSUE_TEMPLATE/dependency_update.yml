@@ -1,5 +1,6 @@
 name: 📦 Dependency Update Request
 description: 'Request to update, add, or remove dependencies'
+title: '[Dependencies]: '
 labels: [dependencies]
 body:
   - type: markdown

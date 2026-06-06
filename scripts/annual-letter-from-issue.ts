@@ -43,7 +43,8 @@ function escapeRegExp(value: string): string {
 
 function getIssueField(body: string, label: string): string | undefined {
   const pattern = new RegExp(
-    `(?:^|\\n)###\\s+${escapeRegExp(label)}\\s*\\n+([\\s\\S]*?)(?=\\n###\\s+|$)`,
+    `(?:^|\\n)###\\s+(?:[^\\p{L}\\p{N}\\n]+\\s*)?${escapeRegExp(label)}\\s*\\n+([\\s\\S]*?)(?=\\n###\\s+|$)`,
+    'u',
   )
   const match = body.match(pattern)
   const value = match?.[1]?.trim()

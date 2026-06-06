@@ -8,15 +8,40 @@ const TOKEN = process.env.GITHUB_TOKEN
 const LETTERS_FILE = 'src/lib/annual-letters.ts'
 const GENERATED_SUMMARY_FILE = '.annual-letter-generated.json'
 
-function fail(message) {
+interface IssuePayload {
+  body?: string
+  issue?: IssuePayload
+  number?: number
+}
+
+interface DateParts {
+  day: number
+  month: number
+  year: number
+}
+
+interface TableOfContentsSection {
+  name: string
+  page: string
+}
+
+interface AnnualLetterEntryInput {
+  date: DateParts
+  description?: string
+  link: string
+  tableOfContents: TableOfContentsSection[]
+  year: number
+}
+
+function fail(message: string): never {
   throw new Error(`[annual-letter] ${message}`)
 }
 
-function escapeRegExp(value) {
+function escapeRegExp(value: string): string {
   return value.replace(/[.*+?^${}()|[\]\\]/g, '\\$&')
 }
 
-function getIssueField(body, label) {
+function getIssueField(body: string, label: string): string | undefined {
   const pattern = new RegExp(
     `(?:^|\\n)###\\s+${escapeRegExp(label)}\\s*\\n+([\\s\\S]*?)(?=\\n###\\s+|$)`,
   )
@@ -30,7 +55,7 @@ function getIssueField(body, label) {
   return value
 }
 
-function parseYear(value) {
+function parseYear(value: string | undefined): number {
   if (value === undefined || !/^\d{4}$/.test(value)) {
     fail('Annual letter year must be a four-digit year.')
   }
@@ -38,7 +63,7 @@ function parseYear(value) {
   return Number.parseInt(value, 10)
 }
 
-function parsePublicationDate(value) {
+function parsePublicationDate(value: string | undefined): DateParts {
   if (value === undefined) {
     fail('Publication date is required.')
   }
@@ -67,7 +92,7 @@ function parsePublicationDate(value) {
   return parsed
 }
 
-function parsePdfUrl(value) {
+function parsePdfUrl(value: string | undefined): string {
   if (value === undefined) {
     fail('PDF upload or URL is required.')
   }
@@ -104,7 +129,7 @@ function parsePdfUrl(value) {
   return pdf.url
 }
 
-function parseTableOfContents(value) {
+function parseTableOfContents(value: string | undefined): TableOfContentsSection[] {
   if (value === undefined) {
     fail('Table of contents is required.')
   }
@@ -140,7 +165,7 @@ function parseTableOfContents(value) {
   return sections
 }
 
-function tsString(value) {
+function tsString(value: string): string {
   return `'${value
     .replaceAll('\\', '\\\\')
     // Issue form textareas may include line breaks; keep generated TypeScript single-line-safe.
@@ -155,7 +180,7 @@ function renderAnnualLetterEntry({
   link,
   tableOfContents,
   year,
-}) {
+}: AnnualLetterEntryInput): string {
   const toc = tableOfContents
     .map(section => `      { name: ${tsString(section.name)}, page: ${tsString(section.page)} },`)
     .join('\n')
@@ -172,7 +197,7 @@ ${toc}
 `
 }
 
-function insertAnnualLetter(source, entry, year) {
+function insertAnnualLetter(source: string, entry: string, year: number): string {
   const entryMatches = [...source.matchAll(/\n {2}\{\n {4}name: 'Annual Letter (\d{4})'/g)]
   if (entryMatches.length === 0) {
     fail(`Could not find existing annual letter entries in ${LETTERS_FILE}.`)
@@ -196,8 +221,8 @@ function insertAnnualLetter(source, entry, year) {
   return `${source.slice(0, closingIndex + 1)}${entry}${source.slice(closingIndex + 1)}`
 }
 
-async function downloadPdf(url, targetPath) {
-  const headers = {}
+async function downloadPdf(url: string, targetPath: string): Promise<void> {
+  const headers: Record<string, string> = {}
   const parsed = new URL(url)
 
   if (TOKEN !== undefined && parsed.hostname === 'github.com') {
@@ -227,7 +252,7 @@ async function main() {
     fail('ANNUAL_LETTER_ISSUE_PATH or GITHUB_EVENT_PATH is required.')
   }
 
-  const event = JSON.parse(await fs.readFile(ISSUE_PATH, 'utf8'))
+  const event = JSON.parse(await fs.readFile(ISSUE_PATH, 'utf8')) as IssuePayload
   const issue = event.issue ?? event
   if (issue?.body === undefined) {
     fail('Issue body is missing from the GitHub event.')

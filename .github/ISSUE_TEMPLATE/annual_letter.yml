@@ -6,10 +6,9 @@ body:
   - type: markdown
     attributes:
       value: |
-        Use this form to submit a new DTR annual letter.
+        Use this form to submit a new DTR annual letter. Maintainer submissions automatically open or update a PR.
 
-        After the issue is reviewed, a maintainer should comment `/annual-letter create-pr`.
-        That command runs the automation that opens a PR updating `public/letters/` and `src/lib/annual-letters.ts`.
+        The automation updates `public/letters/` and `src/lib/annual-letters.ts`.
 
   - type: input
     id: year
@@ -66,5 +65,5 @@ body:
           required: true
         - label: The table of contents page numbers have been checked against the PDF.
           required: true
-        - label: I understand a maintainer must comment `/annual-letter create-pr` to create the PR.
+        - label: I understand maintainer submissions automatically open a PR.
           required: true

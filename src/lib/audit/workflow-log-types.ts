@@ -40,6 +40,7 @@ export interface WorkflowRunSummary {
   deletedCount?: number
   scannedBytes?: number
   deletedBytes?: number
+  deleteFailureCount?: number
   logCount: number
   reason?: string
   bucket?: string

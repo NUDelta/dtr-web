@@ -1,11 +1,15 @@
 import type { StaticImageData } from 'next/image'
 import type { ImgHTMLAttributes } from 'react'
+import { R2_BUCKET_PUBLIC_URL } from '@/constants/r2'
 
 export interface AdaptiveImageProps
   extends Omit<ImgHTMLAttributes<HTMLImageElement>, 'src'> {
   /**
-   * Fallback image source (JPEG/PNG).
-   * Can be a string path or a Next.js StaticImageData import.
+   * Fallback image source.
+   *
+   * Local public image paths can be passed as `/images/...` or `images/...`.
+   * R2 URLs usually point at the cached WebP variant; when that URL is present,
+   * the component infers the sibling AVIF source from the same R2 key.
    */
   src: string | StaticImageData
 
@@ -52,9 +56,51 @@ function inferFormatSrc(baseSrc: string, folder: string, ext: string): string {
   return `${prefix}/${baseName}.${ext}`
 }
 
+function shouldInferLocalFormats(baseSrc: string): boolean {
+  return baseSrc.startsWith('/images/')
+}
+
+function normalizeImageSrc(baseSrc: string): string {
+  if (baseSrc.startsWith('images/')) {
+    return `/${baseSrc}`
+  }
+
+  return baseSrc
+}
+
+function inferR2SiblingSources(baseSrc: string): {
+  avifSrc?: string
+  webpSrc?: string
+} | undefined {
+  if (!baseSrc.startsWith(`${R2_BUCKET_PUBLIC_URL}/images/`)) {
+    return undefined
+  }
+
+  try {
+    const url = new URL(baseSrc)
+    if (!url.pathname.toLowerCase().endsWith('.webp')) {
+      return undefined
+    }
+
+    const avifUrl = new URL(url)
+    avifUrl.pathname = url.pathname.replace(/\.webp$/i, '.avif')
+
+    return {
+      avifSrc: avifUrl.toString(),
+      webpSrc: url.toString(),
+    }
+  }
+  catch {
+    return undefined
+  }
+}
+
 /**
- * Picture-based image component that serves AVIF and WebP when available,
- * and falls back to the original JPEG/PNG source.
+ * Picture-based image component that serves AVIF and WebP when available.
+ *
+ * Supported automatic layouts:
+ * - public static assets: `/images/foo.png` -> `/images/avif/foo.avif`
+ * - R2 optimized assets: `.../images/{attId}/full/foo.webp` -> sibling AVIF
  */
 export const AdaptiveImage = ({
   src,
@@ -67,17 +113,25 @@ export const AdaptiveImage = ({
 }: AdaptiveImageProps) => {
   // Normalize src to a plain string
   const fallbackSrc
-    = typeof src === 'string'
+    = normalizeImageSrc(typeof src === 'string'
       ? src
-      : src.src // StaticImageData from Next.js imports
+      : src.src) // StaticImageData from Next.js imports
+
+  const r2Sources = !disableAutoFormats ? inferR2SiblingSources(fallbackSrc) : undefined
 
   const effectiveAvif
     = avifSrc
-      ?? (!disableAutoFormats ? inferFormatSrc(fallbackSrc, 'avif', 'avif') : undefined)
+      ?? r2Sources?.avifSrc
+      ?? (!disableAutoFormats && shouldInferLocalFormats(fallbackSrc)
+        ? inferFormatSrc(fallbackSrc, 'avif', 'avif')
+        : undefined)
 
   const effectiveWebp
     = webpSrc
-      ?? (!disableAutoFormats ? inferFormatSrc(fallbackSrc, 'webp', 'webp') : undefined)
+      ?? r2Sources?.webpSrc
+      ?? (!disableAutoFormats && shouldInferLocalFormats(fallbackSrc)
+        ? inferFormatSrc(fallbackSrc, 'webp', 'webp')
+        : undefined)
 
   return (
     <picture>

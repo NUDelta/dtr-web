@@ -1,7 +1,7 @@
 'use client'
 
-import Image from 'next/image'
 import { useState } from 'react'
+import { AdaptiveImage } from '@/components/shared'
 
 interface AvatarProps {
   src: string | null
@@ -22,12 +22,11 @@ const Avatar = ({ src, alt, size, fill = false }: AvatarProps) => {
 
   if (fill) {
     return (
-      <Image
+      <AdaptiveImage
         src={imageSrc}
         alt={alt}
-        fill
         sizes="(max-width: 640px) 100vw, (max-width: 1024px) 50vw, 25vw"
-        className="h-full w-full object-cover"
+        className="absolute inset-0 h-full w-full object-cover"
         loading="lazy"
         onError={handleError}
       />
@@ -35,7 +34,7 @@ const Avatar = ({ src, alt, size, fill = false }: AvatarProps) => {
   }
 
   return (
-    <Image
+    <AdaptiveImage
       src={imageSrc}
       alt={alt}
       width={size ?? 80}

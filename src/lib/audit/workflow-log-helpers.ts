@@ -25,7 +25,11 @@ export function getWorkflowEventStatus(event: CacheLogEvent): WorkflowRunStatus 
   }
 
   if (event.kind === 'r2GcRunSuccess') {
-    return 'success'
+    return (event.deleteFailureCount ?? 0) > 0
+      || event.capped === true
+      || (event.missingTables?.length ?? 0) > 0
+      ? 'warning'
+      : 'success'
   }
 
   if (event.kind.endsWith('Start')) {
@@ -38,8 +42,7 @@ export function getWorkflowEventStatus(event: CacheLogEvent): WorkflowRunStatus 
 
   if (
     event.capped === true
-    || (event.confirmedOrphanCount ?? 0) > 0
-    || (event.newOrphanCount ?? 0) > 0
+    || (event.deleteFailureCount ?? 0) > 0
     || (event.missingTables?.length ?? 0) > 0
     || (event.reason !== undefined && !event.kind.endsWith('Success'))
   ) {

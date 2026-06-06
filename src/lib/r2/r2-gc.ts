@@ -2,6 +2,8 @@
  * Reference-based R2 garbage collector for old image cache objects.
  * - Current Airtable cache records define the live image key set.
  * - KV tracks when an object was first confirmed as orphaned.
+ * - New/confirmed orphan counts are tracking signals; delete failures are the
+ *   warning signal because those objects remain queued for retry.
  */
 import { Buffer } from 'node:buffer'
 import { randomUUID } from 'node:crypto'
@@ -38,6 +40,8 @@ interface R2CleanupResult {
   scannedBytes: number
   deleted: number
   deletedBytes: number
+  /** R2 delete attempts that failed and will be retried on a later run. */
+  deleteFailures: number
   capped: boolean
   live: number
   newOrphans: number
@@ -53,6 +57,7 @@ interface R2CleanupResult {
 
 function hasR2CleanupChanges(result: R2CleanupResult): boolean {
   return result.deleted > 0
+    || result.deleteFailures > 0
     || result.newOrphans > 0
     || result.confirmedOrphans > 0
     || result.recoveredOrphans > 0
@@ -119,6 +124,7 @@ export async function runR2CleanupOnce(opts: GCOptions = {}): Promise<R2CleanupR
       scannedBytes: 0,
       deleted: 0,
       deletedBytes: 0,
+      deleteFailures: 0,
       capped: false,
       live: liveKeys.size,
       newOrphans: 0,
@@ -138,6 +144,7 @@ export async function runR2CleanupOnce(opts: GCOptions = {}): Promise<R2CleanupR
   let scannedBytes = 0
   let deleted = 0
   let deletedBytes = 0
+  let deleteFailures = 0
   let newOrphans = 0
   let confirmedOrphans = 0
   let recoveredOrphans = 0
@@ -198,6 +205,7 @@ export async function runR2CleanupOnce(opts: GCOptions = {}): Promise<R2CleanupR
       }
       catch {
         // Keep the orphan state so a future run can retry the delete.
+        deleteFailures++
       }
     }
   } while (token !== undefined && !capped)
@@ -222,6 +230,7 @@ export async function runR2CleanupOnce(opts: GCOptions = {}): Promise<R2CleanupR
     scannedBytes,
     deleted,
     deletedBytes,
+    deleteFailures,
     capped,
     live: liveKeys.size,
     newOrphans,
@@ -319,7 +328,6 @@ export async function maybeRunR2CleanupFromISR(opts: GCOptions = {}) {
       prunedOrphanCount: res.prunedOrphans,
       graceDays,
       maxDeletePerRun,
-      capped: res.capped,
     })
     workflowLog.add({
       kind: 'r2GcRunSuccess',
@@ -330,6 +338,7 @@ export async function maybeRunR2CleanupFromISR(opts: GCOptions = {}) {
       scannedBytes: res.scannedBytes,
       deletedCount: res.deleted,
       deletedBytes: res.deletedBytes,
+      deleteFailureCount: res.deleteFailures,
       liveCount: res.live,
       newOrphanCount: res.newOrphans,
       confirmedOrphanCount: res.confirmedOrphans,

@@ -28,6 +28,11 @@ jobs:
           failed_tables=()
           guard_owner="airtable-refresh-${GITHUB_RUN_ID}-${GITHUB_RUN_ATTEMPT}"
           guard_released=0
+          # The schedule is 12h apart, but GitHub cron can start late and the
+          # previous per-table run can finish well after the nominal slot. Use a
+          # 10h admission window so the second daily refresh is not skipped when
+          # the previous success is only ~10.5h old.
+          scheduled_min_interval_hours=10
 
           release_guard() {
             if [ "${guard_released}" -eq 1 ]; then
@@ -77,7 +82,7 @@ jobs:
           for table in "${tables[@]}"; do
             echo "::group::Refresh Airtable table: ${table}"
             response_file="$(mktemp)"
-            payload="{\"minIntervalHours\":11,\"guardOwner\":\"${guard_owner}\",\"releaseGuard\":false,\"tables\":[\"${table}\"]}"
+            payload="{\"minIntervalHours\":${scheduled_min_interval_hours},\"guardOwner\":\"${guard_owner}\",\"releaseGuard\":false,\"tables\":[\"${table}\"]}"
             started_at="$(date -u +%s)"
 
             echo "started_at_utc=$(date -u --iso-8601=seconds)"

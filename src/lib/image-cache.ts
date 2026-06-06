@@ -2,6 +2,7 @@
 
 import type { Attachment } from 'ts-airtable'
 import { Buffer } from 'node:buffer'
+import { createHash } from 'node:crypto'
 import { buildR2PublicUrl, r2Delete, r2Get, r2Head, R2ObjectNotFoundError, r2Put } from '@/lib/r2'
 import { transcodeBufferToOptimizedImages } from '@/utils/image-convert'
 
@@ -9,15 +10,32 @@ import { transcodeBufferToOptimizedImages } from '@/utils/image-convert'
 const MAX_DIMENSION = 2400
 const FILE_EXTENSION_PATTERN = /\.[^.]+$/
 const UNSAFE_OBJECT_KEY_CHARS = /[^\w.-]+/g
+const MAX_OBJECT_KEY_PART_LENGTH = 180
 const ORIGINAL_CACHE_CONTROL = 'public, max-age=31536000, immutable'
 
+/**
+ * Keep every semantic R2 key segment path-safe and URL-stable.
+ *
+ * Object keys are later URL-encoded segment-by-segment, so this normalization is
+ * mostly about avoiding accidental path separators, query strings, and hash
+ * fragments in the stored key itself.
+ */
 function sanitizeObjectKeyPart(value: string, fallback: string): string {
   const sanitized = value
     .split(/[?#]/)[0]
     .replace(UNSAFE_OBJECT_KEY_CHARS, '-')
     .replace(/^-+|-+$/g, '')
 
-  return sanitized.length > 0 ? sanitized : fallback
+  if (sanitized.length === 0) {
+    return fallback
+  }
+
+  if (sanitized.length <= MAX_OBJECT_KEY_PART_LENGTH) {
+    return sanitized
+  }
+
+  const hash = createHash('sha256').update(sanitized).digest('hex').slice(0, 10)
+  return `${sanitized.slice(0, MAX_OBJECT_KEY_PART_LENGTH - hash.length - 1)}-${hash}`
 }
 
 /**
@@ -25,6 +43,10 @@ function sanitizeObjectKeyPart(value: string, fallback: string): string {
  * Stored objects:
  * - images/{attId}/{variant}/{basename}.webp
  * - images/{attId}/{variant}/{basename}.avif
+ *
+ * Airtable attachment ids and internal variant names are trusted identity
+ * segments. Only filenames are normalized because they are user-facing and can
+ * contain spaces, punctuation, query/hash fragments, or very long names.
  */
 export async function buildImageObjectKey(
   attId: string,
@@ -103,7 +125,7 @@ async function fetchAttachmentOriginal(
  * This is safe to call from **server-only** code (cache store, API routes, RSC).
  *
  * Behaviour:
- * - If WebP already exists in R2, this is a cheap HEAD check and we return it.
+ * - If WebP and AVIF already exist in R2, cheap HEAD checks return the WebP URL.
  * - Otherwise, we:
  *   1. Read a prior original fallback from R2, or fetch the Airtable URL
  *   2. Downscale & transcode to AVIF + WebP
@@ -128,12 +150,17 @@ export async function ensureImageInR2(
     buildOriginalImageObjectKey(attId, filename),
   ])
 
-  // Fast path: already cached in R2?
+  // Fast path: both optimized variants are already cached in R2.
   try {
     await r2Head(webpKey)
+    await r2Head(avifKey)
     return { url: await buildImageUrl(attId, variant, filename), webpKey, avifKey }
   }
-  catch {}
+  catch (error) {
+    if (!(error instanceof R2ObjectNotFoundError)) {
+      throw error
+    }
+  }
 
   let original = await readR2ObjectAsBuffer(originalKey)
   const originalWasCached = original !== undefined

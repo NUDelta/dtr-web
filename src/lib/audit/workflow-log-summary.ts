@@ -64,13 +64,19 @@ function getR2GcSummaryText(event: CacheLogEvent): string {
 
   const parts = [
     `${event.scannedCount ?? 0} scanned`,
+    event.scannedBytes === undefined || event.scannedBytes === 0 ? undefined : `${formatBytes(event.scannedBytes)} scanned`,
     `${event.liveCount ?? 0} live`,
     `${event.deletedCount ?? 0} deleted`,
+    event.deletedBytes === undefined || event.deletedBytes === 0 ? undefined : `${formatBytes(event.deletedBytes)} deleted`,
     `${event.newOrphanCount ?? 0} new orphan candidates`,
-  ]
+  ].filter((part): part is string => part !== undefined)
 
-  if ((event.deletedBytes ?? 0) > 0) {
-    parts.push(`${formatBytes(event.deletedBytes ?? 0)} deleted`)
+  if ((event.deleteFailureCount ?? 0) > 0) {
+    parts.push(`${event.deleteFailureCount} delete failures`)
+  }
+
+  if (event.capped === true) {
+    parts.push('delete cap reached')
   }
 
   if ((event.confirmedOrphanCount ?? 0) > 0) {
@@ -82,6 +88,27 @@ function getR2GcSummaryText(event: CacheLogEvent): string {
   }
 
   return parts.join(' · ')
+}
+
+function getR2GcSecondaryIssueText(primary: CacheLogEvent, events: CacheLogEvent[]): string | undefined {
+  const issue = events.find(event => event !== primary && getEventStatus(event) === 'failure')
+    ?? events.find(event => event !== primary && getEventStatus(event) === 'warning')
+
+  if (issue === undefined) {
+    return undefined
+  }
+
+  if (issue.kind === 'workflowLogRetention') {
+    if (issue.reason !== undefined) {
+      return `workflow log retention failed: ${issue.reason}`
+    }
+
+    if (issue.capped === true) {
+      return 'workflow log retention capped'
+    }
+  }
+
+  return issue.reason ?? `${issue.kind} warning`
 }
 
 function getUpdateSummaryText(event: CacheLogEvent): string | undefined {
@@ -102,7 +129,10 @@ function getUpdateSummaryText(event: CacheLogEvent): string | undefined {
 function getSummaryText(sourceId: OpsLogSourceId, event: CacheLogEvent, events: CacheLogEvent[]): string {
   if (event.reason !== undefined) {
     if (sourceId === 'r2-gc') {
-      return getR2GcSummaryText(event)
+      return [
+        getR2GcSummaryText(event),
+        getR2GcSecondaryIssueText(event, events),
+      ].filter((part): part is string => part !== undefined).join(' · ')
     }
 
     return event.reason
@@ -126,7 +156,10 @@ function getSummaryText(sourceId: OpsLogSourceId, event: CacheLogEvent, events: 
     ].filter((part): part is string => part !== undefined).join(' · ')
   }
 
-  return getR2GcSummaryText(event)
+  return [
+    getR2GcSummaryText(event),
+    getR2GcSecondaryIssueText(event, events),
+  ].filter((part): part is string => part !== undefined).join(' · ')
 }
 
 function getObjectDate(timestamp: number): string {
@@ -190,6 +223,7 @@ export function buildWorkflowRunSummary(
     deletedCount: primary.deletedCount,
     scannedBytes: primary.scannedBytes,
     deletedBytes: primary.deletedBytes,
+    deleteFailureCount: primary.deleteFailureCount,
     logCount: events.length,
     reason: primary.reason,
     bucket: primary.bucket,

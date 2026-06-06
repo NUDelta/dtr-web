@@ -1,7 +1,6 @@
 'use client'
 
 import { LoaderCircle, ShieldCheck } from 'lucide-react'
-import { useState } from 'react'
 import { useFormStatus } from 'react-dom'
 
 interface AuditLoginFormProps {
@@ -32,13 +31,10 @@ function LoginError({ auth }: { auth?: string }) {
 
 function AuditLoginFields({
   auth,
-  submitted,
   turnstileSiteKey,
-}: Pick<AuditLoginFormProps, 'auth' | 'turnstileSiteKey'> & {
-  submitted: boolean
-}) {
+}: Pick<AuditLoginFormProps, 'auth' | 'turnstileSiteKey'>) {
   const { pending } = useFormStatus()
-  const isSubmitting = pending || submitted
+  const isSubmitting = pending
   const hasTokenError = auth === 'failed'
   const hasAuthMessage = auth === 'failed' || auth === 'challenge'
 
@@ -98,17 +94,13 @@ export default function AuditLoginForm({
   auth,
   turnstileSiteKey,
 }: AuditLoginFormProps) {
-  const [submitted, setSubmitted] = useState(false)
-
   return (
     <form
       action={action}
       className="mt-6 flex flex-col gap-4"
-      onSubmit={() => setSubmitted(true)}
     >
       <AuditLoginFields
         auth={auth}
-        submitted={submitted}
         turnstileSiteKey={turnstileSiteKey}
       />
     </form>

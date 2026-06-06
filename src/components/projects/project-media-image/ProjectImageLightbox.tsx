@@ -85,15 +85,20 @@ export default function ProjectImageLightbox({
   })
 
   useEffect(() => {
-    if (zoomedSize === null || viewerSize === null || zoom === MIN_ZOOM) {
+    const scrollArea = scrollRef.current
+    if (zoomedSize === null || viewerSize === null || scrollArea === null) {
       return
     }
 
-    scrollRef.current?.scrollTo({
-      left: 0,
-      top: 0,
+    const animationFrame = window.requestAnimationFrame(() => {
+      scrollArea.scrollTo({
+        left: overflow.x ? Math.max(0, (scrollArea.scrollWidth - scrollArea.clientWidth) / 2) : 0,
+        top: overflow.y ? Math.max(0, (scrollArea.scrollHeight - scrollArea.clientHeight) / 2) : 0,
+      })
     })
-  }, [viewerSize, zoom, zoomedSize])
+
+    return () => window.cancelAnimationFrame(animationFrame)
+  }, [overflow.x, overflow.y, viewerSize, zoomedSize])
 
   if (typeof document === 'undefined') {
     return null

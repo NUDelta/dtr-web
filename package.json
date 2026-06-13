@@ -21,7 +21,7 @@
     "@next/third-parties": "16.2.9",
     "@tanstack/react-form-nextjs": "^1.33.0",
     "@zl-asica/react": "^0.13.0",
-    "cloudflare": "^6.3.0",
+    "cloudflare": "^6.4.0",
     "clsx": "^2.1.1",
     "d3-scale": "^4.0.2",
     "framer-motion": "^12.40.0",

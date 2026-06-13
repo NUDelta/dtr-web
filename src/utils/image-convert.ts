@@ -51,7 +51,7 @@ export async function transcodeBufferToOptimizedImages(
       unlimited: false,
       sequentialRead: true,
       animated: false,
-      failOnError: false,
+      failOn: 'none',
     })
 
     // Respect EXIF rotation.

@@ -12,10 +12,10 @@ trustPolicyExclude:
 allowBuilds:
   sharp: true
 
+packages:
+  - .
+
 overrides:
   d3-color: 3.1.0
   mdast-util-to-hast: 13.2.1
   postcss: 8.5.15
-
-packages:
-  - .

@@ -14,3 +14,7 @@ allowBuilds:
 
 packages:
   - .
+
+overrides:
+  mdast-util-to-hast: 13.2.1
+  postcss: 8.5.16

@@ -106,9 +106,10 @@ export function createCloudflareApiKvCacheStore(
       let res
       try {
         // cloudflare-typescript:
-        // client.kv.namespaces.values.get(namespaceId, keyName, params?, options?)
-        res = await client.kv.namespaces.values.get(namespaceId, fullKey, {
+        // client.kv.namespaces.values.get(keyName, params?, options?)
+        res = await client.kv.namespaces.values.get(fullKey, {
           account_id: accountId,
+          namespace_id: namespaceId,
         })
       }
       catch (error) {
@@ -140,8 +141,7 @@ export function createCloudflareApiKvCacheStore(
       // Application-level stale-window enforcement. Freshness is controlled by
       // scheduled refresh; user requests may serve stale data until this point.
       if (staleUntil != null && Number.isFinite(staleUntil) && Date.now() >= staleUntil) {
-        // Optionally, we could fire-and-forget a delete here:
-        // void client.kv.namespaces.values.delete(namespaceId, fullKey, { account_id: accountId })
+        // Optionally, we could fire-and-forget a delete here.
         return undefined
       }
 
@@ -177,11 +177,16 @@ export function createCloudflareApiKvCacheStore(
       const timestamp = Date.now()
 
       // cloudflare-typescript:
-      // client.kv.namespaces.values.update(namespaceId, keyName, params?, options?)
-      await client.kv.namespaces.values.update(namespaceId, fullKey, {
+      // client.kv.namespaces.values.update(keyName, params?, options?)
+      await client.kv.namespaces.values.update(fullKey, {
         account_id: accountId,
         value: serialized,
-        ...(expiration_ttl !== undefined ? { expiration_ttl } : {}),
+        ...(expiration_ttl !== undefined
+          ? {
+              expiration_ttl,
+            }
+          : {}),
+        namespace_id: namespaceId,
       })
 
       safeLog(logger, {
@@ -200,8 +205,9 @@ export function createCloudflareApiKvCacheStore(
       const fullKey = withOptionalPrefix(keyPrefix, key)
       const timestamp = Date.now()
 
-      await client.kv.namespaces.values.delete(namespaceId, fullKey, {
+      await client.kv.namespaces.values.delete(fullKey, {
         account_id: accountId,
+        namespace_id: namespaceId,
       })
 
       safeLog(logger, {

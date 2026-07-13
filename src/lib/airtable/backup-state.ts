@@ -67,9 +67,11 @@ function isCloudflareErrorWithStatus(
 async function readKvText(key: string): Promise<string | undefined> {
   try {
     const response = await CloudflareClient.kv.namespaces.values.get(
-      CLOUDFLARE_KV_NAMESPACE_ID,
       key,
-      { account_id: CLOUDFLARE_ACCOUNT_ID },
+      {
+        account_id: CLOUDFLARE_ACCOUNT_ID,
+        namespace_id: CLOUDFLARE_KV_NAMESPACE_ID,
+      },
     )
     const text = await response.text()
     return text.length > 0 ? text : undefined
@@ -88,12 +90,16 @@ async function writeKvJson(
   expirationTtlSeconds?: number,
 ): Promise<void> {
   await CloudflareClient.kv.namespaces.values.update(
-    CLOUDFLARE_KV_NAMESPACE_ID,
     key,
     {
       account_id: CLOUDFLARE_ACCOUNT_ID,
       value: JSON.stringify(value),
-      ...(expirationTtlSeconds !== undefined ? { expiration_ttl: expirationTtlSeconds } : {}),
+      ...(expirationTtlSeconds !== undefined
+        ? {
+            expiration_ttl: expirationTtlSeconds,
+          }
+        : {}),
+      namespace_id: CLOUDFLARE_KV_NAMESPACE_ID,
     },
   )
 }
@@ -192,8 +198,10 @@ export async function releaseBackupSlotBestEffort(owner: string): Promise<void> 
   }
 
   await CloudflareClient.kv.namespaces.values.delete(
-    CLOUDFLARE_KV_NAMESPACE_ID,
     BACKUP_GUARD_KEY,
-    { account_id: CLOUDFLARE_ACCOUNT_ID },
+    {
+      account_id: CLOUDFLARE_ACCOUNT_ID,
+      namespace_id: CLOUDFLARE_KV_NAMESPACE_ID,
+    },
   )
 }

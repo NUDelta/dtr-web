@@ -92,9 +92,11 @@ export async function r2Get(key: string): Promise<R2GetResponse> {
 
 export async function r2GetFromBucket(bucket: string, key: string): Promise<R2GetResponse> {
   const response = await CloudflareClient.r2.buckets.objects.get(
-    bucket,
     key,
-    getObjectParams(),
+    {
+      ...getObjectParams(),
+      bucket_name: bucket,
+    },
   )
 
   return {
@@ -121,10 +123,12 @@ export async function r2PutToBucket(
   cacheControl = 'public, max-age=31536000, immutable',
 ) {
   return CloudflareClient.r2.buckets.objects.upload(
-    bucket,
     key,
     body,
-    getObjectParams(),
+    {
+      ...getObjectParams(),
+      bucket_name: bucket,
+    },
     {
       headers: {
         'Cache-Control': cacheControl,
@@ -170,8 +174,10 @@ export async function r2Delete(key: string) {
 
 export async function r2DeleteFromBucket(bucket: string, key: string) {
   return CloudflareClient.r2.buckets.objects.delete(
-    bucket,
     key,
-    getObjectParams(),
+    {
+      ...getObjectParams(),
+      bucket_name: bucket,
+    },
   )
 }

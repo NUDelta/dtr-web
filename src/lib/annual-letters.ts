@@ -1,5 +1,26 @@
 const annualLetters: AnnualLetter[] = [
   {
+    name: 'Annual Letter 2026',
+    datePublished: new Date(2026, 7 - 1, 20), // year, month index (0-indexed), day
+    description: '',
+    link: '/letters/2026-dtr-letter.pdf',
+    tableOfContents: [
+      { name: 'welcome', page: '1' },
+      { name: 'celebrating success', page: '1' },
+      { name: 'the research project', page: '4' },
+      { name: 'hello, self', page: '10' },
+      { name: 'sea otters', page: '11' },
+      { name: 'keepers', page: '14' },
+      { name: 'coming out', page: '16' },
+      { name: 'holding space', page: '18' },
+      { name: 'hci studio 2.0', page: '22' },
+      { name: 'direct contact', page: '24' },
+      { name: 'once seen', page: '25' },
+      { name: 'kids', page: '26' },
+      { name: 'an invitation', page: '27' },
+    ],
+  },
+  {
     name: 'Annual Letter 2025',
     datePublished: new Date(2025, 8 - 1, 13), // year, month index (0-indexed), day
     description: '',

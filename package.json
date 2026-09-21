@@ -53,7 +53,6 @@
     "@types/papaparse": "^5.5.2",
     "@types/react": "19.3.0",
     "@types/react-dom": "^19.3.0",
-    "@types/react-simple-maps": "^3.0.6",
     "@types/rss": "^0.0.32",
     "baseline-browser-mapping": "^2.11.25",
     "eslint": "^10.11.0",

@@ -14,9 +14,7 @@ interface AlumniMapProps {
 }
 
 const geoStyle = {
-  default: { outline: 'none' as const },
-  hover: { outline: 'none' as const },
-  pressed: { outline: 'none' as const },
+  outline: 'none',
 }
 
 const AlumniMap = ({
@@ -122,8 +120,12 @@ const AlumniMap = ({
             maxZoom={8}
             onMoveStart={() => { isPanningRef.current = true }}
             onMoveEnd={(p) => {
-              setCenter(p.coordinates)
-              setZoom(p.zoom)
+              if (p.coordinates !== undefined) {
+                setCenter(p.coordinates)
+              }
+              if (p.zoom !== undefined) {
+                setZoom(p.zoom)
+              }
               setTimeout(() => {
                 isPanningRef.current = false
               }, 0)
@@ -135,9 +137,9 @@ const AlumniMap = ({
             {/* States */}
             <Geographies geography={GEO_URL}>
               {({ geographies }) =>
-                geographies.map((geo: { properties: { name: string }, rsmKey: string }) => {
-                  const stateName = (geo.properties).name
-                  const count = stateCounts[stateName] || 0
+                geographies.map((geo) => {
+                  const stateName: unknown = geo.properties?.name
+                  const count = typeof stateName === 'string' ? stateCounts[stateName] || 0 : 0
                   return (
                     <Geography
                       key={geo.rsmKey}
@@ -154,8 +156,11 @@ const AlumniMap = ({
 
             {/* City markers */}
             {[...cityGroups.values()]
-              .filter(g => !!g.lonLat)
               .map((g) => {
+                if (g.lonLat === undefined) {
+                  return null
+                }
+
                 const isHover = hoverKey === g.key && selectedKey !== g.key
                 const isSelected = selectedKey === g.key
                 return (

@@ -22,6 +22,7 @@ export default function GlobalError({ error, reset }: GlobalErrorProps) {
     // Redirect after 10 seconds
     const redirectTimer = setTimeout(() => {
       // Redirect to home page
+      // eslint-disable-next-line next/no-location-assign-relative-destination
       globalThis.location.href = '/'
     }, 10_000)
 

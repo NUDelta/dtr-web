@@ -14,6 +14,7 @@ function Custom404() {
 
     // Redirect after 10 seconds
     const redirectTimer = setTimeout(() => {
+      // eslint-disable-next-line next/no-location-assign-relative-destination
       globalThis.location.href = '/'
     }, 10_000)
 

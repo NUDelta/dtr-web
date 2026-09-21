@@ -1,16 +1,17 @@
 minimumReleaseAge: 1440
+minimumReleaseAgeExcludePrune: true
 minimumReleaseAgeExclude:
   - ts-airtable
-shellEmulator: true
 
 trustPolicy: no-downgrade
-
 trustPolicyExclude:
   - semver@6.3.1
   - ua-parser-js@1.0.41
 
-allowBuilds:
-  sharp: true
+shellEmulator: true
 
 packages:
   - .
+
+allowBuilds:
+  sharp: true

@@ -9,6 +9,10 @@ on:
 concurrency:
   group: airtable-refresh
   cancel-in-progress: false
+permissions:
+  contents: read
+  # Needed by the keepalive step below to re-enable scheduled workflows.
+  actions: write
 
 jobs:
   run:
@@ -126,3 +130,21 @@ jobs:
           fi
         env:
           CICD_SECRET: ${{ secrets.CICD_SECRET }}
+          
+      # GitHub automatically disables scheduled workflows after 60 days without
+      # commits to the repository. Re-enabling a workflow through the API resets
+      # that inactivity timer, so every refresh run re-enables all scheduled
+      # workflows in this repository. Runs even if the refresh step failed.
+      - name: Keep scheduled workflows enabled
+        if: always()
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          set -euo pipefail
+
+          for workflow in airtable-refresh.yml airtable-backup.yml r2-gc.yml; do
+            echo "Re-enabling ${workflow}"
+            gh api \
+              --method PUT \
+              "repos/${GITHUB_REPOSITORY}/actions/workflows/${workflow}/enable"
+          done

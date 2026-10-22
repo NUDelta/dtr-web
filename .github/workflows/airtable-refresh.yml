@@ -130,7 +130,6 @@ jobs:
           fi
         env:
           CICD_SECRET: ${{ secrets.CICD_SECRET }}
-          
       # GitHub automatically disables scheduled workflows after 60 days without
       # commits to the repository. Re-enabling a workflow through the API resets
       # that inactivity timer, so every refresh run re-enables all scheduled

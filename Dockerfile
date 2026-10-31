@@ -1,4 +1,5 @@
-FROM node:lts-alpine AS base
+# Pinned to Node 24: Node 25+ images no longer bundle corepack, which the stages below use for pnpm
+FROM node:24-alpine AS base
 
 # Stage 1: deps
 FROM base AS deps

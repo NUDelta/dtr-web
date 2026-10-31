@@ -3,34 +3,7 @@
 import { useClickOutside, useSessionStorage } from '@zl-asica/react'
 import Image from 'next/image'
 import { useEffect, useRef, useState } from 'react'
-
-interface Announcement {
-  id: string
-  title?: string
-  description?: string
-  image?: string
-  link?: { url: string, text: string }
-  expiryDate: string // YYYY-MM-DD format
-}
-
-const announcements: Announcement[] = [
-  {
-    id: 'dtr-w26-open-house',
-    title: 'DTR Open House',
-    image: '/images/DTR-W26-OpenHouse.jpg',
-    link: {
-      url: 'https://docs.google.com/forms/d/e/1FAIpQLSf_0kEaFuj_1Zwhc-XmiZtvSL5j65iEEG5mzd-IqM5dip02SQ/viewform',
-      text: 'RSVP',
-    },
-    expiryDate: '2025-11-07',
-  },
-]
-
-// local YYYY-MM-DD
-const fmtLocalDate = (d: Date) => {
-  const pad = (n: number) => String(n).padStart(2, '0')
-  return `${d.getFullYear()}-${pad(d.getMonth() + 1)}-${pad(d.getDate())}`
-}
+import { fmtLocalDate, getActiveAnnouncements } from '@/lib/announcements'
 
 const PopupAnnouncement = () => {
   const [activeAnnouncement, setActiveAnnouncement] = useState<Announcement | null>(null)
@@ -60,8 +33,7 @@ const PopupAnnouncement = () => {
       return
     }
 
-    // Compare as ISO-like strings
-    const valid = announcements.filter(a => a.expiryDate >= today)
+    const valid = getActiveAnnouncements(today)
 
     if (valid.length > 0) {
       // eslint-disable-next-line react/set-state-in-effect

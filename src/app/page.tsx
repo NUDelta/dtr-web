@@ -1,3 +1,4 @@
+import AnnouncementStrip from '@/components/home/AnnouncementStrip'
 import Carousel from '@/components/home/Carousel'
 import HomeIntro from '@/components/home/HomeIntro'
 import MediaBanner from '@/components/home/MediaBanner'
@@ -5,6 +6,8 @@ import MediaBanner from '@/components/home/MediaBanner'
 export default function HomePage() {
   return (
     <div className="mx-2 md:mx-4">
+      <AnnouncementStrip className="mb-6" />
+
       <div className="flex flex-col gap-6 md:flex-row md:items-center">
         <Carousel className="w-full md:w-2/3" />
         <HomeIntro className="w-full md:w-1/3" />

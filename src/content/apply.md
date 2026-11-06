@@ -4,7 +4,7 @@
 
 1. Learn more about DTR by [browsing this website](/), [reading some DTR letters](/letters), or [watching the documentary](https://www.forward.movie/).
 
-2. Complete the [application form](https://docs.google.com/forms/d/12PJFFoPrk6CzopB0mAm2Go3eLFBzNMMmwjDtCNAdKEc/viewform) to tell us more about you and when you can meet with us. You should apply in the quarter _prior_ to the one in which you want to join DTR (for example, to join in Spring quarter, apply during the preceding Winter quarter). Applications should be submitted within a few days of the quarterly DTR Open House (usually in the middle of the quarter), or by week 5–6 of the current quarter. Applications received after this will be reviewed as part of the next quarter’s cycle.
+2. Complete the [application form](https://docs.google.com/forms/d/e/1FAIpQLSd3oWF_LKDDekUBxALfL7X8FE8SsovO0YvUsy5R1MRwm07vNg/viewform) to tell us more about you and when you can meet with us. You should apply in the quarter _prior_ to the one in which you want to join DTR (for example, to join in Spring quarter, apply during the preceding Winter quarter). Applications should be submitted within a few days of the quarterly DTR Open House (usually in the middle of the quarter), or by week 5–6 of the current quarter. Applications received after this will be reviewed as part of the next quarter’s cycle.
 
 3. We will contact selected candidates for an interview within about a week. We look for students who are exceptional in their design, technical, and/or research abilities. This may be evidenced through classes you have taken, projects you have led or contributed to, and your personal growth.
 

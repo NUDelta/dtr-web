@@ -14,7 +14,7 @@ export default async function Apply() {
     <div className="mx-auto max-w-4xl">
       <MarkdownContents content={applyContent} />
       <a
-        href="https://docs.google.com/forms/d/12PJFFoPrk6CzopB0mAm2Go3eLFBzNMMmwjDtCNAdKEc/viewform"
+        href="https://docs.google.com/forms/d/e/1FAIpQLSd3oWF_LKDDekUBxALfL7X8FE8SsovO0YvUsy5R1MRwm07vNg/viewform"
         target="_blank"
         rel="noreferrer noopener"
         className="unstyled-link mt-6 inline-block rounded-lg border-2 bg-yellow py-2 px-6 text-lg font-semibold transition hover:bg-yellow-500"
